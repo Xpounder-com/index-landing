@@ -5,9 +5,36 @@
       "VITE_BASE": "/idx/"
     }
   },
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/idx/",
+      "permanent": true
+    },
+    {
+      "source": "/idx",
+      "destination": "/idx/",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/idx/:path*",
+      "destination": "/:path*"
+    }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/idx/assets/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
