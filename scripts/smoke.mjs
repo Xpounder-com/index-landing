@@ -15,7 +15,25 @@ const mimeTypes = {
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
   '.png': 'image/png',
+  '.svg': 'image/svg+xml; charset=utf-8',
+  '.txt': 'text/plain; charset=utf-8',
+  '.xml': 'application/xml; charset=utf-8',
   '.webp': 'image/webp',
+};
+
+const normalizeBasePath = (value) => {
+  if (!value || value === '/') return '/';
+  const withLeadingSlash = value.startsWith('/') ? value : `/${value}`;
+  return withLeadingSlash.endsWith('/') ? withLeadingSlash : `${withLeadingSlash}/`;
+};
+const basePath = normalizeBasePath(process.env.VITE_BASE || '/');
+const stripBasePath = (pathname) => {
+  if (basePath === '/') return pathname;
+  if (pathname === basePath.slice(0, -1)) return '/';
+  if (pathname.startsWith(basePath)) {
+    return pathname.slice(basePath.length - 1) || '/';
+  }
+  return pathname;
 };
 
 const productAssets = [
@@ -97,6 +115,7 @@ const builtLandingText = [...builtText, ...builtJs].join('\n');
 const forbiddenTerms = [
   'example.com',
   '%SITE_URL%',
+  '%BASE_URL%',
   'ASSET SLOT',
   'IDX',
   'Co-sell',
@@ -160,7 +179,8 @@ if (missingRequiredTerms.length) {
 const server = createServer(async (req, res) => {
   try {
     const url = new URL(req.url ?? '/', 'http://127.0.0.1');
-    const rawPath = decodeURIComponent(url.pathname === '/' ? '/index.html' : url.pathname);
+    const routedPath = stripBasePath(url.pathname);
+    const rawPath = decodeURIComponent(routedPath === '/' ? '/index.html' : routedPath);
     const safePath = normalize(rawPath).replace(/^(\.\.[/\\])+/, '');
     const filePath = join(dist, safePath);
 
@@ -182,6 +202,7 @@ const server = createServer(async (req, res) => {
 await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
 const { port } = server.address();
 const origin = `http://127.0.0.1:${port}`;
+const landingUrl = `${origin}${basePath}`;
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
@@ -202,7 +223,7 @@ page.on('response', (response) => {
 });
 
 try {
-  await page.goto(origin, { waitUntil: 'domcontentloaded', timeout: 30_000 });
+  await page.goto(landingUrl, { waitUntil: 'domcontentloaded', timeout: 30_000 });
   await page.waitForFunction(() => window.THREE && document.querySelector('#stage canvas'), null, { timeout: 30_000 });
   await page.waitForFunction(() => document.querySelector('#scene-label')?.textContent !== 'Loading...', null, { timeout: 10_000 });
   await page.waitForFunction(() => document.querySelector('.logo img')?.complete, null, { timeout: 10_000 });
@@ -331,7 +352,7 @@ try {
     throw new Error(`Browser runtime errors:\n${runtimeErrors.join('\n')}`);
   }
 
-  console.log(`Smoke passed: ${origin}`);
+  console.log(`Smoke passed: ${landingUrl}`);
 } finally {
   await browser.close();
   await new Promise((resolve) => server.close(resolve));

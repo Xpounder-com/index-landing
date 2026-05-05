@@ -1,4 +1,10 @@
 {
+  "build": {
+    "env": {
+      "VITE_SITE_URL": "https://www.neuralint.io/idx",
+      "VITE_BASE": "/idx/"
+    }
+  },
   "headers": [
     {
       "source": "/assets/(.*)",

@@ -2,7 +2,8 @@
 
 ## Before Push
 
-- Set `VITE_SITE_URL` to the final `https://www...` domain in Vercel and confirm the generated canonical, Open Graph, Twitter, robots, and sitemap URLs use it.
+- Set `VITE_SITE_URL` to `https://www.neuralint.io/idx` in Vercel and confirm the generated canonical, Open Graph, Twitter, robots, and sitemap URLs use it.
+- Set `VITE_BASE` to `/idx/` in Vercel and confirm scripts, styles, images, and favicon load under `/idx/`.
 - Keep `IDX Landing.html` mirrored from `index.html` if you still want the local snapshot under the legacy filename.
 - Confirm the seven product screenshots in `public/assets/product/` are approved for public use.
 - Add final partner logos, named testimonials, or case-study evidence only when approved.
@@ -35,3 +36,4 @@
 - Verify connector names and logos rotate through the approved connector list.
 - Verify all product images load with no console errors or failed requests.
 - Verify no `example.com`, visible placeholder copy, pricing language, or legacy prototype route is present in production output.
+- Verify `https://www.neuralint.io/idx/` loads and `https://www.neuralint.io/idx/assets/...` asset requests return `200`.

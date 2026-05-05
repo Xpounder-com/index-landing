@@ -39,9 +39,10 @@ Import this repo into the GitHub organization, then connect it to Vercel as a Vi
 - Output directory: `dist`
 - Production branch: `main`
 - Canonical domain: use `www` as primary and redirect the apex domain to `www`
-- Environment variable: set `VITE_SITE_URL` to the final production origin, for example `https://www.index.app`
+- Environment variable: set `VITE_SITE_URL` to the final production origin, for example `https://www.neuralint.io/idx`
+- Environment variable: set `VITE_BASE` to the deployment path, for example `/idx/`
 - Cloudflare: add the DNS records shown by Vercel after the custom domain is attached
 
-Before production launch, confirm `VITE_SITE_URL` matches the final `https://www...` domain and verify the Vercel preview plus production domain over HTTPS.
+Before production launch, confirm `VITE_SITE_URL` and `VITE_BASE` match the final path and verify the Vercel preview plus production domain over HTTPS.
 
 See `LAUNCH_CHECKLIST.md` for the push, Vercel, Cloudflare, and verification checklist.

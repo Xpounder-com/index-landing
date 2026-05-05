@@ -17,12 +17,12 @@
 <meta name="twitter:title" content="Index Partner Program"/>
 <meta name="twitter:description" content="B2B Ops are why companies don't get paid fast enough. Index is the fix."/>
 <meta name="twitter:image" content="%SITE_URL%/assets/product/idx-ap-review.png"/>
-<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="icon" href="%BASE_URL%favicon.svg" type="image/svg+xml"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link rel="preload" href="/assets/brand/index-logo.jpg" as="image"/>
-<link rel="preload" href="/assets/product/idx-ap-review.png" as="image" fetchpriority="high"/>
-<link rel="prefetch" href="/assets/product/idx-ap-match.png" as="image"/>
+<link rel="preload" href="%BASE_URL%assets/brand/index-logo.jpg" as="image"/>
+<link rel="preload" href="%BASE_URL%assets/product/idx-ap-review.png" as="image" fetchpriority="high"/>
+<link rel="prefetch" href="%BASE_URL%assets/product/idx-ap-match.png" as="image"/>
 <link rel="stylesheet" href="styles.css"/>
 <style>
   html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #0d0a08; color: #faf7f0; }
@@ -523,7 +523,7 @@
 </main>
 
 <header class="nav">
-  <a href="#" class="logo" aria-label="Index home"><img src="/assets/brand/index-logo.jpg" alt="" aria-hidden="true"/></a>
+  <a href="#" class="logo" aria-label="Index home"><img src="%BASE_URL%assets/brand/index-logo.jpg" alt="" aria-hidden="true"/></a>
   <nav class="nav-links">
     <a href="#" data-go="1">Blueprints</a>
     <a href="#" data-go="2">Platform</a>
@@ -872,14 +872,16 @@ window.THREE = THREE;
   const sceneObjects = []; // { group, shards, label, z, texture, canvas }
   const ROLE_WORDS = ['finance', 'operations'];
   let roleWordIndex = 0;
+  const BASE_URL = '%BASE_URL%';
+  const assetPath = (path) => `${BASE_URL}${path.replace(/^\/+/, '')}`;
   const PRODUCT_ASSETS = {
-    hero: { src: '/assets/product/idx-ap-review.png', alt: 'AP invoice match workspace' },
-    apMatch: { src: '/assets/product/idx-ap-match.png', alt: 'AP invoice review workspace' },
-    inbox: { src: '/assets/product/idx-inbox.png', alt: 'Index inbox workspace' },
-    dashboard: { src: '/assets/product/idx-dashboard.png', alt: 'Index operations dashboard' },
-    inventory: { src: '/assets/product/idx-inventory.png', alt: 'Index inventory workspace' },
-    customer: { src: '/assets/product/idx-customer-360.png', alt: 'Index customer 360 workspace' },
-    posting: { src: '/assets/product/idx-posting-preview.png', alt: 'Index posting preview and audit trail' },
+    hero: { src: assetPath('assets/product/idx-ap-review.png'), alt: 'AP invoice match workspace' },
+    apMatch: { src: assetPath('assets/product/idx-ap-match.png'), alt: 'AP invoice review workspace' },
+    inbox: { src: assetPath('assets/product/idx-inbox.png'), alt: 'Index inbox workspace' },
+    dashboard: { src: assetPath('assets/product/idx-dashboard.png'), alt: 'Index operations dashboard' },
+    inventory: { src: assetPath('assets/product/idx-inventory.png'), alt: 'Index inventory workspace' },
+    customer: { src: assetPath('assets/product/idx-customer-360.png'), alt: 'Index customer 360 workspace' },
+    posting: { src: assetPath('assets/product/idx-posting-preview.png'), alt: 'Index posting preview and audit trail' },
   };
   const PRODUCT_CROPS = {
     hero: { focusX: 0.56, focusY: 0.38, zoom: 1.62 },
