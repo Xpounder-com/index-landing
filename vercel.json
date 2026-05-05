@@ -19,8 +19,28 @@
   ],
   "rewrites": [
     {
+      "source": "/idx/assets/:path*",
+      "destination": "/assets/:path*"
+    },
+    {
+      "source": "/idx/favicon.svg",
+      "destination": "/favicon.svg"
+    },
+    {
+      "source": "/idx/robots.txt",
+      "destination": "/robots.txt"
+    },
+    {
+      "source": "/idx/sitemap.xml",
+      "destination": "/sitemap.xml"
+    },
+    {
       "source": "/idx/:path*",
-      "destination": "/:path*"
+      "destination": "/index.html"
+    },
+    {
+      "source": "/idx/",
+      "destination": "/index.html"
     }
   ],
   "headers": [
