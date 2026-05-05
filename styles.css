@@ -1,0 +1,338 @@
+/* ============================================================
+   IDX Wireframes — sketchy low-fi style system
+   B&W base + a single accent (red-orange) for highlight links
+   between extracted fields and source document regions.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* Palette — warm paper + ink */
+  --paper: #faf7f0;
+  --paper-warm: #f3ede0;
+  --ink: #2a1a10;
+  --ink-2: #3d2418;
+  --ink-3: #5a3a26;
+  --pencil: #7a5a44;
+  --pencil-light: #a8a8a8;
+  --pencil-faint: #d4d0c8;
+
+  /* Accent — used ONLY for the hover-link between field <-> doc */
+  --accent: #d24a2e;
+  --accent-soft: rgba(210, 74, 46, 0.18);
+  --accent-glow: rgba(210, 74, 46, 0.35);
+
+  /* Confidence colors — muted, drawn-in feel */
+  --conf-good: #2d6a3e;
+  --conf-good-bg: rgba(45, 106, 62, 0.12);
+  --conf-warn: #b8860b;
+  --conf-warn-bg: rgba(184, 134, 11, 0.14);
+  --conf-bad: #a83232;
+  --conf-bad-bg: rgba(168, 50, 50, 0.13);
+
+  /* Highlight (yellow marker on doc) */
+  --marker: rgba(255, 224, 80, 0.55);
+  --marker-strong: rgba(255, 200, 50, 0.75);
+
+  /* Type — editorial serif display + clean sans body */
+  --font-hand: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-hand-loose: 'Cormorant Garamond', 'Times New Roman', serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Cormorant Garamond', 'Times New Roman', serif;
+}
+
+/* ---------- Sketchy primitives ---------- */
+
+.sk-card {
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  border-radius: 6px 4px 7px 5px;
+  position: relative;
+  box-shadow: 2px 3px 0 rgba(0,0,0,0.08);
+}
+
+.sk-card-tight {
+  background: var(--paper);
+  border: 1.25px solid var(--ink-2);
+  border-radius: 4px 6px 3px 5px;
+}
+
+.sk-divider {
+  height: 1.5px;
+  background: var(--ink);
+  border-radius: 2px;
+  margin: 6px 0;
+  /* slightly wobbly */
+  clip-path: polygon(0 30%, 8% 0, 22% 60%, 40% 20%, 60% 80%, 78% 30%, 92% 70%, 100% 40%, 100% 60%, 92% 90%, 78% 50%, 60% 100%, 40% 40%, 22% 80%, 8% 20%, 0 50%);
+  background: linear-gradient(180deg, transparent 35%, var(--ink) 35%, var(--ink) 65%, transparent 65%);
+}
+
+.sk-divider-soft {
+  height: 1px;
+  background: var(--pencil-light);
+  margin: 8px 0;
+  border-radius: 1px;
+}
+
+/* Hand-drawn checkbox / radio */
+.sk-check {
+  width: 16px; height: 16px;
+  border: 1.5px solid var(--ink);
+  border-radius: 3px 4px 2px 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.sk-check.checked::after {
+  content: "✓";
+  font-family: var(--font-hand-loose);
+  font-size: 18px;
+  color: var(--ink);
+  line-height: 0;
+  margin-top: 2px;
+}
+
+/* Hand-drawn pill / tag */
+.sk-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 9px;
+  border: 1.25px solid var(--ink);
+  border-radius: 12px 14px 11px 13px;
+  font-family: var(--font-hand);
+  font-size: 12px;
+  background: var(--paper);
+  white-space: nowrap;
+}
+.sk-pill.solid { background: var(--ink); color: var(--paper); }
+.sk-pill.good { border-color: var(--conf-good); color: var(--conf-good); background: var(--conf-good-bg); }
+.sk-pill.warn { border-color: var(--conf-warn); color: var(--conf-warn); background: var(--conf-warn-bg); }
+.sk-pill.bad  { border-color: var(--conf-bad);  color: var(--conf-bad);  background: var(--conf-bad-bg); }
+.sk-pill.accent { border-color: var(--accent); color: var(--accent); }
+
+/* Hand-drawn input — single line */
+.sk-input {
+  position: relative;
+  background: var(--paper);
+  border: 1.5px solid var(--ink-2);
+  border-radius: 4px 6px 3px 5px;
+  padding: 5px 9px;
+  font-family: var(--font-hand);
+  font-size: 14px;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  transition: box-shadow .12s, border-color .12s;
+}
+.sk-input.good { border-color: var(--conf-good); background: var(--conf-good-bg); }
+.sk-input.warn { border-color: var(--conf-warn); background: var(--conf-warn-bg); }
+.sk-input.bad  { border-color: var(--conf-bad);  background: var(--conf-bad-bg); }
+
+.sk-input.linked {
+  box-shadow: 0 0 0 2.5px var(--accent), 2px 3px 0 var(--accent-soft);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.sk-label {
+  font-family: var(--font-hand);
+  font-size: 10px;
+  color: var(--pencil);
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.sk-h {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #3d2418;
+  line-height: 1.0;
+}
+.sk-h1 { font-size: 48px; font-weight: 600; }
+.sk-h2 { font-size: 32px; font-weight: 600; }
+.sk-h3 { font-size: 22px; font-weight: 600; }
+.sk-body { font-family: var(--font-hand); font-size: 13px; color: var(--ink-2); line-height: 1.5; }
+.sk-small { font-family: var(--font-hand); font-size: 11px; color: var(--pencil); line-height: 1.45; }
+.sk-mono { font-family: var(--font-mono); font-size: 12px; }
+
+/* Hand-drawn arrow */
+.sk-arrow {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-hand-loose);
+  color: var(--accent);
+}
+
+/* Btn */
+.sk-btn {
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  border-radius: 5px 7px 4px 6px;
+  padding: 6px 14px;
+  font-family: var(--font-hand);
+  font-size: 13px;
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--ink);
+  transition: transform .08s, box-shadow .08s;
+  white-space: nowrap;
+}
+.sk-btn:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--ink); }
+.sk-btn:active { transform: translate(1px, 1px); box-shadow: 0 0 0 var(--ink); }
+.sk-btn.solid { background: var(--ink); color: var(--paper); }
+.sk-btn.accent { background: var(--accent); color: white; border-color: var(--ink); }
+.sk-btn.ghost { box-shadow: none; border-style: dashed; }
+.sk-btn.sm { padding: 3px 9px; font-size: 12px; box-shadow: 1.5px 1.5px 0 var(--ink); }
+
+/* Strikethrough scribble effect */
+.sk-strike { text-decoration: line-through; text-decoration-thickness: 2px; text-decoration-color: var(--accent); }
+
+/* Dotted/dashed connectors */
+.sk-dotted { background-image: radial-gradient(var(--pencil) 1.2px, transparent 1.2px); background-size: 6px 6px; }
+
+/* Doc page (the right-side scan) */
+.sk-page {
+  background: #fdfcf7;
+  border: 1.5px solid var(--ink-2);
+  border-radius: 3px;
+  box-shadow: 4px 5px 0 rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.04);
+  position: relative;
+  overflow: hidden;
+}
+.sk-page::before {
+  /* paper grain */
+  content: "";
+  position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 23px, rgba(180,160,120,0.08) 23px 24px),
+    radial-gradient(ellipse at 30% 20%, rgba(255,240,200,0.3), transparent 60%);
+  pointer-events: none;
+}
+
+/* The yellow-marker highlight on the document */
+.doc-mark {
+  position: absolute;
+  background: var(--marker);
+  border-radius: 3px 5px 2px 4px;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: background .12s, box-shadow .12s, transform .12s;
+  mix-blend-mode: multiply;
+}
+.doc-mark:hover, .doc-mark.linked {
+  background: var(--marker-strong);
+  box-shadow: 0 0 0 2px var(--accent), 0 0 14px var(--accent-glow);
+  transform: scale(1.02);
+  z-index: 5;
+}
+
+/* Doc text fill (handwriting placeholder) */
+.doc-line {
+  height: 7px;
+  background: var(--ink-3);
+  border-radius: 2px;
+  opacity: 0.78;
+}
+.doc-line.short { opacity: 0.45; }
+.doc-line.faint { opacity: 0.22; }
+
+/* Wobbly underline — for hand-drawn emphasis */
+.sk-underline {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 6'><path d='M2 4 Q 12 1 22 3 T 42 3 T 62 4 T 78 3' fill='none' stroke='%23d24a2e' stroke-width='1.8' stroke-linecap='round'/></svg>");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: 0 100%;
+  padding-bottom: 4px;
+}
+
+/* Hand-drawn scribble box (placeholder) */
+.sk-scribble {
+  background:
+    repeating-linear-gradient(135deg, transparent 0 5px, var(--pencil-light) 5px 6px);
+  border: 1.25px dashed var(--pencil);
+  border-radius: 3px;
+}
+
+/* App chrome */
+.sk-chrome-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  border-bottom: 1.5px solid var(--ink);
+  background: var(--paper-warm);
+}
+
+/* Topbar tabs */
+.sk-tab {
+  font-family: var(--font-hand);
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 4px 6px 3px 5px;
+  cursor: pointer;
+  color: var(--ink-3);
+}
+.sk-tab.active {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* Sidebar nav item */
+.sk-nav {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 8px;
+  font-family: var(--font-hand);
+  font-size: 13px;
+  color: var(--ink-2);
+  border-radius: 4px 6px 3px 5px;
+  cursor: pointer;
+}
+.sk-nav.active { background: var(--ink); color: var(--paper); }
+.sk-nav:hover:not(.active) { background: rgba(0,0,0,0.05); }
+
+/* Bar/sparkline placeholders */
+.sk-bar { background: var(--ink); border-radius: 1px 2px 1px 2px; }
+.sk-bar.faint { background: var(--pencil-light); }
+.sk-bar.accent { background: var(--accent); }
+
+/* Annotation note */
+.sk-note {
+  background: #fff8c4;
+  border: 1.25px solid var(--ink);
+  font-family: var(--font-hand-loose);
+  font-size: 16px;
+  padding: 6px 10px;
+  border-radius: 3px 7px 5px 4px;
+  box-shadow: 2px 3px 0 rgba(0,0,0,0.1);
+  transform: rotate(-1.2deg);
+  color: var(--ink);
+}
+
+/* utility */
+.sk-rotate-1 { transform: rotate(-0.6deg); }
+.sk-rotate-2 { transform: rotate(0.8deg); }
+
+.sk-row { display: flex; align-items: center; }
+.sk-col { display: flex; flex-direction: column; }
+
+/* Hover-link state for the link group */
+.link-target.linked {
+  outline: 2.5px solid var(--accent);
+  outline-offset: 1px;
+  background: var(--accent-soft) !important;
+}
+
+/* For dotted "lasso" between field and doc region */
+.lasso-line {
+  position: absolute;
+  pointer-events: none;
+  z-index: 50;
+}

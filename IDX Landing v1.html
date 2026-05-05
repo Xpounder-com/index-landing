@@ -1,0 +1,1387 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1280"/>
+<title>IDX — Document intelligence, ready to deploy</title>
+<link rel="stylesheet" href="styles.css"/>
+<style>
+  /* ===== Landing-only overrides — keep the warm paper palette,
+     drop the wobbly sketch chrome for a clean editorial layout ===== */
+  html, body { margin: 0; padding: 0; background: var(--paper); color: var(--ink); }
+  body {
+    font-family: var(--font-ui);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .lp { max-width: 1240px; margin: 0 auto; padding: 0 40px; }
+  .lp-wide { max-width: 1440px; margin: 0 auto; padding: 0 40px; }
+
+  a { color: inherit; text-decoration: none; }
+  a:hover { color: var(--accent); }
+
+  /* type */
+  .display {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.022em;
+    color: var(--ink);
+    line-height: 0.96;
+  }
+  .display em { font-style: italic; font-weight: 400; color: var(--ink-3); }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--pencil);
+    font-weight: 500;
+  }
+  .lede {
+    font-family: var(--font-display);
+    font-size: 22px;
+    line-height: 1.35;
+    color: var(--ink-2);
+    font-weight: 400;
+    letter-spacing: -0.005em;
+  }
+  .body { font-size: 15px; line-height: 1.6; color: var(--ink-2); }
+  .small { font-size: 12px; color: var(--pencil); }
+  .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+  /* hairlines */
+  .hr { height: 1px; background: var(--ink); opacity: 0.85; border: 0; }
+  .hr-soft { height: 1px; background: var(--ink); opacity: 0.18; border: 0; }
+
+  /* ===== Top bar ===== */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(250, 247, 240, 0.92);
+    backdrop-filter: saturate(140%) blur(8px);
+    -webkit-backdrop-filter: saturate(140%) blur(8px);
+    border-bottom: 1px solid rgba(42,26,16,0.12);
+  }
+  .nav-inner {
+    display: flex; align-items: center; gap: 28px;
+    height: 64px; padding: 0 40px;
+    max-width: 1440px; margin: 0 auto;
+  }
+  .logo {
+    display: inline-flex; align-items: baseline; gap: 8px;
+    font-family: var(--font-display); font-weight: 600;
+    font-size: 22px; letter-spacing: -0.01em; color: var(--ink);
+  }
+  .logo-mark {
+    width: 22px; height: 22px;
+    border: 1.5px solid var(--ink);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-weight: 600; font-size: 14px;
+    background: var(--ink); color: var(--paper);
+    border-radius: 2px;
+    transform: translateY(2px);
+  }
+  .nav-links { display: flex; gap: 22px; font-size: 14px; color: var(--ink-2); }
+  .nav-links a { display: inline-flex; align-items: center; gap: 4px; }
+  .nav-links a .caret { font-size: 9px; color: var(--pencil); transform: translateY(1px); }
+  .nav-spacer { flex: 1; }
+  .nav-cta { display: flex; gap: 10px; align-items: center; font-size: 14px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13.5px;
+    padding: 9px 16px;
+    border-radius: 2px;
+    border: 1px solid var(--ink);
+    background: var(--paper);
+    color: var(--ink);
+    cursor: pointer;
+    transition: background .12s, color .12s, transform .08s;
+    font-family: var(--font-ui);
+    font-weight: 500;
+    letter-spacing: 0.005em;
+  }
+  .btn:hover { background: var(--ink); color: var(--paper); }
+  .btn.solid { background: var(--ink); color: var(--paper); }
+  .btn.solid:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.ghost { border-color: rgba(42,26,16,0.25); }
+  .btn .arrow { display: inline-block; transform: translateY(0); transition: transform .12s; }
+  .btn:hover .arrow { transform: translate(2px, 0); }
+
+  /* ===== Hero ===== */
+  .hero { padding: 64px 0 32px; }
+  .hero-grid {
+    display: grid; grid-template-columns: 1.05fr 0.95fr;
+    gap: 64px; align-items: end;
+  }
+  .hero h1 { font-size: 96px; }
+  .hero-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 24px; }
+  .hero-meta .cell { padding-top: 14px; border-top: 1px solid var(--ink); }
+  .hero-meta .k { font-size: 12px; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.14em; color: var(--pencil); }
+  .hero-meta .v { font-family: var(--font-display); font-size: 28px; font-weight: 500; margin-top: 4px; letter-spacing: -0.01em; color: var(--ink); }
+
+  /* hero preview card */
+  .hero-preview {
+    background: #fff;
+    border: 1px solid var(--ink);
+    border-radius: 3px;
+    box-shadow: 12px 14px 0 rgba(42,26,16,0.06), 0 1px 0 rgba(0,0,0,0.04);
+    overflow: hidden;
+    height: 460px;
+    display: flex; flex-direction: column;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Glass shatter canvas — fixed full-viewport behind everything */
+  .shatter-stage {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .shatter-stage canvas {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+  }
+  /* Lift all real content above the canvas */
+  .nav, section, .marquee, .cta, footer { position: relative; z-index: 2; }
+  .hero-right { position: relative; }
+  .shatter-caption {
+    position: absolute;
+    left: 0; bottom: -28px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--pencil);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    z-index: 2;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .shatter-caption .dot {
+    width: 6px; height: 6px; background: var(--accent); border-radius: 50%;
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.85); }
+  }
+  .hp-bar {
+    display: flex; align-items: center; gap: 8px;
+    height: 30px; padding: 0 12px;
+    border-bottom: 1px solid rgba(42,26,16,0.18);
+    background: var(--paper-warm);
+    font-family: var(--font-mono); font-size: 11px; color: var(--pencil);
+  }
+  .hp-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--pencil-faint); }
+  .hp-body { flex: 1; display: grid; grid-template-columns: 220px 1fr 1fr; min-height: 0; }
+  .hp-rail {
+    border-right: 1px solid rgba(42,26,16,0.12);
+    padding: 14px 12px; background: var(--paper-warm);
+    font-size: 12.5px;
+  }
+  .hp-rail .grp { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--pencil); padding: 8px 6px 4px; }
+  .hp-rail .item { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 3px; color: var(--ink-2); }
+  .hp-rail .item.active { background: var(--ink); color: var(--paper); }
+  .hp-rail .item .ct { margin-left: auto; font-family: var(--font-mono); font-size: 10px; opacity: 0.8; }
+  .hp-rail .glyph { width: 12px; text-align: center; opacity: 0.7; }
+
+  .hp-fields { padding: 14px 16px; border-right: 1px solid rgba(42,26,16,0.12); display: flex; flex-direction: column; gap: 9px; overflow: hidden; }
+  .hp-fields .grp { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--pencil); margin-bottom: 2px; }
+  .fld {
+    border: 1px solid rgba(42,26,16,0.18);
+    border-left: 2px solid var(--conf-good);
+    padding: 6px 10px; border-radius: 2px; background: #fff;
+    display: flex; flex-direction: column;
+  }
+  .fld.warn { border-left-color: var(--conf-warn); background: var(--conf-warn-bg); }
+  .fld.bad  { border-left-color: var(--conf-bad);  background: var(--conf-bad-bg); }
+  .fld .lab { font-family: var(--font-mono); font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--pencil); }
+  .fld .val { font-size: 13px; font-weight: 500; color: var(--ink); margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .fld .val.mono { font-family: var(--font-mono); }
+
+  .hp-doc {
+    padding: 14px;
+    background:
+      repeating-linear-gradient(0deg, transparent 0 22px, rgba(180,160,120,0.06) 22px 23px);
+    position: relative;
+  }
+  .hp-doc .page {
+    background: #fff; border: 1px solid rgba(42,26,16,0.18);
+    border-radius: 2px; height: 100%;
+    padding: 16px 18px; position: relative;
+    box-shadow: 2px 2px 0 rgba(42,26,16,0.04);
+  }
+  .doc-h { font-family: var(--font-display); font-size: 17px; font-weight: 600; }
+  .doc-row { height: 6px; background: var(--ink-3); opacity: 0.55; border-radius: 1px; }
+  .doc-row.s { width: 40%; opacity: 0.32; }
+  .doc-row.m { width: 75%; }
+  .doc-row.f { opacity: 0.22; }
+  .doc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; margin-top: 10px; }
+  .doc-mini { display: flex; flex-direction: column; gap: 4px; }
+  .doc-mini .l { font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.1em; color: var(--pencil); text-transform: uppercase; }
+  .doc-hl {
+    position: absolute; background: var(--marker); border-radius: 2px;
+    mix-blend-mode: multiply;
+  }
+  .doc-hl.glow {
+    background: var(--marker-strong);
+    box-shadow: 0 0 0 1.5px var(--accent), 0 0 12px var(--accent-glow);
+  }
+
+  /* ===== Marquee ===== */
+  .marquee {
+    border-top: 1px solid rgba(42,26,16,0.12);
+    border-bottom: 1px solid rgba(42,26,16,0.12);
+    padding: 22px 0;
+    margin-top: 56px;
+    overflow: hidden;
+  }
+  .marquee-row { display: flex; gap: 64px; align-items: center; justify-content: space-between; opacity: 0.72; }
+  .logo-fake {
+    font-family: var(--font-display); font-size: 22px; font-weight: 500;
+    color: var(--ink-2); letter-spacing: -0.01em;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .logo-fake .glyph { width: 18px; height: 18px; border: 1.25px solid var(--ink-2); border-radius: 50%; display: inline-block; }
+  .logo-fake.b1 .glyph { border-radius: 2px; transform: rotate(45deg); }
+  .logo-fake.b2 .glyph { border-radius: 0; background: var(--ink-2); }
+  .logo-fake.b3 .glyph { border: 1.25px solid var(--ink-2); background: linear-gradient(45deg, var(--ink-2) 50%, transparent 50%); }
+  .logo-fake.b4 .glyph { border-radius: 50%; background: radial-gradient(circle at 30% 30%, var(--ink-2) 35%, transparent 36%); }
+  .logo-fake.b5 .glyph { border: 1.25px solid var(--ink-2); border-radius: 50%; box-shadow: inset 0 0 0 3px var(--paper), inset 0 0 0 4px var(--ink-2); }
+
+  /* ===== Section scaffolding ===== */
+  section { padding: 96px 0; border-top: 1px solid rgba(42,26,16,0.12); }
+  section.tight { padding: 64px 0; }
+  .sec-head {
+    display: grid; grid-template-columns: 80px 1fr; gap: 24px;
+    margin-bottom: 56px;
+    align-items: end;
+  }
+  .sec-num {
+    font-family: var(--font-mono); font-size: 12px; color: var(--pencil);
+    letter-spacing: 0.12em;
+  }
+  .sec-title {
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .sec-title h2 {
+    font-family: var(--font-display); font-size: 56px; font-weight: 500;
+    letter-spacing: -0.018em; color: var(--ink); margin: 0; line-height: 1;
+  }
+  .sec-title h2 em { font-style: italic; color: var(--ink-3); font-weight: 400; }
+  .sec-title p {
+    margin: 0; max-width: 640px; font-family: var(--font-display);
+    font-size: 20px; line-height: 1.4; color: var(--ink-3); font-weight: 400;
+  }
+
+  /* ===== Templates / Blueprints ===== */
+  .blue-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(42,26,16,0.18); border: 1px solid rgba(42,26,16,0.18); }
+  .blue {
+    background: var(--paper);
+    padding: 0;
+    display: flex; flex-direction: column;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .blue:hover { background: #fff; }
+  .blue:hover .preview { background: var(--paper-warm); }
+  .blue .preview {
+    aspect-ratio: 4/3; background: var(--paper-warm);
+    border-bottom: 1px solid rgba(42,26,16,0.18);
+    position: relative; overflow: hidden;
+    transition: background .15s;
+  }
+  .blue .meta {
+    padding: 16px 20px 22px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .blue .top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .blue h3 { font-family: var(--font-display); font-size: 26px; font-weight: 500; margin: 0; letter-spacing: -0.01em; color: var(--ink); }
+  .blue h3 em { font-style: italic; color: var(--ink-3); font-weight: 400; }
+  .blue .tag { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--pencil); }
+  .blue .desc { font-size: 13.5px; color: var(--ink-3); line-height: 1.55; min-height: 42px; }
+  .blue .foot { display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid rgba(42,26,16,0.12); font-size: 12px; color: var(--pencil); font-family: var(--font-mono); letter-spacing: 0.06em; }
+  .blue .foot .arrow { color: var(--ink); font-family: var(--font-display); font-size: 18px; }
+  .blue:hover .foot .arrow { color: var(--accent); transform: translate(3px, 0); }
+  .blue .foot .arrow { transition: transform .12s, color .12s; }
+
+  /* preview compositions — mini docs/dashboards drawn with css */
+  .pv { position: absolute; inset: 0; padding: 18px; }
+  .pv-row { display: flex; gap: 8px; }
+  .pv-card {
+    background: #fff; border: 1px solid rgba(42,26,16,0.16); border-radius: 2px;
+    box-shadow: 2px 2px 0 rgba(42,26,16,0.05);
+  }
+  .pv-line { height: 4px; background: var(--ink-3); opacity: 0.55; border-radius: 1px; }
+  .pv-line.s { opacity: 0.28; }
+  .pv-mark { background: var(--marker); border-radius: 1px; height: 6px; }
+
+  /* ===== How it works ===== */
+  .how {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+    border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink);
+  }
+  .how .step {
+    padding: 32px 28px 32px 0;
+    border-right: 1px solid rgba(42,26,16,0.18);
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .how .step:last-child { border-right: 0; padding-right: 0; }
+  .how .step:not(:first-child) { padding-left: 28px; }
+  .how .n { font-family: var(--font-mono); font-size: 11px; color: var(--accent); letter-spacing: 0.16em; text-transform: uppercase; }
+  .how .t { font-family: var(--font-display); font-size: 26px; font-weight: 500; letter-spacing: -0.01em; color: var(--ink); line-height: 1.05; }
+  .how .d { font-size: 13.5px; color: var(--ink-3); line-height: 1.55; }
+  .how .ic {
+    width: 48px; height: 48px; border: 1px solid var(--ink); border-radius: 2px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 20px; color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  /* ===== Metrics strip ===== */
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border-top: 1px solid rgba(42,26,16,0.18); border-bottom: 1px solid rgba(42,26,16,0.18); }
+  .metric {
+    padding: 36px 28px;
+    border-right: 1px solid rgba(42,26,16,0.18);
+  }
+  .metric:last-child { border-right: 0; }
+  .metric .n { font-family: var(--font-display); font-size: 64px; font-weight: 500; line-height: 1; color: var(--ink); letter-spacing: -0.02em; }
+  .metric .n .unit { font-size: 28px; color: var(--ink-3); margin-left: 4px; }
+  .metric .l { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--pencil); margin-top: 12px; }
+  .metric .s { font-size: 13px; color: var(--ink-3); margin-top: 8px; line-height: 1.5; }
+
+  /* ===== Quote / testimonial ===== */
+  .quote-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; }
+  .quote {
+    border-top: 1px solid var(--ink);
+    padding-top: 24px;
+    display: flex; flex-direction: column; gap: 24px;
+  }
+  .quote blockquote {
+    margin: 0; font-family: var(--font-display); font-size: 28px;
+    font-weight: 400; line-height: 1.35; color: var(--ink); letter-spacing: -0.005em;
+  }
+  .quote blockquote em { font-style: italic; color: var(--ink-3); }
+  .quote .who { display: flex; align-items: center; gap: 14px; }
+  .quote .who .av {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--paper-warm); border: 1px solid rgba(42,26,16,0.2);
+    font-family: var(--font-display); font-weight: 500; font-size: 18px;
+    display: flex; align-items: center; justify-content: center; color: var(--ink-2);
+  }
+  .quote .who .nm { font-size: 14px; font-weight: 500; color: var(--ink); }
+  .quote .who .rl { font-size: 12.5px; color: var(--pencil); margin-top: 1px; }
+
+  /* ===== Pricing teaser ===== */
+  .price-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(42,26,16,0.18); border: 1px solid rgba(42,26,16,0.18); }
+  .price {
+    background: var(--paper); padding: 28px 28px 24px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .price.feat { background: var(--ink); color: var(--paper); }
+  .price.feat .pn,
+  .price.feat .pp,
+  .price.feat .pd,
+  .price.feat ul li { color: var(--paper); }
+  .price.feat .small { color: rgba(250,247,240,0.6); }
+  .price.feat .btn { background: var(--paper); color: var(--ink); border-color: var(--paper); }
+  .price.feat .btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .price .pn { font-family: var(--font-display); font-size: 28px; font-weight: 500; letter-spacing: -0.01em; }
+  .price .pn em { font-style: italic; color: var(--ink-3); font-weight: 400; }
+  .price.feat .pn em { color: rgba(250,247,240,0.65); }
+  .price .pp { font-family: var(--font-display); font-size: 48px; font-weight: 500; line-height: 1; }
+  .price .pp .unit { font-size: 18px; color: var(--ink-3); margin-left: 4px; }
+  .price.feat .pp .unit { color: rgba(250,247,240,0.6); }
+  .price .pd { font-size: 13px; color: var(--ink-3); line-height: 1.5; min-height: 42px; }
+  .price ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 13.5px; color: var(--ink-2); }
+  .price ul li { display: flex; gap: 10px; align-items: baseline; }
+  .price ul li::before { content: "—"; color: var(--accent); font-family: var(--font-mono); }
+
+  /* ===== FAQ ===== */
+  .faq { display: flex; flex-direction: column; }
+  .faq details {
+    border-top: 1px solid rgba(42,26,16,0.18);
+    padding: 22px 0;
+  }
+  .faq details:last-child { border-bottom: 1px solid rgba(42,26,16,0.18); }
+  .faq summary {
+    list-style: none; cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--font-display); font-size: 22px; font-weight: 500;
+    color: var(--ink); letter-spacing: -0.005em;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary .plus {
+    font-family: var(--font-display); font-size: 28px; color: var(--ink-3);
+    transition: transform .15s;
+  }
+  .faq details[open] .plus { transform: rotate(45deg); color: var(--accent); }
+  .faq .a {
+    margin-top: 14px; max-width: 760px;
+    font-size: 15px; color: var(--ink-3); line-height: 1.65;
+  }
+
+  /* ===== CTA banner ===== */
+  .cta {
+    background: var(--ink); color: var(--paper);
+    padding: 96px 0;
+    margin: 0; border: 0;
+  }
+  .cta h2 {
+    font-family: var(--font-display); font-size: 96px; font-weight: 500;
+    letter-spacing: -0.022em; line-height: 0.95; color: var(--paper); margin: 0;
+  }
+  .cta h2 em { font-style: italic; color: rgba(250,247,240,0.6); font-weight: 400; }
+  .cta .row { display: flex; align-items: end; justify-content: space-between; gap: 64px; }
+  .cta .right { display: flex; flex-direction: column; gap: 24px; align-items: flex-start; max-width: 360px; }
+  .cta p { font-family: var(--font-display); font-size: 20px; line-height: 1.4; color: rgba(250,247,240,0.78); margin: 0; font-weight: 400; }
+  .cta .btn { background: var(--paper); color: var(--ink); border-color: var(--paper); }
+  .cta .btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .cta .btn.ghost { background: transparent; color: var(--paper); border-color: rgba(250,247,240,0.4); }
+  .cta .btn.ghost:hover { background: var(--paper); color: var(--ink); }
+
+  /* ===== Footer ===== */
+  footer { padding: 64px 0 40px; background: var(--paper-warm); border-top: 1px solid rgba(42,26,16,0.12); }
+  .foot-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 40px; }
+  .foot-grid h4 { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--pencil); margin: 0 0 16px; font-weight: 500; }
+  .foot-grid ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 13.5px; color: var(--ink-2); }
+  .foot-bottom {
+    margin-top: 56px; padding-top: 22px;
+    border-top: 1px solid rgba(42,26,16,0.18);
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--font-mono); font-size: 11px; color: var(--pencil); letter-spacing: 0.08em;
+  }
+  .foot-mark {
+    font-family: var(--font-display); font-size: 88px; font-weight: 500;
+    letter-spacing: -0.03em; color: var(--ink); line-height: 0.85;
+    margin: 16px 0 -10px;
+  }
+
+  /* small annotations */
+  .ann {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--font-mono); font-size: 10.5px; color: var(--pencil);
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .ann .dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
+
+</style>
+</head>
+<body>
+
+<!-- ============== NAV ============== -->
+<header class="nav">
+  <div class="nav-inner">
+    <a href="#" class="logo">
+      <span class="logo-mark">i</span>
+      IDX
+    </a>
+    <nav class="nav-links">
+      <a href="#blueprints">Blueprints <span class="caret">▾</span></a>
+      <a href="#how">Platform <span class="caret">▾</span></a>
+      <a href="#customers">Customers</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#docs">Docs</a>
+      <a href="#changelog">Changelog</a>
+    </nav>
+    <div class="nav-spacer"></div>
+    <div class="nav-cta">
+      <a href="#login" class="small" style="color: var(--ink-2);">Sign in</a>
+      <a class="btn solid" href="#demo">Book a demo <span class="arrow">→</span></a>
+    </div>
+  </div>
+</header>
+
+<!-- ============== HERO ============== -->
+<section class="hero" style="border: 0; padding-top: 56px;">
+  <div class="lp">
+    <div class="ann" style="margin-bottom: 32px;">
+      <span class="dot"></span>
+      <span>Spring release · Blueprints 2.0 — preconfigured workflows for AP, claims & logistics</span>
+    </div>
+    <div class="hero-grid">
+      <div>
+        <h1 class="display">
+          The document<br>
+          back office,<br>
+          <em>finally</em> automated.
+        </h1>
+        <p class="lede" style="margin-top: 28px; max-width: 520px;">
+          IDX turns inbound documents — invoices, BOLs, POs, statements, claims —
+          into structured records, reviewed by your team and posted to your system of record.
+          Pick a blueprint, connect your inbox, go live in a week.
+        </p>
+        <div style="display: flex; gap: 12px; margin-top: 32px;">
+          <a class="btn solid" href="#demo">Start a free workspace <span class="arrow">→</span></a>
+          <a class="btn ghost" href="#blueprints">Browse blueprints</a>
+        </div>
+        <div class="hero-meta">
+          <div class="cell">
+            <div class="k">Avg. accuracy</div>
+            <div class="v">99.4<span style="font-size: 18px; color: var(--ink-3);">%</span></div>
+          </div>
+          <div class="cell">
+            <div class="k">Time to live</div>
+            <div class="v">5–9 <span style="font-size: 16px; color: var(--ink-3);">days</span></div>
+          </div>
+          <div class="cell">
+            <div class="k">Reviewer hours saved</div>
+            <div class="v">71<span style="font-size: 18px; color: var(--ink-3);">%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero preview: a simulated IDX inbox/extraction window -->
+      <div class="hero-right">
+      <div class="hero-preview">
+        <div class="hp-bar">
+          <span class="hp-dot"></span><span class="hp-dot"></span><span class="hp-dot"></span>
+          <span style="margin-left: 8px;">acme.idx.app / inbox / INV-204881.pdf</span>
+        </div>
+        <div class="hp-body">
+          <div class="hp-rail">
+            <div class="grp">Inbox</div>
+            <div class="item active"><span class="glyph">⌧</span> Invoices <span class="ct">12</span></div>
+            <div class="item"><span class="glyph">⊟</span> Statements <span class="ct">3</span></div>
+            <div class="item"><span class="glyph">◫</span> POs <span class="ct">21</span></div>
+            <div class="item"><span class="glyph">⌗</span> Receipts <span class="ct">7</span></div>
+            <div class="grp" style="margin-top: 8px;">Pinned</div>
+            <div class="item"><span class="glyph">◐</span> Lufting Co. <span class="ct">4</span></div>
+            <div class="item"><span class="glyph">◑</span> Northbeam <span class="ct">2</span></div>
+          </div>
+          <div class="hp-fields">
+            <div class="grp">Header</div>
+            <div class="fld"><div class="lab">Vendor</div><div class="val">Lufting Mercantile Co.</div></div>
+            <div class="fld"><div class="lab">Invoice №</div><div class="val mono">INV-204881</div></div>
+            <div class="fld"><div class="lab">Issue date</div><div class="val mono">2026·04·14</div></div>
+            <div class="grp" style="margin-top: 6px;">Totals</div>
+            <div class="fld"><div class="lab">Subtotal</div><div class="val mono">$ 18,420.00</div></div>
+            <div class="fld warn"><div class="lab">Tax · review</div><div class="val mono">$  1,289.40</div></div>
+            <div class="fld"><div class="lab">Total due</div><div class="val mono">$ 19,709.40</div></div>
+          </div>
+          <div class="hp-doc">
+            <div class="page">
+              <div class="doc-h">Lufting Mercantile Co.</div>
+              <div class="small" style="font-family: var(--font-mono); font-size: 9px; color: var(--pencil); margin-top: 2px;">14 Quay Street · Bristol · UK</div>
+              <div style="height: 12px;"></div>
+              <div class="doc-row m"></div>
+              <div class="doc-row s" style="margin-top: 5px;"></div>
+              <div class="doc-grid">
+                <div class="doc-mini"><div class="l">Invoice</div><div class="doc-row"></div></div>
+                <div class="doc-mini"><div class="l">Date</div><div class="doc-row"></div></div>
+                <div class="doc-mini"><div class="l">Bill to</div><div class="doc-row"></div></div>
+                <div class="doc-mini"><div class="l">Ship to</div><div class="doc-row"></div></div>
+              </div>
+              <div style="height: 14px;"></div>
+              <div class="doc-row"></div>
+              <div class="doc-row m" style="margin-top: 5px;"></div>
+              <div class="doc-row" style="margin-top: 5px;"></div>
+              <div class="doc-row m" style="margin-top: 5px;"></div>
+              <div class="doc-row s" style="margin-top: 5px;"></div>
+              <div style="height: 14px;"></div>
+              <div class="doc-row f"></div>
+              <div class="doc-row f" style="margin-top: 5px;"></div>
+
+              <!-- highlights mapping fields to source -->
+              <div class="doc-hl glow" style="top: 16px; left: 18px; width: 130px; height: 16px;"></div>
+              <div class="doc-hl" style="top: 78px; left: 18px; width: 64px; height: 8px;"></div>
+              <div class="doc-hl" style="top: 78px; left: calc(50% + 8px); width: 64px; height: 8px;"></div>
+              <div class="doc-hl" style="bottom: 28px; right: 22px; width: 78px; height: 10px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== Marquee ============== -->
+<div class="marquee">
+  <div class="lp marquee-row">
+    <span class="logo-fake b1"><span class="glyph"></span> Northbeam</span>
+    <span class="logo-fake b2"><span class="glyph"></span> Lufting &amp; Co.</span>
+    <span class="logo-fake b3"><span class="glyph"></span> Atrium Freight</span>
+    <span class="logo-fake b4"><span class="glyph"></span> Quaybridge</span>
+    <span class="logo-fake b5"><span class="glyph"></span> Meridian Mutual</span>
+    <span class="logo-fake b1"><span class="glyph"></span> Foundry &amp; Sons</span>
+    <span class="logo-fake b2"><span class="glyph"></span> Halberd Health</span>
+  </div>
+</div>
+
+<!-- ============== BLUEPRINTS / TEMPLATES ============== -->
+<section id="blueprints">
+  <div class="lp">
+    <div class="sec-head">
+      <div class="sec-num">01 / Blueprints</div>
+      <div class="sec-title">
+        <h2>Production-grade <em>blueprints</em>.<br>Not a blank page.</h2>
+        <p>Every blueprint is a complete document workflow — extraction schema, validation rules, reviewer queues, and downstream sync — tuned on hundreds of thousands of real documents. Pick one, brand it, ship it.</p>
+      </div>
+    </div>
+
+    <div class="blue-grid">
+      <!-- Ledger -->
+      <a class="blue" href="#">
+        <div class="preview">
+          <div class="pv">
+            <div class="pv-card" style="height: 100%; padding: 14px; display: flex; flex-direction: column; gap: 8px;">
+              <div style="display: flex; justify-content: space-between;">
+                <div class="pv-line" style="width: 38%;"></div>
+                <div class="pv-line s" style="width: 22%;"></div>
+              </div>
+              <div class="pv-mark" style="width: 56%; margin-top: 4px;"></div>
+              <div class="pv-line m" style="width: 70%;"></div>
+              <div class="pv-line s" style="width: 50%;"></div>
+              <div style="border-top: 1px solid rgba(42,26,16,0.12); margin-top: 6px; padding-top: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                <div class="pv-line"></div><div class="pv-line"></div>
+                <div class="pv-line s"></div><div class="pv-line"></div>
+                <div class="pv-line"></div><div class="pv-mark" style="width: 70%;"></div>
+              </div>
+              <div style="margin-top: auto; display: flex; gap: 6px;">
+                <span style="font-family: var(--font-mono); font-size: 9px; color: var(--pencil); background: var(--paper-warm); padding: 2px 6px; border-radius: 1px;">$  19,709.40</span>
+                <span style="font-family: var(--font-mono); font-size: 9px; color: var(--accent); margin-left: auto;">VERIFIED</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="meta">
+          <div class="top">
+            <h3>Ledger</h3>
+            <span class="tag">Accounts payable</span>
+          </div>
+          <p class="desc">Vendor invoices, credit memos & statements. Three-way match to POs and GRNs, posted to NetSuite, Sage Intacct, or QuickBooks.</p>
+          <div class="foot">
+            <span>16 fields · 9 rules · ERP sync</span>
+            <span class="arrow">→</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Atrium -->
+      <a class="blue" href="#">
+        <div class="preview">
+          <div class="pv">
+            <div class="pv-card" style="height: 100%; padding: 14px; display: flex; flex-direction: column; gap: 6px;">
+              <div class="pv-line" style="width: 40%;"></div>
+              <div class="pv-line s" style="width: 60%;"></div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-top: 6px;">
+                <div class="pv-card" style="padding: 6px; box-shadow: none;">
+                  <div class="pv-line s"></div>
+                  <div class="pv-line" style="margin-top: 4px; width: 70%;"></div>
+                </div>
+                <div class="pv-card" style="padding: 6px; box-shadow: none;">
+                  <div class="pv-line s"></div>
+                  <div class="pv-mark" style="margin-top: 4px; width: 80%;"></div>
+                </div>
+                <div class="pv-card" style="padding: 6px; box-shadow: none;">
+                  <div class="pv-line s"></div>
+                  <div class="pv-line" style="margin-top: 4px;"></div>
+                </div>
+              </div>
+              <div style="margin-top: 6px;">
+                <div class="pv-line s" style="width: 35%;"></div>
+                <svg viewBox="0 0 220 36" style="width: 100%; height: 36px; margin-top: 4px;">
+                  <polyline points="2,28 22,20 42,24 62,12 82,18 102,8 122,14 142,4 162,10 182,2 202,8 218,3"
+                    fill="none" stroke="#5a3a26" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="meta">
+          <div class="top">
+            <h3>Atrium</h3>
+            <span class="tag">Logistics &amp; freight</span>
+          </div>
+          <p class="desc">Bills of lading, rate confirmations & customs paperwork. Reconciles charges line-by-line against quoted rates, surfaces drift.</p>
+          <div class="foot">
+            <span>22 fields · 14 rules · TMS sync</span>
+            <span class="arrow">→</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Foundry -->
+      <a class="blue" href="#">
+        <div class="preview">
+          <div class="pv">
+            <div class="pv-card" style="height: 100%; padding: 12px; display: flex; flex-direction: column; gap: 4px;">
+              <div style="display: flex; justify-content: space-between;">
+                <div class="pv-line" style="width: 40%;"></div>
+                <span style="font-family: var(--font-mono); font-size: 9px; color: var(--accent);">CLAIM #4471</span>
+              </div>
+              <div class="pv-line s" style="width: 70%;"></div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 6px;">
+                <div class="pv-line"></div><div class="pv-line"></div>
+                <div class="pv-mark"></div><div class="pv-line"></div>
+                <div class="pv-line"></div><div class="pv-line s"></div>
+                <div class="pv-line s"></div><div class="pv-mark" style="width: 60%;"></div>
+                <div class="pv-line"></div><div class="pv-line"></div>
+              </div>
+              <div style="margin-top: auto; display: flex; gap: 5px; flex-wrap: wrap;">
+                <span style="font-family: var(--font-mono); font-size: 9px; padding: 1px 5px; border: 1px solid rgba(42,26,16,0.2);">FNOL</span>
+                <span style="font-family: var(--font-mono); font-size: 9px; padding: 1px 5px; border: 1px solid rgba(42,26,16,0.2);">ICD-10</span>
+                <span style="font-family: var(--font-mono); font-size: 9px; padding: 1px 5px; border: 1px solid rgba(42,26,16,0.2);">EOB</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="meta">
+          <div class="top">
+            <h3>Foundry</h3>
+            <span class="tag">Insurance claims</span>
+          </div>
+          <p class="desc">FNOLs, EOBs and adjuster reports. Builds a structured claim file with policy lookup and coverage validation in real time.</p>
+          <div class="foot">
+            <span>34 fields · 21 rules · Guidewire</span>
+            <span class="arrow">→</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Quay -->
+      <a class="blue" href="#">
+        <div class="preview">
+          <div class="pv">
+            <div class="pv-card" style="height: 100%; padding: 12px; display: flex; flex-direction: column; gap: 5px;">
+              <div class="pv-line" style="width: 50%;"></div>
+              <div style="border-top: 1px solid rgba(42,26,16,0.12); margin-top: 4px; padding-top: 5px;"></div>
+              <div style="display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 6px;">
+                <div class="pv-line s"></div><div class="pv-line s"></div><div class="pv-line s"></div>
+                <div class="pv-line"></div><div class="pv-line"></div><div class="pv-mark"></div>
+                <div class="pv-line"></div><div class="pv-line"></div><div class="pv-line"></div>
+                <div class="pv-line"></div><div class="pv-mark" style="width: 75%;"></div><div class="pv-line"></div>
+                <div class="pv-line"></div><div class="pv-line"></div><div class="pv-line"></div>
+              </div>
+              <div style="margin-top: auto; display: flex; gap: 6px; align-items: center;">
+                <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--conf-good);"></span>
+                <span style="font-family: var(--font-mono); font-size: 9px; color: var(--pencil);">SO  ·  POSTED</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="meta">
+          <div class="top">
+            <h3>Quay</h3>
+            <span class="tag">Sales orders</span>
+          </div>
+          <p class="desc">Customer POs from email or EDI. Maps to your SKU catalog, flags pricing breaks, drops orders into your OMS.</p>
+          <div class="foot">
+            <span>18 fields · 11 rules · OMS sync</span>
+            <span class="arrow">→</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Halberd -->
+      <a class="blue" href="#">
+        <div class="preview">
+          <div class="pv">
+            <div class="pv-card" style="height: 100%; padding: 12px; display: flex; flex-direction: column; gap: 5px;">
+              <div style="display: flex; justify-content: space-between;">
+                <div class="pv-line" style="width: 35%;"></div>
+                <div class="pv-line s" style="width: 25%;"></div>
+              </div>
+              <div class="pv-line s" style="width: 60%; margin-top: 2px;"></div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 6px;">
+                <div class="pv-card" style="padding: 6px; box-shadow: none;">
+                  <div class="pv-line s"></div>
+                  <div class="pv-mark" style="width: 60%; margin-top: 4px;"></div>
+                </div>
+                <div class="pv-card" style="padding: 6px; box-shadow: none;">
+                  <div class="pv-line s"></div>
+                  <div class="pv-line" style="margin-top: 4px;"></div>
+                </div>
+                <div class="pv-card" style="padding: 6px; box-shadow: none;">
+                  <div class="pv-line s"></div>
+                  <div class="pv-line" style="margin-top: 4px;"></div>
+                </div>
+                <div class="pv-card" style="padding: 6px; box-shadow: none;">
+                  <div class="pv-line s"></div>
+                  <div class="pv-mark" style="margin-top: 4px;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="meta">
+          <div class="top">
+            <h3>Halberd</h3>
+            <span class="tag">Patient intake</span>
+          </div>
+          <p class="desc">Referrals, prior auths, lab results. HIPAA-grade redaction and routing into your EHR with PHI lineage on every field.</p>
+          <div class="foot">
+            <span>28 fields · 19 rules · Epic / Athena</span>
+            <span class="arrow">→</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Custom -->
+      <a class="blue" href="#" style="background: var(--paper-warm);">
+        <div class="preview" style="background: var(--paper); display: flex; align-items: center; justify-content: center;">
+          <div style="text-align: center; max-width: 70%;">
+            <div style="font-family: var(--font-display); font-size: 56px; font-weight: 500; color: var(--ink); letter-spacing: -0.02em; line-height: 0.9;">
+              <em style="font-style: italic; color: var(--ink-3); font-weight: 400;">your</em><br>blueprint.
+            </div>
+            <div style="margin-top: 12px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; color: var(--pencil); text-transform: uppercase;">
+              ── built with you ──
+            </div>
+          </div>
+        </div>
+        <div class="meta">
+          <div class="top">
+            <h3>Bespoke</h3>
+            <span class="tag">With our team</span>
+          </div>
+          <p class="desc">Niche document type? Our solutions team trains a custom blueprint on your archive, with a named engineer and a 30-day SLA.</p>
+          <div class="foot">
+            <span>From 30 days · fixed-fee</span>
+            <span class="arrow">→</span>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div style="margin-top: 24px; display: flex; justify-content: space-between; align-items: center;">
+      <div class="small" style="font-family: var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase;">Showing 6 of 41 blueprints</div>
+      <a class="btn" href="#">Browse the full catalogue <span class="arrow">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============== HOW IT WORKS ============== -->
+<section id="how">
+  <div class="lp">
+    <div class="sec-head">
+      <div class="sec-num">02 / Platform</div>
+      <div class="sec-title">
+        <h2>One pipeline, four <em>moves</em>.</h2>
+        <p>The work IDX does is unsexy on purpose. Bring documents in, pull the data out, let humans agree, push it onward. Everything else is detail.</p>
+      </div>
+    </div>
+
+    <div class="how">
+      <div class="step">
+        <div class="ic">⌧</div>
+        <div class="n">— Capture</div>
+        <div class="t">A shared inbox<br>for documents.</div>
+        <div class="d">Email aliases, SFTP drops, API uploads, a Drive folder, an EDI feed. IDX dedupes, classifies, and queues every page.</div>
+      </div>
+      <div class="step">
+        <div class="ic">⊟</div>
+        <div class="n">— Extract</div>
+        <div class="t">Fields with<br>provenance.</div>
+        <div class="d">A blueprint-aware model returns typed values with a confidence score and a pixel region pinned back to the source page.</div>
+      </div>
+      <div class="step">
+        <div class="ic">◐</div>
+        <div class="n">— Reconcile</div>
+        <div class="t">Humans only<br>where it matters.</div>
+        <div class="d">Validation rules and reviewer queues route exceptions to the right teammate. The 92% that pass clean go straight through.</div>
+      </div>
+      <div class="step">
+        <div class="ic">◑</div>
+        <div class="n">— Sync</div>
+        <div class="t">Pushed to your<br>system of record.</div>
+        <div class="d">Native connectors to NetSuite, SAP, QuickBooks, Salesforce, Guidewire, plus a typed REST &amp; webhook API for the rest.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== METRICS ============== -->
+<section class="tight" id="customers">
+  <div class="lp">
+    <div class="sec-head" style="margin-bottom: 36px;">
+      <div class="sec-num">03 / In production</div>
+      <div class="sec-title">
+        <h2>Numbers from <em>real</em> deployments.</h2>
+      </div>
+    </div>
+    <div class="metrics">
+      <div class="metric">
+        <div class="n num">99.4<span class="unit">%</span></div>
+        <div class="l">Header-field accuracy</div>
+        <div class="s">Across 14M invoices processed in the last 12 months. Line-item accuracy at 97.1%.</div>
+      </div>
+      <div class="metric">
+        <div class="n num">5.4<span class="unit">d</span></div>
+        <div class="l">Median time to live</div>
+        <div class="s">From kickoff to first synced document. Faster than your last vendor onboarding.</div>
+      </div>
+      <div class="metric">
+        <div class="n num">71<span class="unit">%</span></div>
+        <div class="l">Reviewer time saved</div>
+        <div class="s">Measured against the team's previous keying process. Customers report 3-day-month closes routinely.</div>
+      </div>
+      <div class="metric">
+        <div class="n num">$0.04</div>
+        <div class="l">Cost per page</div>
+        <div class="s">Bundled. No per-field, per-API or per-seat surprises in the bill.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== TESTIMONIALS ============== -->
+<section class="tight">
+  <div class="lp">
+    <div class="quote-grid">
+      <div class="quote">
+        <div class="ann"><span class="dot"></span> Atrium · Northbeam Logistics</div>
+        <blockquote>
+          "We used to keep two contractors on rate-con tickets. <em>Inside a month</em> on IDX they were redeployed; reconciliation runs nightly and we close the freight book three days earlier than we used to."
+        </blockquote>
+        <div class="who">
+          <div class="av">A</div>
+          <div>
+            <div class="nm">Ana Vermeer</div>
+            <div class="rl">VP Operations · Northbeam Logistics</div>
+          </div>
+        </div>
+      </div>
+      <div class="quote">
+        <div class="ann"><span class="dot"></span> Ledger · Foundry &amp; Sons</div>
+        <blockquote>
+          "The Ledger blueprint was <em>basically our AP team</em> in a box on day one. We tweaked four rules and turned on auto-post for everything under five thousand. Eight hundred invoices a week now post without a human."
+        </blockquote>
+        <div class="who">
+          <div class="av">M</div>
+          <div>
+            <div class="nm">Marcus Quibell</div>
+            <div class="rl">Controller · Foundry &amp; Sons</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== PRICING TEASER ============== -->
+<section id="pricing">
+  <div class="lp">
+    <div class="sec-head">
+      <div class="sec-num">04 / Pricing</div>
+      <div class="sec-title">
+        <h2>Plain pricing, <em>per page</em>.</h2>
+        <p>Pick a plan that matches your volume. Every plan includes the full blueprint catalogue, every connector, and a real human inside two business hours.</p>
+      </div>
+    </div>
+
+    <div class="price-grid">
+      <div class="price">
+        <div class="pn">Studio <em>· starter</em></div>
+        <div>
+          <div class="pp num">$0.06<span class="unit">/page</span></div>
+          <div class="small">Min. 2,000 pages / mo · monthly</div>
+        </div>
+        <div class="pd">For a single team that wants to be live this month, on a credit card.</div>
+        <ul>
+          <li>Every blueprint, unbranded</li>
+          <li>Up to 5 reviewers</li>
+          <li>REST API · email alias capture</li>
+          <li>Email support, business hours</li>
+        </ul>
+        <div style="margin-top: auto;"><a class="btn" href="#">Start free <span class="arrow">→</span></a></div>
+      </div>
+      <div class="price feat">
+        <div class="ann" style="color: var(--accent);"><span class="dot"></span> Most teams pick this</div>
+        <div class="pn">Atelier <em>· business</em></div>
+        <div>
+          <div class="pp num">$0.04<span class="unit">/page</span></div>
+          <div class="small">Min. 25,000 pages / mo · annual</div>
+        </div>
+        <div class="pd">For finance and ops orgs running production document workflows daily.</div>
+        <ul>
+          <li>Branded reviewer workspace</li>
+          <li>Unlimited reviewers · roles &amp; SSO</li>
+          <li>All connectors · typed webhooks</li>
+          <li>Named CSM · 99.95% SLA</li>
+        </ul>
+        <div style="margin-top: auto;"><a class="btn" href="#">Talk to sales <span class="arrow">→</span></a></div>
+      </div>
+      <div class="price">
+        <div class="pn">Foundry <em>· enterprise</em></div>
+        <div>
+          <div class="pp num">Custom</div>
+          <div class="small">Annual · volume tiers from 250k pp/mo</div>
+        </div>
+        <div class="pd">Bespoke blueprints, your VPC, your auditors, your procurement form.</div>
+        <ul>
+          <li>Custom blueprint engineering</li>
+          <li>Single-tenant deployment</li>
+          <li>HIPAA / SOC 2 / ISO 27001</li>
+          <li>Solutions architect on-call</li>
+        </ul>
+        <div style="margin-top: auto;"><a class="btn" href="#">Request a proposal <span class="arrow">→</span></a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FAQ ============== -->
+<section>
+  <div class="lp">
+    <div class="sec-head">
+      <div class="sec-num">05 / FAQ</div>
+      <div class="sec-title">
+        <h2>The <em>quiet</em> questions.</h2>
+        <p>The things that come up on the second call, when the demo is over and procurement is in the room.</p>
+      </div>
+    </div>
+    <div class="faq">
+      <details open>
+        <summary>How is IDX different from a generic LLM with OCR?<span class="plus">+</span></summary>
+        <div class="a">Every blueprint ships with a typed schema, a validation layer, and a reviewer UI tuned to that document class. We use language models inside the pipeline — for layout, for reasoning over tables, for entity matching — but the output your team sees is structured, auditable data with provenance back to the source page, not a freeform paragraph. Customers consistently report 60–80 fewer reviewer-hours per month per ten thousand pages than they get with generic GPT-4 / Gemini extraction.</div>
+      </details>
+      <details>
+        <summary>Where does our data go? Does IDX train on it?<span class="plus">+</span></summary>
+        <div class="a">No. Customer documents are processed in your dedicated tenant and never enter a shared training corpus. Atelier and Foundry plans support customer-managed encryption keys (CMEK), single-tenant deployments and configurable data-residency in US, EU, UK and APAC regions.</div>
+      </details>
+      <details>
+        <summary>What if our document is weird?<span class="plus">+</span></summary>
+        <div class="a">Most customers pick a stock blueprint and tweak ten or twenty rules. If your document type isn't covered — niche commodity contracts, regulatory filings, your own internal form — the Bespoke track has our solutions team train a custom blueprint on your historical archive with a fixed scope and 30-day delivery.</div>
+      </details>
+      <details>
+        <summary>How do you handle line items and tables?<span class="plus">+</span></summary>
+        <div class="a">Tables are first-class. Every blueprint that ships with line-item extraction also ships with a reviewer view that lets your team correct rows in place, split combined rows, and apply corrections forward to all future documents from that vendor. Line-item accuracy is reported separately from header-field accuracy in your account dashboard.</div>
+      </details>
+      <details>
+        <summary>What does deployment actually look like?<span class="plus">+</span></summary>
+        <div class="a">Day 1 you get a workspace, the blueprint, an inbox alias and an API key. Days 2–5 we sit with your reviewers, watch the first hundred documents go through, and tune validation rules to your domain. Day 6 onward, you're posting to your system of record. The median go-live across our last 50 deployments is 5.4 working days.</div>
+      </details>
+      <details>
+        <summary>What does it cost to get started?<span class="plus">+</span></summary>
+        <div class="a">There's a free workspace with 200 pages of credit — enough to push your top three vendors through and see what the output actually looks like. Studio is self-serve from there. Atelier and Foundry are annual; pricing is volume-tiered with no per-seat fees.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============== CTA ============== -->
+<div class="cta">
+  <div class="lp">
+    <div class="row">
+      <h2>Ship your<br>back office.<br><em>This quarter.</em></h2>
+      <div class="right">
+        <p>Pick a blueprint, drop in your last hundred documents, see what comes out the other side.</p>
+        <div style="display: flex; gap: 12px;">
+          <a class="btn" href="#">Start free <span class="arrow">→</span></a>
+          <a class="btn ghost" href="#">Book a 30-min demo</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============== FOOTER ============== -->
+<footer>
+  <div class="lp">
+    <div class="foot-grid">
+      <div>
+        <a href="#" class="logo"><span class="logo-mark">i</span> IDX</a>
+        <p class="body" style="margin-top: 14px; max-width: 320px; font-size: 13.5px;">
+          Document intelligence for finance, ops &amp; insurance teams. Made in Bristol &amp; Brooklyn.
+        </p>
+      </div>
+      <div>
+        <h4>Blueprints</h4>
+        <ul>
+          <li><a href="#">Ledger — AP</a></li>
+          <li><a href="#">Atrium — Logistics</a></li>
+          <li><a href="#">Foundry — Claims</a></li>
+          <li><a href="#">Quay — Orders</a></li>
+          <li><a href="#">Halberd — Health</a></li>
+          <li><a href="#">All 41 →</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Platform</h4>
+        <ul>
+          <li><a href="#">How it works</a></li>
+          <li><a href="#">Reviewer studio</a></li>
+          <li><a href="#">Connectors</a></li>
+          <li><a href="#">API &amp; webhooks</a></li>
+          <li><a href="#">Security</a></li>
+          <li><a href="#">Status</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Customers</a></li>
+          <li><a href="#">Careers <span style="color: var(--accent); font-family: var(--font-mono); font-size: 10px;">·  6</span></a></li>
+          <li><a href="#">Press</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="#">Documentation</a></li>
+          <li><a href="#">Changelog</a></li>
+          <li><a href="#">Field guide</a></li>
+          <li><a href="#">Trust center</a></li>
+          <li><a href="#">DPA</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="foot-mark">IDX.</div>
+
+    <div class="foot-bottom">
+      <span>© 2026 IDX Document Systems Ltd. All rights reserved.</span>
+      <span style="display: flex; gap: 24px;">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Cookies</a>
+        <a href="#">SOC 2</a>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<div class="shatter-stage" id="shatter-stage"></div>
+
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+<script>
+(() => {
+  const stage = document.getElementById('shatter-stage');
+  if (!stage || !window.THREE) return;
+
+  const getSize = () => ({ W: window.innerWidth, H: window.innerHeight });
+  let { W: W0, H: H0 } = getSize();
+  const scene = new THREE.Scene();
+  const camera = new THREE.OrthographicCamera(-W0/2, W0/2, H0/2, -H0/2, -1000, 1000);
+  camera.position.z = 100;
+
+  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(W0, H0);
+  renderer.setClearColor(0x000000, 0);
+  stage.appendChild(renderer.domElement);
+
+  // ---- Build shards via random-point Delaunay (custom triangulation: fan from random sites is fine for this look)
+  // We use a simple grid-jitter + per-cell triangle fan to approximate a fractured-glass look.
+  const PAPER = new THREE.Color('#faf7f0');
+  const INK = new THREE.Color('#2a1a10');
+  const ACCENT = new THREE.Color('#d24a2e');
+
+  // Use a finer grid for full-viewport coverage; keep cell density similar
+  const cols = Math.max(10, Math.round(W0 / 110));
+  const rows = Math.max(8, Math.round(H0 / 110));
+  const cellW = W0 / cols, cellH = H0 / rows;
+  const sites = [];
+  for (let j = 0; j < rows; j++) {
+    for (let i = 0; i < cols; i++) {
+      const jx = (Math.random() - 0.5) * cellW * 0.85;
+      const jy = (Math.random() - 0.5) * cellH * 0.85;
+      sites.push([
+        -W0/2 + (i + 0.5) * cellW + jx,
+         H0/2 - (j + 0.5) * cellH + jy
+      ]);
+    }
+  }
+
+  // Generate triangle shards by triangulating each cell's corner with its site + neighbors
+  // Simpler approach: for each cell quad, split into 4 triangles around its jittered site
+  const shards = [];
+  const shardGroup = new THREE.Group();
+  scene.add(shardGroup);
+
+  function makeShard(verts, baseColor) {
+    // verts: 3 [x,y]
+    const cx = (verts[0][0] + verts[1][0] + verts[2][0]) / 3;
+    const cy = (verts[0][1] + verts[1][1] + verts[2][1]) / 3;
+    // Local-space verts (relative to centroid) so we can rotate around centroid
+    const local = verts.map(v => [v[0] - cx, v[1] - cy]);
+
+    const geom = new THREE.BufferGeometry();
+    const pos = new Float32Array([
+      local[0][0], local[0][1], 0,
+      local[1][0], local[1][1], 0,
+      local[2][0], local[2][1], 0,
+    ]);
+    geom.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    geom.computeVertexNormals();
+
+    const tint = baseColor.clone().lerp(new THREE.Color(0xffffff), Math.random() * 0.18);
+    const mat = new THREE.MeshBasicMaterial({
+      color: tint,
+      transparent: true,
+      opacity: 0.18 + Math.random() * 0.18,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    });
+    const mesh = new THREE.Mesh(geom, mat);
+    mesh.position.set(cx, cy, 0);
+
+    // Edge lines — the cracked-glass outlines
+    const edgeGeom = new THREE.BufferGeometry();
+    const edgePos = new Float32Array([
+      local[0][0], local[0][1], 0.5,
+      local[1][0], local[1][1], 0.5,
+      local[1][0], local[1][1], 0.5,
+      local[2][0], local[2][1], 0.5,
+      local[2][0], local[2][1], 0.5,
+      local[0][0], local[0][1], 0.5,
+    ]);
+    edgeGeom.setAttribute('position', new THREE.BufferAttribute(edgePos, 3));
+    const edgeMat = new THREE.LineBasicMaterial({
+      color: INK,
+      transparent: true,
+      opacity: 0.32,
+    });
+    const edges = new THREE.LineSegments(edgeGeom, edgeMat);
+    mesh.add(edges);
+
+    shardGroup.add(mesh);
+
+    return {
+      mesh, edges, edgeMat, mat,
+      cx, cy,
+      baseZ: 0,
+      vx: 0, vy: 0, vz: 0,
+      vrx: 0, vry: 0, vrz: 0,
+      tx: 0, ty: 0, tz: 0,
+      rx: 0, ry: 0, rz: 0,
+      restPhase: Math.random() * Math.PI * 2,
+      restAmp: 0.3 + Math.random() * 0.6,
+    };
+  }
+
+  // Build shards: for each grid cell, split into 4 triangles around the jittered site.
+  for (let j = 0; j < rows; j++) {
+    for (let i = 0; i < cols; i++) {
+      const idx = j * cols + i;
+      const [sx, sy] = sites[idx];
+      // four corners of the cell
+      const x0 = -W0/2 + i * cellW;
+      const x1 = x0 + cellW;
+      const y0 = H0/2 - (j + 1) * cellH;
+      const y1 = y0 + cellH;
+      // jitter corners slightly so edges aren't axis-aligned
+      const jit = (a, b) => [a + (Math.random() - 0.5) * cellW * 0.15, b + (Math.random() - 0.5) * cellH * 0.15];
+      const c00 = jit(x0, y0), c10 = jit(x1, y0), c11 = jit(x1, y1), c01 = jit(x0, y1);
+      const base = Math.random() < 0.18 ? ACCENT : (Math.random() < 0.5 ? PAPER : INK);
+      shards.push(makeShard([[sx, sy], c00, c10], base));
+      shards.push(makeShard([[sx, sy], c10, c11], base));
+      shards.push(makeShard([[sx, sy], c11, c01], base));
+      shards.push(makeShard([[sx, sy], c01, c00], base));
+    }
+  }
+
+  // ---- Mouse interaction (window-level, since canvas is pointer-events:none)
+  const mouse = new THREE.Vector2(-9999, -9999);
+  let mouseInside = false;
+  window.addEventListener('pointermove', (e) => {
+    mouse.x = e.clientX - window.innerWidth / 2;
+    mouse.y = -(e.clientY) + window.innerHeight / 2;
+    mouseInside = true;
+  });
+  window.addEventListener('pointerleave', () => { mouseInside = false; mouse.x = mouse.y = -9999; });
+
+  // Click to "explode"
+  let kickT = 0;
+  window.addEventListener('pointerdown', () => {
+    kickT = 1.0;
+    shards.forEach(s => {
+      const dx = s.cx - mouse.x;
+      const dy = s.cy - mouse.y;
+      const d = Math.max(40, Math.hypot(dx, dy));
+      const f = 220 / d;
+      s.vx += (dx / d) * f * 8;
+      s.vy += (dy / d) * f * 8;
+      s.vz += f * 6;
+      s.vrx += (Math.random() - 0.5) * 0.4;
+      s.vry += (Math.random() - 0.5) * 0.4;
+      s.vrz += (Math.random() - 0.5) * 0.4;
+    });
+  });
+
+  // Resize — rebuild camera to match viewport
+  window.addEventListener('resize', () => {
+    const W = window.innerWidth, H = window.innerHeight;
+    camera.left = -W/2; camera.right = W/2;
+    camera.top = H/2; camera.bottom = -H/2;
+    camera.updateProjectionMatrix();
+    renderer.setSize(W, H);
+  });
+
+  // ---- Animate
+  let t = 0;
+  function tick() {
+    t += 0.016;
+    kickT *= 0.94;
+
+    const HOVER_R = 180;
+    const HOVER_R2 = HOVER_R * HOVER_R;
+
+    for (let i = 0; i < shards.length; i++) {
+      const s = shards[i];
+
+      // Hover repulsion
+      if (mouseInside) {
+        const dx = s.cx - mouse.x;
+        const dy = s.cy - mouse.y;
+        const d2 = dx*dx + dy*dy;
+        if (d2 < HOVER_R2) {
+          const d = Math.sqrt(d2) || 1;
+          const falloff = 1 - d / HOVER_R;
+          const force = falloff * falloff * 1.4;
+          s.vx += (dx / d) * force;
+          s.vy += (dy / d) * force;
+          s.vz += force * 1.6;
+          s.vrx += (Math.random() - 0.5) * falloff * 0.05;
+          s.vry += (Math.random() - 0.5) * falloff * 0.05;
+          s.vrz += (dx / d) * falloff * 0.04;
+
+          s.mat.opacity = Math.min(0.7, s.mat.opacity + falloff * 0.04);
+          s.edgeMat.opacity = Math.min(0.9, s.edgeMat.opacity + falloff * 0.04);
+        }
+      }
+
+      // Drift back to rest
+      const restX = Math.sin(t * 0.6 + s.restPhase) * s.restAmp;
+      const restY = Math.cos(t * 0.5 + s.restPhase) * s.restAmp;
+      s.vx += (restX - s.tx) * 0.04;
+      s.vy += (restY - s.ty) * 0.04;
+      s.vz += (0 - s.tz) * 0.06;
+      s.vrx += (0 - s.rx) * 0.05;
+      s.vry += (0 - s.ry) * 0.05;
+      s.vrz += (0 - s.rz) * 0.05;
+
+      // Damping
+      s.vx *= 0.86; s.vy *= 0.86; s.vz *= 0.86;
+      s.vrx *= 0.88; s.vry *= 0.88; s.vrz *= 0.88;
+
+      s.tx += s.vx; s.ty += s.vy; s.tz += s.vz;
+      s.rx += s.vrx; s.ry += s.vry; s.rz += s.vrz;
+
+      s.mesh.position.set(s.cx + s.tx, s.cy + s.ty, s.tz);
+      s.mesh.rotation.set(s.rx, s.ry, s.rz);
+
+      // Fade opacity back toward base
+      s.mat.opacity += (0.22 - s.mat.opacity) * 0.02;
+      s.edgeMat.opacity += (0.32 - s.edgeMat.opacity) * 0.02;
+    }
+
+    // Slow group rotation for ambient life
+    shardGroup.rotation.z = Math.sin(t * 0.2) * 0.005;
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+</script>
+
+</body>
+</html>

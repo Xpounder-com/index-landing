@@ -1,0 +1,990 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>IDX — Document intelligence, ready to deploy</title>
+<link rel="stylesheet" href="styles.css"/>
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #0d0a08; color: #faf7f0; }
+  body { font-family: 'Inter', system-ui, sans-serif; }
+  a { color: inherit; text-decoration: none; }
+
+  /* Background: deep paper-ink with subtle noise + gradient */
+  .bg {
+    position: fixed; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(210,74,46,0.08), transparent 55%),
+      radial-gradient(ellipse at 80% 70%, rgba(250,247,240,0.04), transparent 60%),
+      linear-gradient(180deg, #0d0a08 0%, #161210 100%);
+  }
+  .bg::after {
+    content: ""; position: absolute; inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg, transparent 0 22px, rgba(250,247,240,0.012) 22px 23px);
+    pointer-events: none;
+  }
+
+  /* WebGL stage */
+  #stage {
+    position: fixed; inset: 0; z-index: 1;
+    width: 100vw; height: 100vh;
+    cursor: crosshair;
+  }
+  #stage canvas { display: block; width: 100% !important; height: 100% !important; }
+
+  /* Top nav — minimal, lives above the glass */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+    height: 60px;
+    display: flex; align-items: center; gap: 28px;
+    padding: 0 36px;
+    background: linear-gradient(180deg, rgba(13,10,8,0.85), rgba(13,10,8,0));
+    pointer-events: none;
+  }
+  .nav > * { pointer-events: auto; }
+  .logo {
+    display: inline-flex; align-items: baseline; gap: 8px;
+    font-family: 'Cormorant Garamond', serif; font-weight: 600;
+    font-size: 22px; letter-spacing: -0.01em; color: #faf7f0;
+  }
+  .logo-mark {
+    width: 22px; height: 22px;
+    border: 1.5px solid #faf7f0;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 14px;
+    background: #faf7f0; color: #0d0a08;
+    border-radius: 2px; transform: translateY(2px);
+  }
+  .nav-links { display: flex; gap: 22px; font-size: 13px; color: rgba(250,247,240,0.7); margin-left: 12px; }
+  .nav-links a:hover { color: #d24a2e; }
+  .nav-spacer { flex: 1; }
+  .nav-cta { display: flex; gap: 10px; align-items: center; font-size: 13px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12.5px; padding: 8px 14px;
+    border-radius: 2px; border: 1px solid rgba(250,247,240,0.4);
+    background: transparent; color: #faf7f0; cursor: pointer;
+    font-family: inherit; font-weight: 500; letter-spacing: 0.01em;
+    transition: all .15s;
+  }
+  .btn:hover { background: #d24a2e; border-color: #d24a2e; color: #fff; }
+  .btn.solid { background: #faf7f0; color: #0d0a08; border-color: #faf7f0; }
+  .btn.solid:hover { background: #d24a2e; border-color: #d24a2e; color: #fff; }
+
+  /* Bottom HUD — scroll progress + scene label */
+  .hud {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
+    height: 68px;
+    display: flex; align-items: center; gap: 24px;
+    padding: 0 36px;
+    pointer-events: none;
+    color: rgba(250,247,240,0.7);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .hud > * { pointer-events: auto; }
+  .hud .progress {
+    flex: 1; height: 1px; background: rgba(250,247,240,0.15);
+    position: relative; max-width: 480px;
+  }
+  .hud .progress .fill {
+    position: absolute; left: 0; top: -1px; height: 3px;
+    background: #d24a2e; width: 0;
+    transition: width .25s ease;
+  }
+  .hud .scene-label {
+    color: #faf7f0; font-weight: 500;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    text-transform: none; letter-spacing: -0.005em;
+    font-style: italic;
+  }
+  .hud .scene-num {
+    font-variant-numeric: tabular-nums;
+    color: #d24a2e;
+  }
+  .hud .ann {
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .hud .ann .dot {
+    width: 6px; height: 6px; background: #d24a2e; border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+  .hud .hint {
+    color: rgba(250,247,240,0.45);
+    font-size: 10px;
+  }
+
+  /* Scene dots — vertical scene navigator */
+  .dots {
+    position: fixed; right: 36px; top: 50%; transform: translateY(-50%);
+    z-index: 10;
+    display: flex; flex-direction: column; gap: 14px;
+    align-items: flex-end;
+  }
+  .dots button {
+    background: transparent; border: 0; cursor: pointer;
+    display: flex; align-items: center; gap: 12px;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: rgba(250,247,240,0.4);
+    padding: 0;
+  }
+  .dots button .d {
+    width: 6px; height: 6px; border: 1px solid rgba(250,247,240,0.4);
+    border-radius: 50%; transition: all .2s;
+  }
+  .dots button.active { color: #faf7f0; }
+  .dots button.active .d { background: #d24a2e; border-color: #d24a2e; box-shadow: 0 0 10px #d24a2e; }
+  .dots button:hover { color: #faf7f0; }
+
+  /* Title overlay — only shows on first scene briefly */
+  .intro-hint {
+    position: fixed; left: 36px; bottom: 88px; z-index: 10;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px; font-style: italic;
+    color: rgba(250,247,240,0.5);
+    pointer-events: none;
+    max-width: 200px;
+    line-height: 1.4;
+  }
+
+  /* Scroll proxy — invisible scrollable element to drive the scene */
+  #scroll-proxy {
+    position: fixed; inset: 0; z-index: 5;
+    overflow-y: scroll; overflow-x: hidden;
+    scrollbar-width: none;
+  }
+  #scroll-proxy::-webkit-scrollbar { display: none; }
+  #scroll-proxy .spacer { width: 100%; }
+
+</style>
+</head>
+<body>
+
+<div class="bg"></div>
+
+<header class="nav">
+  <a href="#" class="logo"><span class="logo-mark">i</span>IDX</a>
+  <nav class="nav-links">
+    <a href="#" data-go="1">Blueprints</a>
+    <a href="#" data-go="2">Platform</a>
+    <a href="#" data-go="3">Customers</a>
+    <a href="#" data-go="4">Pricing</a>
+  </nav>
+  <div class="nav-spacer"></div>
+  <div class="nav-cta">
+    <a href="#" class="btn">Sign in</a>
+    <a href="#" class="btn solid">Book a demo →</a>
+  </div>
+</header>
+
+<div id="stage"></div>
+
+<div id="scroll-proxy"><div class="spacer"></div></div>
+
+<aside class="dots" id="dots"></aside>
+
+<div class="intro-hint" id="intro-hint">
+  Scroll to drift through the scenes.<br>
+  Hover to disturb the glass.<br>
+  Click to shatter.
+</div>
+
+<footer class="hud">
+  <span class="ann"><span class="dot"></span><span>IDX · Spring '26</span></span>
+  <div class="progress"><div class="fill" id="progress-fill"></div></div>
+  <span class="scene-num" id="scene-num">00 / 05</span>
+  <span class="scene-label" id="scene-label">Loading…</span>
+  <span class="hud-spacer" style="flex: 1;"></span>
+  <span class="hint">Scroll · Hover · Click</span>
+</footer>
+
+<script src="https://unpkg.com/three@0.149.0/build/three.min.js"></script>
+<script>
+(() => {
+  const stage = document.getElementById('stage');
+  const proxy = document.getElementById('scroll-proxy');
+  const dotsEl = document.getElementById('dots');
+  const fillEl = document.getElementById('progress-fill');
+  const sceneNumEl = document.getElementById('scene-num');
+  const sceneLabelEl = document.getElementById('scene-label');
+  const introHint = document.getElementById('intro-hint');
+  if (!window.THREE) return;
+
+  // ============================================================
+  // SCENE CONTENT — each scene is a "page" that becomes shattered
+  // glass. We render the page to an offscreen canvas, then divide
+  // it into shards that float in 3D, react to the mouse, and
+  // tile back together visually.
+  // ============================================================
+
+  const SCENES = [
+    {
+      label: 'Cover',
+      title: 'IDX',
+      build: drawSceneCover,
+      shardCols: 11, shardRows: 7,
+    },
+    {
+      label: 'Blueprints',
+      build: drawSceneBlueprints,
+      shardCols: 12, shardRows: 8,
+    },
+    {
+      label: 'Platform',
+      build: drawScenePlatform,
+      shardCols: 10, shardRows: 7,
+    },
+    {
+      label: 'Numbers',
+      build: drawSceneNumbers,
+      shardCols: 11, shardRows: 7,
+    },
+    {
+      label: 'Pricing',
+      build: drawScenePricing,
+      shardCols: 12, shardRows: 7,
+    },
+    {
+      label: 'Talk to us',
+      build: drawSceneCTA,
+      shardCols: 9, shardRows: 6,
+    },
+  ];
+
+  // ---- Drawing helpers ----------------------------------------
+  // Each scene draws to a 1920x1080 canvas which then becomes a texture.
+  const TEX_W = 1920, TEX_H = 1080;
+  const PAPER = '#faf7f0';
+  const PAPER_WARM = '#f3ede0';
+  const INK = '#2a1a10';
+  const INK_2 = '#3d2418';
+  const INK_3 = '#5a3a26';
+  const PENCIL = '#7a5a44';
+  const ACCENT = '#d24a2e';
+  const MARKER = 'rgba(255, 224, 80, 0.55)';
+
+  function makeCanvas(w, h) {
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    return c;
+  }
+  function rule(ctx, x, y, w, color = INK_3, h = 1) {
+    ctx.fillStyle = color; ctx.fillRect(x, y, w, h);
+  }
+  function eyebrow(ctx, x, y, text, color = PENCIL) {
+    ctx.fillStyle = color;
+    ctx.font = '500 18px "JetBrains Mono", monospace';
+    ctx.fillText(text.toUpperCase(), x, y);
+  }
+  function display(ctx, x, y, text, size = 200, weight = 500, color = PAPER) {
+    ctx.fillStyle = color;
+    ctx.font = `${weight} ${size}px "Cormorant Garamond", serif`;
+    ctx.fillText(text, x, y);
+  }
+  function displayItalic(ctx, x, y, text, size = 200, color = ACCENT) {
+    ctx.fillStyle = color;
+    ctx.font = `italic 400 ${size}px "Cormorant Garamond", serif`;
+    ctx.fillText(text, x, y);
+  }
+  function body(ctx, x, y, lines, opts = {}) {
+    const { size = 26, color = '#cfc5b6', lh = 1.5, font = 'Inter, sans-serif', weight = 400, maxW = 700 } = opts;
+    ctx.fillStyle = color; ctx.font = `${weight} ${size}px ${font}`;
+    let yy = y;
+    lines.forEach(line => {
+      const words = line.split(' ');
+      let cur = '';
+      words.forEach(w => {
+        const test = cur ? cur + ' ' + w : w;
+        if (ctx.measureText(test).width > maxW) {
+          ctx.fillText(cur, x, yy);
+          yy += size * lh;
+          cur = w;
+        } else cur = test;
+      });
+      if (cur) { ctx.fillText(cur, x, yy); yy += size * lh; }
+    });
+    return yy;
+  }
+  function tabularNum(ctx, x, y, text, size = 120, color = PAPER) {
+    ctx.fillStyle = color;
+    ctx.font = `500 ${size}px "Cormorant Garamond", serif`;
+    ctx.fillText(text, x, y);
+  }
+  function pageBg(ctx, color = '#0d0a08') {
+    ctx.fillStyle = color; ctx.fillRect(0, 0, TEX_W, TEX_H);
+    // grain
+    ctx.globalAlpha = 0.025;
+    for (let i = 0; i < 1400; i++) {
+      ctx.fillStyle = Math.random() > 0.5 ? PAPER : ACCENT;
+      ctx.fillRect(Math.random() * TEX_W, Math.random() * TEX_H, 1.2, 1.2);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // ---- Scenes -------------------------------------------------
+  function drawSceneCover() {
+    const c = makeCanvas(TEX_W, TEX_H), ctx = c.getContext('2d');
+    pageBg(ctx, '#0d0a08');
+
+    // Eyebrow
+    eyebrow(ctx, 110, 130, 'Spring  ·  release  ·  Blueprints 2.0', PENCIL);
+
+    // Headline
+    ctx.save();
+    display(ctx, 110, 380, 'The document', 220, 500, PAPER);
+    display(ctx, 110, 580, 'back office,', 220, 500, PAPER);
+    ctx.font = `italic 400 220px "Cormorant Garamond", serif`;
+    ctx.fillStyle = ACCENT;
+    ctx.fillText('finally', 110, 780);
+    ctx.fillStyle = PAPER;
+    ctx.font = `500 220px "Cormorant Garamond", serif`;
+    ctx.fillText(' automated.', 110 + ctx.measureText('finally').width, 780);
+    ctx.restore();
+
+    // Lede
+    body(ctx, 110, 850, [
+      'IDX turns invoices, BOLs, POs and claims into structured records — reviewed by your team and posted to your system of record. Pick a blueprint, connect your inbox, go live in a week.'
+    ], { size: 26, color: '#cfc5b6', maxW: 980, lh: 1.45 });
+
+    // Right column — preview-like card
+    const px = 1180, py = 200, pw = 620, ph = 560;
+    ctx.fillStyle = '#1a1411'; ctx.fillRect(px, py, pw, ph);
+    ctx.strokeStyle = 'rgba(250,247,240,0.18)'; ctx.lineWidth = 1; ctx.strokeRect(px+0.5, py+0.5, pw-1, ph-1);
+    // bar
+    ctx.fillStyle = '#221a16'; ctx.fillRect(px, py, pw, 38);
+    eyebrow(ctx, px + 18, py + 25, 'acme.idx.app  /  inbox  /  INV-204881.pdf', '#9a8a78');
+    [PENCIL, PENCIL, PENCIL].forEach((cc, i) => {
+      ctx.fillStyle = '#3d2418'; ctx.beginPath(); ctx.arc(px + 16 + i*14, py + 19, 4, 0, Math.PI*2); ctx.fill();
+    });
+    // fields
+    const fld = (yy, lab, val, kind) => {
+      const x = px + 22, w = 290;
+      const accent = kind === 'warn' ? '#b8860b' : kind === 'bad' ? '#a83232' : '#2d6a3e';
+      const bg = kind === 'warn' ? 'rgba(184,134,11,0.14)' : kind === 'bad' ? 'rgba(168,50,50,0.13)' : '#221a16';
+      ctx.fillStyle = bg; ctx.fillRect(x, yy, w, 56);
+      ctx.fillStyle = accent; ctx.fillRect(x, yy, 3, 56);
+      ctx.fillStyle = '#9a8a78'; ctx.font = '500 13px "JetBrains Mono", monospace'; ctx.fillText(lab.toUpperCase(), x + 14, yy + 22);
+      ctx.fillStyle = PAPER; ctx.font = '500 22px "JetBrains Mono", monospace'; ctx.fillText(val, x + 14, yy + 46);
+    };
+    eyebrow(ctx, px + 22, py + 80, 'Header', '#9a8a78');
+    fld(py + 100, 'Vendor', 'Lufting Mercantile Co.');
+    fld(py + 162, 'Invoice  №', 'INV-204881');
+    fld(py + 224, 'Issue date', '2026·04·14');
+    eyebrow(ctx, px + 22, py + 310, 'Totals', '#9a8a78');
+    fld(py + 330, 'Subtotal', '$ 18,420.00');
+    fld(py + 392, 'Tax  ·  review', '$  1,289.40', 'warn');
+    fld(py + 454, 'Total due', '$ 19,709.40');
+
+    // page number / accent label
+    eyebrow(ctx, 110, TEX_H - 80, '01  /  Cover', ACCENT);
+
+    // Hero meta cells
+    const meta = (xx, k, v) => {
+      ctx.fillStyle = PAPER; ctx.fillRect(xx, 950, 220, 1);
+      ctx.fillStyle = PENCIL; ctx.font = '500 14px "JetBrains Mono", monospace';
+      ctx.fillText(k.toUpperCase(), xx, 980);
+      ctx.fillStyle = PAPER; ctx.font = '500 38px "Cormorant Garamond", serif';
+      ctx.fillText(v, xx, 1024);
+    };
+    meta(110, 'Avg. accuracy', '99.4%');
+    meta(420, 'Time to live', '5–9 days');
+    meta(730, 'Hours saved', '71%');
+    return c;
+  }
+
+  function drawSceneBlueprints() {
+    const c = makeCanvas(TEX_W, TEX_H), ctx = c.getContext('2d');
+    pageBg(ctx, '#0f0c0a');
+    eyebrow(ctx, 110, 130, '02  /  Blueprints', ACCENT);
+    display(ctx, 110, 250, 'Production-grade', 130, 500, PAPER);
+    ctx.font = `italic 400 130px "Cormorant Garamond", serif`;
+    ctx.fillStyle = ACCENT;
+    ctx.fillText('blueprints.', 110, 380);
+    body(ctx, 110, 440, [
+      'Every blueprint is a complete document workflow — extraction schema, validation rules, reviewer queues, and downstream sync — tuned on hundreds of thousands of real documents.'
+    ], { size: 24, maxW: 920, color: '#cfc5b6' });
+
+    // 6-card grid
+    const items = [
+      ['Ledger', 'Accounts payable', '16 fields  ·  9 rules  ·  ERP sync'],
+      ['Atrium', 'Logistics & freight', '22 fields  ·  14 rules  ·  TMS sync'],
+      ['Foundry', 'Insurance claims', '34 fields  ·  21 rules  ·  Guidewire'],
+      ['Quay', 'Sales orders', '18 fields  ·  11 rules  ·  OMS sync'],
+      ['Halberd', 'Patient intake', '28 fields  ·  19 rules  ·  Epic / Athena'],
+      ['Bespoke', 'With our team', 'From 30 days  ·  fixed-fee'],
+    ];
+    const cw = 540, ch = 230, gx = 110, gy = 580;
+    items.forEach((it, i) => {
+      const col = i % 3, row = Math.floor(i / 3);
+      const x = gx + col * (cw + 16);
+      const y = gy + row * (ch + 16);
+      ctx.fillStyle = '#1a1411'; ctx.fillRect(x, y, cw, ch);
+      ctx.strokeStyle = 'rgba(250,247,240,0.14)'; ctx.lineWidth = 1; ctx.strokeRect(x+0.5, y+0.5, cw-1, ch-1);
+      // mini preview block (left)
+      ctx.fillStyle = '#221a16'; ctx.fillRect(x + 18, y + 22, 160, 186);
+      // hairlines inside
+      [40, 60, 80, 100, 130, 150].forEach(yy => {
+        ctx.fillStyle = '#5a3a26'; ctx.fillRect(x + 28, y + yy, 130 - (yy % 30), 3);
+      });
+      // marker
+      ctx.fillStyle = MARKER; ctx.fillRect(x + 28, y + 108, 100, 8);
+
+      // text
+      ctx.fillStyle = PAPER; ctx.font = `500 36px "Cormorant Garamond", serif`;
+      ctx.fillText(it[0], x + 200, y + 60);
+      ctx.fillStyle = PENCIL; ctx.font = `500 13px "JetBrains Mono", monospace`;
+      ctx.fillText(it[1].toUpperCase(), x + 200, y + 88);
+      // hairline
+      rule(ctx, x + 200, y + 110, cw - 220, 'rgba(250,247,240,0.14)');
+      // body
+      ctx.fillStyle = '#cfc5b6'; ctx.font = `400 18px Inter, sans-serif`;
+      ctx.fillText('Pre-tuned schema, validators,', x + 200, y + 140);
+      ctx.fillText('reviewer queue and connectors.', x + 200, y + 164);
+      // foot
+      ctx.fillStyle = PENCIL; ctx.font = `500 12px "JetBrains Mono", monospace`;
+      ctx.fillText(it[2].toUpperCase(), x + 200, y + 198);
+      ctx.fillStyle = ACCENT; ctx.font = `500 22px "Cormorant Garamond", serif`;
+      ctx.fillText('→', x + cw - 36, y + 198);
+    });
+
+    return c;
+  }
+
+  function drawScenePlatform() {
+    const c = makeCanvas(TEX_W, TEX_H), ctx = c.getContext('2d');
+    pageBg(ctx, '#0d0a08');
+    eyebrow(ctx, 110, 130, '03  /  Platform', ACCENT);
+    display(ctx, 110, 290, 'One pipeline,', 160, 500, PAPER);
+    ctx.font = `500 160px "Cormorant Garamond", serif`;
+    ctx.fillStyle = PAPER; ctx.fillText('four ', 110, 460);
+    const fwidth = ctx.measureText('four ').width;
+    ctx.font = `italic 400 160px "Cormorant Garamond", serif`;
+    ctx.fillStyle = ACCENT; ctx.fillText('moves.', 110 + fwidth, 460);
+
+    body(ctx, 110, 540, [
+      "The work IDX does is unsexy on purpose. Bring documents in, pull the data out, let humans agree, push it onward."
+    ], { size: 24, maxW: 920, color: '#cfc5b6' });
+
+    // Four steps in a row
+    const steps = [
+      ['Capture', 'A shared inbox for documents. Email, SFTP, API, Drive, EDI. We dedupe and classify.', '⌧'],
+      ['Extract', 'Fields with provenance — typed values, confidence scores, pinned to source pixels.', '⊟'],
+      ['Reconcile', 'Validation rules route exceptions. The 92% that pass clean go straight through.', '◐'],
+      ['Sync', 'Native connectors to NetSuite, SAP, Guidewire, plus typed REST & webhooks for the rest.', '◑'],
+    ];
+    const sx = 110, sy = 700, sw = 410, sh = 280;
+    steps.forEach((st, i) => {
+      const x = sx + i * (sw + 14);
+      ctx.strokeStyle = 'rgba(250,247,240,0.2)'; ctx.lineWidth = 1;
+      ctx.strokeRect(x + 0.5, sy + 0.5, sw - 1, sh - 1);
+      // glyph
+      ctx.fillStyle = ACCENT; ctx.font = `500 13px "JetBrains Mono", monospace`;
+      ctx.fillText('— 0' + (i+1), x + 24, sy + 40);
+      ctx.fillStyle = PAPER; ctx.font = `500 76px "Cormorant Garamond", serif`;
+      ctx.fillText(st[2], x + 24, sy + 130);
+      ctx.font = `500 44px "Cormorant Garamond", serif`;
+      ctx.fillText(st[0], x + 24, sy + 190);
+      ctx.fillStyle = '#cfc5b6'; ctx.font = `400 17px Inter, sans-serif`;
+      body(ctx, x + 24, sy + 218, [st[1]], { size: 17, maxW: sw - 48, color: '#cfc5b6', lh: 1.45 });
+    });
+    return c;
+  }
+
+  function drawSceneNumbers() {
+    const c = makeCanvas(TEX_W, TEX_H), ctx = c.getContext('2d');
+    pageBg(ctx, '#0e0b09');
+    eyebrow(ctx, 110, 130, '04  /  In production', ACCENT);
+    display(ctx, 110, 290, 'Numbers from', 150, 500, PAPER);
+    ctx.font = `500 150px "Cormorant Garamond", serif`;
+    ctx.fillText('real ', 110, 450);
+    const fw = ctx.measureText('real ').width;
+    ctx.font = `italic 400 150px "Cormorant Garamond", serif`;
+    ctx.fillStyle = ACCENT;
+    ctx.fillText('deployments.', 110 + fw, 450);
+
+    // Big metric blocks
+    const metrics = [
+      ['99.4%', 'Header-field accuracy', 'Across 14M invoices in the last 12 months. Line-item at 97.1%.'],
+      ['5.4d', 'Median time to live', 'Kickoff to first synced doc. Faster than your last vendor onboarding.'],
+      ['71%', 'Reviewer time saved', 'Vs. the team\'s previous keying process. Three-day-month closes routine.'],
+      ['$0.04', 'Cost per page', 'Bundled. No per-field, per-API or per-seat surprises in the bill.'],
+    ];
+    const mx = 110, my = 600, mw = 425, mh = 350;
+    metrics.forEach((m, i) => {
+      const x = mx + i * (mw + 10);
+      ctx.strokeStyle = 'rgba(250,247,240,0.16)';
+      ctx.beginPath(); ctx.moveTo(x, my); ctx.lineTo(x + mw, my); ctx.stroke();
+      ctx.fillStyle = PAPER; ctx.font = `500 130px "Cormorant Garamond", serif`;
+      ctx.fillText(m[0], x, my + 130);
+      ctx.fillStyle = PENCIL; ctx.font = `500 13px "JetBrains Mono", monospace`;
+      ctx.fillText(m[1].toUpperCase(), x, my + 180);
+      ctx.fillStyle = '#cfc5b6'; ctx.font = `400 18px Inter, sans-serif`;
+      body(ctx, x, my + 220, [m[2]], { size: 18, maxW: mw - 30, color: '#cfc5b6' });
+    });
+
+    // quote at bottom
+    ctx.fillStyle = ACCENT; ctx.font = `italic 500 30px "Cormorant Garamond", serif`;
+    ctx.fillText('"Eight hundred invoices a week now post without a human."', 110, 1010);
+    ctx.fillStyle = PENCIL; ctx.font = `500 13px "JetBrains Mono", monospace`;
+    ctx.fillText('MARCUS QUIBELL  ·  CONTROLLER  ·  FOUNDRY & SONS', 110, 1040);
+    return c;
+  }
+
+  function drawScenePricing() {
+    const c = makeCanvas(TEX_W, TEX_H), ctx = c.getContext('2d');
+    pageBg(ctx, '#0d0a08');
+    eyebrow(ctx, 110, 130, '05  /  Pricing', ACCENT);
+    display(ctx, 110, 290, 'Plain pricing,', 150, 500, PAPER);
+    ctx.font = `italic 400 150px "Cormorant Garamond", serif`;
+    ctx.fillStyle = ACCENT; ctx.fillText('per page.', 110, 450);
+
+    body(ctx, 110, 510, ['Pick a plan that matches your volume. Every plan includes the full blueprint catalogue, every connector, and a real human inside two business hours.'],
+      { size: 22, maxW: 880, color: '#cfc5b6' });
+
+    const plans = [
+      ['Studio', 'Starter', '$0.06', '/page', 'For a single team that wants to be live this month, on a credit card.', ['Every blueprint, unbranded', 'Up to 5 reviewers', 'REST API · email alias', 'Email support'], false],
+      ['Atelier', 'Business', '$0.04', '/page', 'For finance and ops orgs running production document workflows daily.', ['Branded reviewer workspace', 'Unlimited reviewers · SSO', 'All connectors · webhooks', 'Named CSM · 99.95% SLA'], true],
+      ['Foundry', 'Enterprise', 'Custom', '', 'Bespoke blueprints, your VPC, your auditors, your procurement form.', ['Custom blueprint engineering', 'Single-tenant deployment', 'HIPAA / SOC 2 / ISO 27001', 'Solutions architect on-call'], false],
+    ];
+    const pw = 565, ph = 400, gx = 110, gy = 620;
+    plans.forEach((p, i) => {
+      const x = gx + i * (pw + 12);
+      const featured = p[6];
+      ctx.fillStyle = featured ? '#faf7f0' : '#1a1411';
+      ctx.fillRect(x, gy, pw, ph);
+      ctx.strokeStyle = featured ? '#faf7f0' : 'rgba(250,247,240,0.18)';
+      ctx.strokeRect(x + 0.5, gy + 0.5, pw - 1, ph - 1);
+      const txt = featured ? '#0d0a08' : PAPER;
+      const sub = featured ? 'rgba(13,10,8,0.55)' : '#cfc5b6';
+      // name
+      ctx.fillStyle = txt; ctx.font = `500 38px "Cormorant Garamond", serif`;
+      ctx.fillText(p[0], x + 30, gy + 60);
+      ctx.fillStyle = sub; ctx.font = `italic 400 26px "Cormorant Garamond", serif`;
+      ctx.fillText('· ' + p[1].toLowerCase(), x + 30 + ctx.measureText(p[0]).width + 12, gy + 60);
+      // price
+      ctx.fillStyle = txt; ctx.font = `500 76px "Cormorant Garamond", serif`;
+      ctx.fillText(p[2], x + 30, gy + 150);
+      ctx.fillStyle = sub; ctx.font = `400 22px "Cormorant Garamond", serif`;
+      ctx.fillText(p[3], x + 30 + ctx.measureText(p[2]).width + 8, gy + 150);
+      // pitch
+      ctx.fillStyle = sub; ctx.font = `400 17px Inter, sans-serif`;
+      body(ctx, x + 30, gy + 195, [p[4]], { size: 17, maxW: pw - 60, color: sub, lh: 1.4 });
+      // bullets
+      let yy = gy + 270;
+      p[5].forEach(b => {
+        ctx.fillStyle = ACCENT; ctx.font = `500 17px "JetBrains Mono", monospace`;
+        ctx.fillText('—', x + 30, yy);
+        ctx.fillStyle = featured ? '#0d0a08' : PAPER; ctx.font = `400 17px Inter, sans-serif`;
+        ctx.fillText(b, x + 60, yy);
+        yy += 26;
+      });
+    });
+    return c;
+  }
+
+  function drawSceneCTA() {
+    const c = makeCanvas(TEX_W, TEX_H), ctx = c.getContext('2d');
+    pageBg(ctx, '#0d0a08');
+    eyebrow(ctx, 110, 130, '06  /  Talk to us', ACCENT);
+    display(ctx, 110, 380, 'Ship your', 240, 500, PAPER);
+    display(ctx, 110, 600, 'back office.', 240, 500, PAPER);
+    ctx.font = `italic 400 240px "Cormorant Garamond", serif`;
+    ctx.fillStyle = ACCENT;
+    ctx.fillText('This quarter.', 110, 820);
+
+    body(ctx, 1180, 400, [
+      'Pick a blueprint, drop in your last hundred documents, see what comes out the other side.'
+    ], { size: 28, maxW: 600, color: '#cfc5b6', lh: 1.4 });
+
+    // CTA buttons
+    ctx.fillStyle = PAPER; ctx.fillRect(1180, 540, 220, 64);
+    ctx.fillStyle = '#0d0a08'; ctx.font = `500 22px Inter, sans-serif`;
+    ctx.fillText('Start free  →', 1206, 581);
+
+    ctx.strokeStyle = 'rgba(250,247,240,0.4)'; ctx.lineWidth = 1.2;
+    ctx.strokeRect(1420.5, 540.5, 280, 63);
+    ctx.fillStyle = PAPER; ctx.font = `500 22px Inter, sans-serif`;
+    ctx.fillText('Book a 30-min demo', 1442, 581);
+
+    // Footer-ish wordmark
+    ctx.fillStyle = '#1a1411'; ctx.fillRect(0, 940, TEX_W, 1);
+    ctx.fillStyle = PAPER; ctx.font = `500 360px "Cormorant Garamond", serif`;
+    ctx.fillText('IDX.', 90, 1060);
+    ctx.fillStyle = PENCIL; ctx.font = `500 13px "JetBrains Mono", monospace`;
+    ctx.fillText('© 2026 IDX DOCUMENT SYSTEMS LTD.  ·  MADE IN BRISTOL & BROOKLYN.', 1180, 1050);
+    return c;
+  }
+
+  // ============================================================
+  // THREE.JS SCENE
+  // ============================================================
+  const scene = new THREE.Scene();
+  // Compute fov so a 900-tall plane fits the viewport at distance 1200.
+  // tan(fov/2) = 450 / 1200 => fov ≈ 41°. Use slightly wider so scene reads.
+  const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 6000);
+  camera.position.set(0, 0, 1200);
+  camera.lookAt(0, 0, 0);
+
+  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, preserveDrawingBuffer: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setClearColor(0x000000, 0);
+  stage.appendChild(renderer.domElement);
+
+  // Lighting (subtle)
+  scene.add(new THREE.AmbientLight(0xffffff, 0.85));
+  const key = new THREE.DirectionalLight(0xffe6c2, 0.4);
+  key.position.set(2, 1, 3);
+  scene.add(key);
+
+  // ---- Build shards for each scene ----------------------------
+  // World scale: each scene plane is 1600 wide × 900 tall (matches 16:9 texture)
+  const PLANE_W = 1600, PLANE_H = 900;
+  const SCENE_SPACING = 1100; // distance between scenes along Z
+  const sceneObjects = []; // { group, shards, label, z, texture, canvas }
+
+  function buildSceneShards(sceneSpec, zPos) {
+    const cnv = sceneSpec.build();
+    const tex = new THREE.CanvasTexture(cnv);
+    tex.minFilter = THREE.LinearFilter;
+    tex.magFilter = THREE.LinearFilter;
+    tex.generateMipmaps = false;
+    tex.wrapS = THREE.ClampToEdgeWrapping;
+    tex.wrapT = THREE.ClampToEdgeWrapping;
+    tex.anisotropy = 4;
+    tex.needsUpdate = true;
+
+    const group = new THREE.Group();
+    group.position.z = zPos;
+    scene.add(group);
+
+    const cols = sceneSpec.shardCols, rows = sceneSpec.shardRows;
+    const cellW = PLANE_W / cols, cellH = PLANE_H / rows;
+    const shards = [];
+
+    // Generate jittered site per cell, build 4 triangles per cell around the site
+    const sites = [];
+    for (let j = 0; j < rows; j++) {
+      for (let i = 0; i < cols; i++) {
+        const cx = -PLANE_W/2 + (i + 0.5) * cellW + (Math.random() - 0.5) * cellW * 0.7;
+        const cy = -PLANE_H/2 + (j + 0.5) * cellH + (Math.random() - 0.5) * cellH * 0.7;
+        sites.push([cx, cy]);
+      }
+    }
+
+    function addShard(verts) {
+      // verts: [[x,y],[x,y],[x,y]] in plane space (-PLANE_W/2..PLANE_W/2, -PLANE_H/2..PLANE_H/2)
+      const cx = (verts[0][0] + verts[1][0] + verts[2][0]) / 3;
+      const cy = (verts[0][1] + verts[1][1] + verts[2][1]) / 3;
+      const local = verts.map(v => [v[0] - cx, v[1] - cy]);
+
+      const geom = new THREE.BufferGeometry();
+      const pos = new Float32Array([
+        local[0][0], local[0][1], 0,
+        local[1][0], local[1][1], 0,
+        local[2][0], local[2][1], 0,
+      ]);
+      // UVs map to texture coords: convert plane-space verts to 0..1
+      const uvs = new Float32Array([
+        (verts[0][0] + PLANE_W/2) / PLANE_W, (verts[0][1] + PLANE_H/2) / PLANE_H,
+        (verts[1][0] + PLANE_W/2) / PLANE_W, (verts[1][1] + PLANE_H/2) / PLANE_H,
+        (verts[2][0] + PLANE_W/2) / PLANE_W, (verts[2][1] + PLANE_H/2) / PLANE_H,
+      ]);
+      geom.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+      geom.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+      geom.computeVertexNormals();
+
+      const mat = new THREE.MeshBasicMaterial({
+        map: tex,
+        transparent: true,
+        opacity: 1,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+      });
+      const mesh = new THREE.Mesh(geom, mat);
+      mesh.position.set(cx, cy, 0);
+
+      // Edge highlight
+      const edgeGeom = new THREE.BufferGeometry();
+      const edgePos = new Float32Array([
+        local[0][0], local[0][1], 0.5,
+        local[1][0], local[1][1], 0.5,
+        local[1][0], local[1][1], 0.5,
+        local[2][0], local[2][1], 0.5,
+        local[2][0], local[2][1], 0.5,
+        local[0][0], local[0][1], 0.5,
+      ]);
+      edgeGeom.setAttribute('position', new THREE.BufferAttribute(edgePos, 3));
+      const edgeMat = new THREE.LineBasicMaterial({
+        color: 0xd24a2e,
+        transparent: true,
+        opacity: 0.15,
+      });
+      const edges = new THREE.LineSegments(edgeGeom, edgeMat);
+      mesh.add(edges);
+
+      group.add(mesh);
+
+      shards.push({
+        mesh, mat, edgeMat,
+        cx, cy,
+        // displacement state (relative to rest)
+        tx: 0, ty: 0, tz: 0,
+        rx: 0, ry: 0, rz: 0,
+        vx: 0, vy: 0, vz: 0,
+        vrx: 0, vry: 0, vrz: 0,
+        restPhase: Math.random() * Math.PI * 2,
+        restAmp: 1.5 + Math.random() * 3,
+      });
+    }
+
+    // Build cell triangulation
+    for (let j = 0; j < rows; j++) {
+      for (let i = 0; i < cols; i++) {
+        const idx = j * cols + i;
+        const [sx, sy] = sites[idx];
+        const x0 = -PLANE_W/2 + i * cellW;
+        const x1 = x0 + cellW;
+        const y0 = -PLANE_H/2 + j * cellH;
+        const y1 = y0 + cellH;
+        // Use neighbor sites where available so shards tile cleanly enough
+        const c00 = [x0, y0], c10 = [x1, y0], c11 = [x1, y1], c01 = [x0, y1];
+        addShard([[sx, sy], c00, c10]);
+        addShard([[sx, sy], c10, c11]);
+        addShard([[sx, sy], c11, c01]);
+        addShard([[sx, sy], c01, c00]);
+      }
+    }
+
+    return { group, shards, label: sceneSpec.label, z: zPos, texture: tex, canvas: cnv };
+  }
+
+  // Build all scenes
+  SCENES.forEach((sp, i) => {
+    sceneObjects.push(buildSceneShards(sp, -i * SCENE_SPACING));
+  });
+
+  // Build dot navigator
+  SCENES.forEach((sp, i) => {
+    const b = document.createElement('button');
+    const idx = String(i + 1).padStart(2, '0');
+    b.innerHTML = `<span>${idx}  ${sp.label}</span><span class="d"></span>`;
+    b.addEventListener('click', () => {
+      proxy.scrollTo({ top: i * window.innerHeight, behavior: 'smooth' });
+    });
+    dotsEl.appendChild(b);
+  });
+  document.querySelectorAll('.nav-links a[data-go]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const i = parseInt(a.dataset.go, 10);
+      proxy.scrollTo({ top: i * window.innerHeight, behavior: 'smooth' });
+    });
+  });
+
+  // ---- Scroll proxy: total height = scenes × viewportH × 1.4 ----
+  const TOTAL_SCENES = SCENES.length;
+  function setProxyHeight() {
+    proxy.querySelector('.spacer').style.height = (TOTAL_SCENES * 1.0 * window.innerHeight + window.innerHeight) + 'px';
+  }
+  setProxyHeight();
+
+  // ---- Mouse (raycast against the active scene's plane) -------
+  const mouseNDC = new THREE.Vector2(-9999, -9999);
+  let mouseInside = false;
+  const mousePlane = new THREE.Vector3(); // in world coords on active scene
+  const raycaster = new THREE.Raycaster();
+  const planeHelper = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+
+  window.addEventListener('pointermove', e => {
+    mouseNDC.x = (e.clientX / window.innerWidth) * 2 - 1;
+    mouseNDC.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    mouseInside = true;
+    if (introHint) introHint.style.opacity = 0;
+  });
+  window.addEventListener('pointerleave', () => { mouseInside = false; });
+
+  // Click to shatter
+  let clickKick = null; // { sceneIdx, point }
+  window.addEventListener('pointerdown', e => {
+    // Don't trigger clicks on UI buttons
+    if (e.target.closest('.nav, .dots, .hud')) return;
+    clickKick = { time: 1.0 };
+  });
+
+  // ---- Resize -------------------------------------------------
+  window.addEventListener('resize', () => {
+    const W = window.innerWidth, H = window.innerHeight;
+    camera.aspect = W / H;
+    camera.updateProjectionMatrix();
+    renderer.setSize(W, H);
+    setProxyHeight();
+  });
+
+  // ---- Loop ---------------------------------------------------
+  let scrollT = 0; // 0..(TOTAL_SCENES-1)
+  let scrollTLerp = 0;
+  let t = 0;
+
+  function tick() {
+    t += 0.016;
+
+    // Update scroll progress
+    const maxScroll = proxy.scrollHeight - window.innerHeight;
+    const scrollNorm = maxScroll > 0 ? proxy.scrollTop / maxScroll : 0;
+    scrollT = scrollNorm * (TOTAL_SCENES - 1);
+    scrollTLerp += (scrollT - scrollTLerp) * 0.08;
+
+    // Keep camera fixed at z=1200, move the scenes themselves so the active
+    // scene sits at z=0 in front of the camera.
+    camera.position.x = Math.sin(t * 0.15) * 12;
+    camera.position.y = Math.cos(t * 0.12) * 8;
+    camera.lookAt(0, 0, 0);
+    sceneObjects.forEach((so, i) => {
+      so.group.position.z = (scrollTLerp - i) * SCENE_SPACING * -1 + (-i * SCENE_SPACING - so.z);
+      // Simpler: place each scene relative to scrollTLerp
+      so.group.position.z = (i - scrollTLerp) * -SCENE_SPACING;
+    });
+
+    // Determine active scene & raycast onto its plane
+    const activeIdx = Math.round(scrollTLerp);
+    const activeScene = sceneObjects[activeIdx];
+    let mouseWorld = null;
+    if (mouseInside && activeScene) {
+      raycaster.setFromCamera(mouseNDC, camera);
+      // plane at z = activeScene.z facing +z
+      planeHelper.constant = -activeScene.z;
+      const hit = new THREE.Vector3();
+      if (raycaster.ray.intersectPlane(planeHelper, hit)) {
+        mouseWorld = hit;
+      }
+    }
+
+    const HOVER_R = 220;
+    const HOVER_R2 = HOVER_R * HOVER_R;
+
+    sceneObjects.forEach((so, sIdx) => {
+      const distFromActive = Math.abs(scrollTLerp - sIdx);
+      // Scene fades out as we move away
+      const alpha = Math.max(0, 1 - distFromActive * 0.55);
+      const scaleBoost = Math.max(0.6, 1 - distFromActive * 0.05);
+
+      so.group.scale.setScalar(scaleBoost);
+
+      so.shards.forEach(s => {
+        // Hover repulsion (only for active scene)
+        if (mouseWorld && sIdx === activeIdx) {
+          const dx = (s.cx + so.group.position.x) - mouseWorld.x;
+          const dy = (s.cy + so.group.position.y) - mouseWorld.y;
+          const d2 = dx*dx + dy*dy;
+          if (d2 < HOVER_R2) {
+            const d = Math.sqrt(d2) || 1;
+            const falloff = 1 - d / HOVER_R;
+            const force = falloff * falloff * 2.2;
+            s.vx += (dx / d) * force;
+            s.vy += (dy / d) * force;
+            s.vz += force * 3.5;
+            s.vrx += (Math.random() - 0.5) * falloff * 0.04;
+            s.vry += (Math.random() - 0.5) * falloff * 0.04;
+            s.vrz += (dx / d) * falloff * 0.03;
+
+            s.edgeMat.opacity = Math.min(0.9, s.edgeMat.opacity + falloff * 0.05);
+          }
+        }
+
+        // Click kick (only on active scene)
+        if (clickKick && clickKick.time > 0.95 && sIdx === activeIdx && mouseWorld) {
+          const dx = s.cx - mouseWorld.x;
+          const dy = s.cy - mouseWorld.y;
+          const d = Math.max(40, Math.hypot(dx, dy));
+          const f = 380 / d;
+          s.vx += (dx / d) * f * 18;
+          s.vy += (dy / d) * f * 18;
+          s.vz += f * 20;
+          s.vrx += (Math.random() - 0.5) * 0.5;
+          s.vry += (Math.random() - 0.5) * 0.5;
+          s.vrz += (Math.random() - 0.5) * 0.5;
+        }
+
+        // Scroll-induced drift: each scene's shards stagger entry/exit based on scroll proximity
+        // When scene is "off-axis", push shards slightly outward
+        if (Math.abs(distFromActive) > 0.05 && Math.abs(distFromActive) < 1.2) {
+          const dir = scrollTLerp - sIdx;
+          const phase = (s.restPhase + s.cx * 0.001) ;
+          s.vx += Math.cos(phase) * 0.12 * dir;
+          s.vy += Math.sin(phase) * 0.12 * dir;
+          s.vrz += Math.sin(phase * 1.7) * 0.002 * dir;
+        }
+
+        // Rest oscillation (subtle ambient motion)
+        const restX = Math.sin(t * 0.5 + s.restPhase) * s.restAmp * 0.4;
+        const restY = Math.cos(t * 0.4 + s.restPhase) * s.restAmp * 0.4;
+        s.vx += (restX - s.tx) * 0.025;
+        s.vy += (restY - s.ty) * 0.025;
+        s.vz += (0 - s.tz) * 0.045;
+        s.vrx += (0 - s.rx) * 0.04;
+        s.vry += (0 - s.ry) * 0.04;
+        s.vrz += (0 - s.rz) * 0.04;
+
+        // Damping
+        s.vx *= 0.88; s.vy *= 0.88; s.vz *= 0.85;
+        s.vrx *= 0.88; s.vry *= 0.88; s.vrz *= 0.88;
+
+        s.tx += s.vx; s.ty += s.vy; s.tz += s.vz;
+        s.rx += s.vrx; s.ry += s.vry; s.rz += s.vrz;
+
+        s.mesh.position.set(s.cx + s.tx, s.cy + s.ty, s.tz);
+        s.mesh.rotation.set(s.rx, s.ry, s.rz);
+
+        // Material alpha
+        s.mat.opacity = alpha;
+        s.edgeMat.opacity += (0.15 * alpha - s.edgeMat.opacity) * 0.06;
+        s.mesh.visible = alpha > 0.02;
+      });
+    });
+
+    if (clickKick) {
+      clickKick.time *= 0.6;
+      if (clickKick.time < 0.05) clickKick = null;
+    }
+
+    // HUD updates
+    const idx = Math.round(scrollTLerp);
+    sceneNumEl.textContent = String(idx + 1).padStart(2, '0') + ' / ' + String(TOTAL_SCENES).padStart(2, '0');
+    sceneLabelEl.textContent = SCENES[idx].label;
+    fillEl.style.width = (scrollNorm * 100) + '%';
+    document.querySelectorAll('.dots button').forEach((b, i) => {
+      b.classList.toggle('active', i === idx);
+    });
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(tick);
+  }
+
+  // Wait one frame for fonts to load before drawing scenes (so canvas type is correct)
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => {
+      // Redraw all scene textures now that fonts are loaded
+      sceneObjects.forEach((so, i) => {
+        const newCanvas = SCENES[i].build();
+        so.texture.image = newCanvas;
+        so.texture.needsUpdate = true;
+      });
+    });
+  }
+
+  tick();
+})();
+</script>
+
+</body>
+</html>

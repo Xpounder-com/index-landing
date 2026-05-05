@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>IDX · Upgrade wireframes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<link rel="stylesheet" href="styles.css"/>
+<style>
+  html, body { margin: 0; padding: 0; background: #f0eee9; height: 100%; }
+  body { font-family: 'Kalam', system-ui, sans-serif; color: #1a1a1a; }
+  .wf-screen-shell { width: 100%; height: 100%; overflow: hidden; }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="shared.jsx"></script>
+<script type="text/babel" src="docMock.jsx"></script>
+<script type="text/babel" src="directionA.jsx"></script>
+<script type="text/babel" src="directionB.jsx"></script>
+<script type="text/babel" src="directionC.jsx"></script>
+<script type="text/babel" src="directionD.jsx"></script>
+<script type="text/babel" src="directionE.jsx"></script>
+<script type="text/babel" src="secondary.jsx"></script>
+
+<script type="text/babel" data-presets="env,react">
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "highlightColor": "#d24a2e",
+  "showConfidenceColors": true,
+  "showERPRail": true
+}/*EDITMODE-END*/;
+
+function App() {
+  const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+  // Apply tweaks live as CSS vars
+  React.useEffect(() => {
+    document.documentElement.style.setProperty('--accent', tweaks.highlightColor);
+    // soft / glow are derived
+    const hex = tweaks.highlightColor.replace('#','');
+    const r = parseInt(hex.slice(0,2), 16), g = parseInt(hex.slice(2,4), 16), b = parseInt(hex.slice(4,6), 16);
+    document.documentElement.style.setProperty('--accent-soft', `rgba(${r}, ${g}, ${b}, 0.18)`);
+    document.documentElement.style.setProperty('--accent-glow', `rgba(${r}, ${g}, ${b}, 0.35)`);
+    if (!tweaks.showConfidenceColors) {
+      document.documentElement.style.setProperty('--conf-good', '#4a4a4a');
+      document.documentElement.style.setProperty('--conf-warn', '#4a4a4a');
+      document.documentElement.style.setProperty('--conf-bad', '#4a4a4a');
+      document.documentElement.style.setProperty('--conf-good-bg', 'transparent');
+      document.documentElement.style.setProperty('--conf-warn-bg', 'transparent');
+      document.documentElement.style.setProperty('--conf-bad-bg', 'transparent');
+    } else {
+      document.documentElement.style.setProperty('--conf-good', '#2d6a3e');
+      document.documentElement.style.setProperty('--conf-warn', '#b8860b');
+      document.documentElement.style.setProperty('--conf-bad', '#a83232');
+      document.documentElement.style.setProperty('--conf-good-bg', 'rgba(45, 106, 62, 0.12)');
+      document.documentElement.style.setProperty('--conf-warn-bg', 'rgba(184, 134, 11, 0.14)');
+      document.documentElement.style.setProperty('--conf-bad-bg', 'rgba(168, 50, 50, 0.13)');
+    }
+  }, [tweaks]);
+
+  return (
+    <>
+      <DesignCanvas>
+        <DCSection id="extract" title="Document detail · 5 directions" subtitle="bidirectional hover · color-coded confidence · ERP context">
+          <DCArtboard id="A" label="A · Classic split (form ↔ doc + ERP rail)" width={1280} height={820}><DirectionA/></DCArtboard>
+          <DCArtboard id="B" label="B · Stepped review (Capture → Match → Code → Approve)" width={1280} height={820}><DirectionB/></DCArtboard>
+          <DCArtboard id="C" label="C · Spatial / sticky-card (doc-first)" width={1280} height={820}><DirectionC/></DCArtboard>
+          <DCArtboard id="D" label="D · Power user (J/K · co-pilot · ⌘K)" width={1280} height={820}><DirectionD/></DCArtboard>
+          <DCArtboard id="E" label="E · ERP-first (posting impact preview)" width={1280} height={820}><DirectionE/></DCArtboard>
+        </DCSection>
+
+        <DCSection id="around" title="The rest of the app" subtitle="how IDX feels beyond the extraction screen">
+          <DCArtboard id="inbox" label="Inbox / queue" width={1280} height={780}><InboxScreen/></DCArtboard>
+          <DCArtboard id="dash" label="Dashboard · single source of truth" width={1280} height={820}><DashboardScreen/></DCArtboard>
+          <DCArtboard id="inv" label="Inventory · warehouse view" width={1280} height={820}><InventoryScreen/></DCArtboard>
+          <DCArtboard id="crm" label="CRM-lite · customer 360" width={1280} height={820}><CRMScreen/></DCArtboard>
+          <DCArtboard id="rep" label="Reports & analytics" width={1280} height={820}><ReportsScreen/></DCArtboard>
+        </DCSection>
+
+        <DCPostIt x={40} y={40} rotate={-3}>
+          IDX upgrade · sketch round 1{"\n"}
+          5 directions for the doc-extraction screen{"\n"}
+          + 5 supporting screens for the SMB-ERP story
+        </DCPostIt>
+        <DCPostIt x={40} y={920} rotate={2}>
+          accent (red-orange) = the link{"\n"}
+          between a field and its source{"\n"}
+          on the document
+        </DCPostIt>
+        <DCPostIt x={1500} y={40} rotate={4}>
+          Try hovering anywhere{"\n"}
+          inside any artboard.{"\n"}
+          Both sides light up.
+        </DCPostIt>
+      </DesignCanvas>
+
+      <TweaksPanel title="Tweaks">
+        <TweakSection title="Highlight">
+          <TweakColor label="Link color" value={tweaks.highlightColor} onChange={v => setTweak('highlightColor', v)}/>
+        </TweakSection>
+        <TweakSection title="Display">
+          <TweakToggle label="Color-code confidence" value={tweaks.showConfidenceColors} onChange={v => setTweak('showConfidenceColors', v)}/>
+          <TweakToggle label="Show ERP context rail" value={tweaks.showERPRail} onChange={v => setTweak('showERPRail', v)}/>
+        </TweakSection>
+        <TweakSection title="Notes">
+          <div style={{fontFamily:'Kalam, sans-serif', fontSize: 13, lineHeight: 1.5, color:'#444'}}>
+            Each artboard is a wireframe. Hover any field on the left or any
+            highlight on the document to test the bidirectional link.
+            Click an artboard's expand button to focus it fullscreen.
+          </div>
+        </TweakSection>
+      </TweaksPanel>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
