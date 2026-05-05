@@ -3,19 +3,46 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>IDX — Document intelligence, ready to deploy</title>
+<title>Index Partner Program | Become a partner</title>
+<meta name="description" content="Index is the AI documents operations platform for B2B teams that need source linked workflows, provenance, and system of record sync."/>
+<meta name="robots" content="index,follow"/>
+<link rel="canonical" href="%SITE_URL%/"/>
+<meta name="theme-color" content="#0d0a08"/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="%SITE_URL%/"/>
+<meta property="og:title" content="Index Partner Program"/>
+<meta property="og:description" content="B2B Ops are why companies don't get paid fast enough. Index is the fix."/>
+<meta property="og:image" content="%SITE_URL%/assets/product/idx-ap-review.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Index Partner Program"/>
+<meta name="twitter:description" content="B2B Ops are why companies don't get paid fast enough. Index is the fix."/>
+<meta name="twitter:image" content="%SITE_URL%/assets/product/idx-ap-review.png"/>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="preload" href="/assets/brand/index-logo.jpg" as="image"/>
+<link rel="preload" href="/assets/product/idx-ap-review.png" as="image" fetchpriority="high"/>
+<link rel="prefetch" href="/assets/product/idx-ap-match.png" as="image"/>
 <link rel="stylesheet" href="styles.css"/>
 <style>
   html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #0d0a08; color: #faf7f0; }
   body { font-family: 'Inter', system-ui, sans-serif; }
   a { color: inherit; text-decoration: none; }
+  :root {
+    --dark: #0d0a08;
+    --paper: #faf7f0;
+    --paper-dim: #cfc5b6;
+    --pencil: #7a5a44;
+    --accent: #d24a2e;
+  }
 
   /* Background: deep paper-ink with subtle noise + gradient */
   .bg {
     position: fixed; inset: 0; z-index: 0;
     background:
-      radial-gradient(ellipse at 30% 20%, rgba(210,74,46,0.08), transparent 55%),
-      radial-gradient(ellipse at 80% 70%, rgba(250,247,240,0.04), transparent 60%),
+      radial-gradient(ellipse at 24% 12%, rgba(210,74,46,0.10), transparent 44%),
+      radial-gradient(ellipse at 78% 72%, rgba(250,247,240,0.06), transparent 55%),
+      radial-gradient(ellipse at 50% 108%, rgba(122,90,68,0.12), transparent 42%),
       linear-gradient(180deg, #0d0a08 0%, #161210 100%);
   }
   .bg::after {
@@ -36,39 +63,44 @@
   /* Top nav — minimal, lives above the glass */
   .nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 10;
-    height: 60px;
+    height: 64px;
     display: flex; align-items: center; gap: 28px;
     padding: 0 36px;
-    background: linear-gradient(180deg, rgba(13,10,8,0.85), rgba(13,10,8,0));
+    background: linear-gradient(180deg, rgba(13,10,8,0.92), rgba(13,10,8,0.48) 58%, rgba(13,10,8,0));
+    border-bottom: 1px solid rgba(250,247,240,0.06);
+    backdrop-filter: blur(12px);
     pointer-events: none;
   }
   .nav > * { pointer-events: auto; }
   .logo {
-    display: inline-flex; align-items: baseline; gap: 8px;
-    font-family: 'Cormorant Garamond', serif; font-weight: 600;
-    font-size: 22px; letter-spacing: -0.01em; color: #faf7f0;
-  }
-  .logo-mark {
-    width: 22px; height: 22px;
-    border: 1.5px solid #faf7f0;
     display: inline-flex; align-items: center; justify-content: center;
-    font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 14px;
-    background: #faf7f0; color: #0d0a08;
-    border-radius: 2px; transform: translateY(2px);
+    width: 116px; height: 38px;
+    background: rgba(250,247,240,0.96);
+    border: 1px solid rgba(250,247,240,0.76);
+    border-radius: 3px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    overflow: hidden;
   }
-  .nav-links { display: flex; gap: 22px; font-size: 13px; color: rgba(250,247,240,0.7); margin-left: 12px; }
-  .nav-links a:hover { color: #d24a2e; }
+  .logo img {
+    width: 104px; height: 30px;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+  .nav-links { display: flex; gap: 22px; font-size: 13px; color: rgba(250,247,240,0.68); margin-left: 12px; }
+  .nav-links a { transition: color .18s ease, opacity .18s ease; }
+  .nav-links a:hover { color: #faf7f0; opacity: 1; }
   .nav-spacer { flex: 1; }
   .nav-cta { display: flex; gap: 10px; align-items: center; font-size: 13px; }
   .btn {
     display: inline-flex; align-items: center; gap: 8px;
     font-size: 12.5px; padding: 8px 14px;
-    border-radius: 2px; border: 1px solid rgba(250,247,240,0.4);
-    background: transparent; color: #faf7f0; cursor: pointer;
+    border-radius: 2px; border: 1px solid rgba(250,247,240,0.32);
+    background: rgba(13,10,8,0.24); color: #faf7f0; cursor: pointer;
     font-family: inherit; font-weight: 500; letter-spacing: 0.01em;
-    transition: all .15s;
+    transition: background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease;
   }
-  .btn:hover { background: #d24a2e; border-color: #d24a2e; color: #fff; }
+  .btn:hover { background: rgba(210,74,46,0.92); border-color: #d24a2e; color: #fff; transform: translateY(-1px); }
   .btn.solid { background: #faf7f0; color: #0d0a08; border-color: #faf7f0; }
   .btn.solid:hover { background: #d24a2e; border-color: #d24a2e; color: #fff; }
 
@@ -84,15 +116,16 @@
     font-size: 11px;
     letter-spacing: 0.14em;
     text-transform: uppercase;
+    background: linear-gradient(0deg, rgba(13,10,8,0.88), rgba(13,10,8,0));
   }
   .hud > * { pointer-events: auto; }
   .hud .progress {
-    flex: 1; height: 1px; background: rgba(250,247,240,0.15);
+    flex: 1; height: 1px; background: rgba(250,247,240,0.12);
     position: relative; max-width: 480px;
   }
   .hud .progress .fill {
     position: absolute; left: 0; top: -1px; height: 3px;
-    background: #d24a2e; width: 0;
+    background: linear-gradient(90deg, #d24a2e, #f2b37a); width: 0;
     transition: width .25s ease;
   }
   .hud .scene-label {
@@ -117,11 +150,6 @@
     0%, 100% { opacity: 1; transform: scale(1); }
     50% { opacity: 0.4; transform: scale(0.7); }
   }
-  .hud .hint {
-    color: rgba(250,247,240,0.45);
-    font-size: 10px;
-  }
-
   /* Scene dots — vertical scene navigator */
   .dots {
     position: fixed; right: 36px; top: 50%; transform: translateY(-50%);
@@ -138,22 +166,247 @@
     padding: 0;
   }
   .dots button .d {
-    width: 6px; height: 6px; border: 1px solid rgba(250,247,240,0.4);
+    width: 6px; height: 6px; border: 1px solid rgba(250,247,240,0.36);
     border-radius: 50%; transition: all .2s;
   }
   .dots button.active { color: #faf7f0; }
-  .dots button.active .d { background: #d24a2e; border-color: #d24a2e; box-shadow: 0 0 10px #d24a2e; }
+  .dots button.active .d { background: #d24a2e; border-color: #f2b37a; box-shadow: 0 0 12px rgba(210,74,46,0.9); }
   .dots button:hover { color: #faf7f0; }
 
-  /* Title overlay — only shows on first scene briefly */
-  .intro-hint {
-    position: fixed; left: 36px; bottom: 88px; z-index: 10;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 13px; font-style: italic;
-    color: rgba(250,247,240,0.5);
-    pointer-events: none;
-    max-width: 200px;
+  .partner-form-shell {
+    position: fixed; inset: 0; z-index: 30;
+    display: flex; align-items: center; justify-content: center;
+    padding: 28px;
+    background: rgba(13,10,8,0.72);
+    backdrop-filter: blur(18px);
+  }
+  .partner-form-shell[hidden] { display: none; }
+  .partner-form-card {
+    width: min(900px, 100%);
+    max-height: calc(100vh - 56px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #faf7f0;
+    color: #0d0a08;
+    border: 1px solid rgba(250,247,240,0.72);
+    box-shadow: 0 28px 80px rgba(0,0,0,0.42);
+  }
+  .partner-form-head {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 18px;
+    padding: 30px 32px 22px;
+    border-bottom: 1px solid rgba(13,10,8,0.14);
+  }
+  .partner-form-kicker {
+    margin: 0 0 8px;
+    color: #d24a2e;
+    font: 700 12px "JetBrains Mono", monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .partner-form-title {
+    margin: 0;
+    font: 500 54px "Cormorant Garamond", serif;
+    letter-spacing: 0;
+    line-height: 0.95;
+  }
+  .partner-form-copy {
+    margin: 16px 0 0;
+    max-width: 620px;
+    color: rgba(13,10,8,0.68);
+    font-size: 16px;
+    line-height: 1.45;
+  }
+  .partner-form-close {
+    width: 38px; height: 38px;
+    border: 1px solid rgba(13,10,8,0.2);
+    background: transparent;
+    color: #0d0a08;
+    cursor: pointer;
+    font: 700 12px "JetBrains Mono", monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .partner-form {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .partner-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    min-height: 0;
+    overflow: auto;
+    padding: 28px 32px 18px;
+  }
+  .partner-form-field {
+    display: grid;
+    gap: 7px;
+  }
+  .partner-form-field.full { grid-column: 1 / -1; }
+  .partner-form-field label {
+    color: rgba(13,10,8,0.62);
+    font: 700 11px "JetBrains Mono", monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .partner-form-field input,
+  .partner-form-field select,
+  .partner-form-field textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid rgba(13,10,8,0.24);
+    border-radius: 0;
+    background: rgba(13,10,8,0.035);
+    color: #0d0a08;
+    font: 500 16px Inter, sans-serif;
+    padding: 13px 14px;
+    outline: none;
+  }
+  .partner-form-field textarea { min-height: 94px; resize: vertical; }
+  .partner-form-field input:focus,
+  .partner-form-field select:focus,
+  .partner-form-field textarea:focus {
+    border-color: #d24a2e;
+    box-shadow: 0 0 0 3px rgba(210,74,46,0.14);
+  }
+  .partner-form-actions {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px;
+    padding: 16px 32px;
+    background: rgba(250,247,240,0.96);
+    border-top: 1px solid rgba(13,10,8,0.14);
+    box-shadow: 0 -18px 32px rgba(13,10,8,0.06);
+  }
+  .partner-form-submit,
+  .partner-form-secondary {
+    min-height: 46px;
+    border-radius: 0;
+    cursor: pointer;
+    font: 700 14px Inter, sans-serif;
+  }
+  .partner-form-submit {
+    min-width: 220px;
+    border: 1px solid #0d0a08;
+    background: #0d0a08;
+    color: #faf7f0;
+  }
+  .partner-form-secondary {
+    border: 1px solid rgba(13,10,8,0.22);
+    background: transparent;
+    color: #0d0a08;
+    padding: 0 18px;
+  }
+  .partner-form-status {
+    min-height: 22px;
+    color: rgba(13,10,8,0.66);
+    font-size: 14px;
     line-height: 1.4;
+  }
+  .partner-form-status[data-state="success"] { color: #2d6a3e; }
+  .partner-form-status[data-state="error"] { color: #a83232; }
+
+  .proof-viewer-shell {
+    position: fixed; inset: 0; z-index: 28;
+    display: flex; align-items: center; justify-content: center;
+    padding: 28px;
+    background: rgba(13,10,8,0.72);
+    backdrop-filter: blur(18px);
+  }
+  .proof-viewer-shell[hidden] { display: none; }
+  .proof-viewer-card {
+    width: min(1180px, 100%);
+    max-height: calc(100vh - 56px);
+    display: grid;
+    grid-template-columns: minmax(280px, 0.36fr) minmax(0, 0.64fr);
+    overflow: hidden;
+    background: #faf7f0;
+    color: #0d0a08;
+    border: 1px solid rgba(250,247,240,0.72);
+    box-shadow: 0 28px 80px rgba(0,0,0,0.46);
+  }
+  .proof-viewer-copy {
+    min-width: 0;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    border-right: 1px solid rgba(13,10,8,0.14);
+  }
+  .proof-viewer-kicker {
+    margin: 0;
+    color: #d24a2e;
+    font: 700 12px "JetBrains Mono", monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .proof-viewer-title {
+    margin: 0;
+    font: 500 62px "Cormorant Garamond", serif;
+    line-height: 0.92;
+  }
+  .proof-viewer-body {
+    margin: 0;
+    color: rgba(13,10,8,0.68);
+    font-size: 16px;
+    line-height: 1.45;
+  }
+  .proof-viewer-meta {
+    margin: auto 0 0;
+    padding-top: 18px;
+    border-top: 1px solid rgba(13,10,8,0.14);
+    color: rgba(13,10,8,0.58);
+    font: 700 11px "JetBrains Mono", monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .proof-viewer-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .proof-viewer-actions button {
+    min-height: 44px;
+    border-radius: 0;
+    cursor: pointer;
+    font: 700 13px Inter, sans-serif;
+    padding: 0 16px;
+  }
+  .proof-viewer-primary {
+    border: 1px solid #0d0a08;
+    background: #0d0a08;
+    color: #faf7f0;
+  }
+  .proof-viewer-secondary,
+  .proof-viewer-close {
+    border: 1px solid rgba(13,10,8,0.22);
+    background: transparent;
+    color: #0d0a08;
+  }
+  .proof-viewer-frame {
+    min-width: 0;
+    padding: 22px;
+    background:
+      linear-gradient(180deg, rgba(13,10,8,0.08), rgba(13,10,8,0.02)),
+      #f3ede0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .proof-viewer-media {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    min-height: 360px;
+    background-color: #faf7f0;
+    background-repeat: no-repeat;
+    background-size: calc(100% * var(--preview-zoom, 1.18)) auto;
+    background-position: var(--preview-x, 50%) var(--preview-y, 40%);
+    border: 1px solid rgba(13,10,8,0.22);
+    box-shadow: 0 24px 58px rgba(13,10,8,0.22);
   }
 
   /* Scroll proxy — invisible scrollable element to drive the scene */
@@ -164,6 +417,96 @@
   }
   #scroll-proxy::-webkit-scrollbar { display: none; }
   #scroll-proxy .spacer { width: 100%; }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 760px) {
+    .nav {
+      height: 56px;
+      padding: 0 14px;
+      gap: 12px;
+    }
+    .logo { width: 92px; height: 32px; }
+    .logo img { width: 82px; height: 24px; }
+    .nav-links { display: none; }
+    .nav-cta .btn:not(.solid) { display: none; }
+    .btn { font-size: 11px; padding: 7px 10px; }
+    .dots {
+      left: 16px; right: 16px; top: auto; bottom: 50px;
+      transform: none;
+      flex-direction: row; justify-content: center; align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      background: rgba(13,10,8,0.62);
+      border: 1px solid rgba(250,247,240,0.08);
+      backdrop-filter: blur(12px);
+    }
+    .dots button { gap: 0; }
+    .dots button span:first-child { display: none; }
+    .dots button .d { width: 7px; height: 7px; }
+    .dots button.active .d { width: 28px; border-radius: 999px; }
+    .hud {
+      height: 48px;
+      padding: 0 14px;
+      gap: 10px;
+      font-size: 9px;
+      letter-spacing: 0.1em;
+    }
+    .hud .ann span:last-child { display: none; }
+    .hud .progress { max-width: none; }
+    .hud .scene-label { font-size: 12px; white-space: nowrap; }
+    .partner-form-shell { align-items: stretch; padding: 12px; }
+    .partner-form-card { max-height: calc(100vh - 24px); }
+    .partner-form-head { padding: 22px 18px 16px; }
+    .partner-form-title { font-size: 40px; }
+    .partner-form-copy { font-size: 14px; }
+    .partner-form-grid {
+      grid-template-columns: 1fr;
+      padding: 18px;
+    }
+    .partner-form-actions {
+      align-items: stretch;
+      flex-direction: column-reverse;
+      padding: 14px 18px;
+    }
+    .partner-form-submit,
+    .partner-form-secondary { width: 100%; }
+    .proof-viewer-shell { align-items: stretch; padding: 12px; }
+    .proof-viewer-card {
+      max-height: calc(100vh - 24px);
+      display: flex;
+      flex-direction: column;
+      overflow: auto;
+    }
+    .proof-viewer-copy {
+      padding: 22px 18px 18px;
+      border-right: 0;
+      border-bottom: 1px solid rgba(13,10,8,0.14);
+    }
+    .proof-viewer-title { font-size: 42px; }
+    .proof-viewer-body { font-size: 14px; }
+    .proof-viewer-actions { flex-direction: column; }
+    .proof-viewer-actions button { width: 100%; }
+    .proof-viewer-frame { padding: 12px; min-height: 0; }
+    .proof-viewer-media {
+      min-height: 360px;
+      background-size: calc(100% * var(--preview-mobile-zoom, 1.45)) auto;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hud .ann .dot { animation: none; }
+    .btn, .dots button .d, .hud .progress .fill { transition: none; }
+  }
 
 </style>
 </head>
@@ -171,18 +514,26 @@
 
 <div class="bg"></div>
 
+<main class="sr-only">
+  <h1>Get paid faster without hiring another finance or operations person.</h1>
+  <p>B2B Ops are why companies don't get paid fast enough. Index is the fix.</p>
+  <p>Index is the AI documents operations platform for review, reconciliation, approval, and clean sync into the systems clients already use.</p>
+  <p>Partner workflows include invoice match, inbox triage, posting audit, customer follow up, inventory holds, and cash dashboard proof.</p>
+  <p>Connectors include Salesforce, QuickBooks, HubSpot, Stripe, NetSuite, Anrok, DocuSign, Gmail, Mercury, Plaid, and Slack.</p>
+</main>
+
 <header class="nav">
-  <a href="#" class="logo"><span class="logo-mark">i</span>IDX</a>
+  <a href="#" class="logo" aria-label="Index home"><img src="/assets/brand/index-logo.jpg" alt="" aria-hidden="true"/></a>
   <nav class="nav-links">
     <a href="#" data-go="1">Blueprints</a>
     <a href="#" data-go="2">Platform</a>
-    <a href="#" data-go="3">Customers</a>
-    <a href="#" data-go="4">Pricing</a>
+    <a href="#" data-go="3">Proof</a>
+    <a href="#" data-go="4">Partners</a>
   </nav>
   <div class="nav-spacer"></div>
   <div class="nav-cta">
-    <a href="#" class="btn">Sign in</a>
-    <a href="#" class="btn solid">Book a demo →</a>
+    <a href="#" class="btn">Partner login</a>
+    <a href="#partner-form" class="btn solid" data-go="5" data-open-partner-form>Start application →</a>
   </div>
 </header>
 
@@ -192,23 +543,97 @@
 
 <aside class="dots" id="dots"></aside>
 
-<div class="intro-hint" id="intro-hint">
-  Scroll to drift through the scenes.<br>
-  Hover to disturb the glass.<br>
-  Click to shatter.
-</div>
-
 <footer class="hud">
-  <span class="ann"><span class="dot"></span><span>IDX · Spring '26</span></span>
+  <span class="ann"><span class="dot"></span><span>Index · Partner '26</span></span>
   <div class="progress"><div class="fill" id="progress-fill"></div></div>
-  <span class="scene-num" id="scene-num">00 / 05</span>
+  <span class="scene-num" id="scene-num">00 / 06</span>
   <span class="scene-label" id="scene-label">Loading…</span>
   <span class="hud-spacer" style="flex: 1;"></span>
-  <span class="hint">Scroll · Hover · Click</span>
 </footer>
 
-<script src="https://unpkg.com/three@0.149.0/build/three.min.js"></script>
-<script>
+<section class="partner-form-shell" id="partner-form-modal" role="dialog" aria-modal="true" aria-labelledby="partner-form-title" aria-hidden="true" hidden>
+  <div class="partner-form-card">
+    <div class="partner-form-head">
+      <div>
+        <p class="partner-form-kicker">Partner application</p>
+        <h2 class="partner-form-title" id="partner-form-title">Tell us where Index fits.</h2>
+        <p class="partner-form-copy">Share your email and partner details. We will follow up with fit, rollout path, and next steps.</p>
+      </div>
+      <button class="partner-form-close" type="button" data-close-partner-form aria-label="Close partner application form">Close</button>
+    </div>
+    <form class="partner-form" id="partner-form" data-capture-target="google-form-ready">
+      <div class="partner-form-grid">
+        <div class="partner-form-field">
+          <label for="partner-name">Name</label>
+          <input id="partner-name" name="name" autocomplete="name" required/>
+        </div>
+        <div class="partner-form-field">
+          <label for="partner-email">Work email</label>
+          <input id="partner-email" name="email" type="email" autocomplete="email" required/>
+        </div>
+        <div class="partner-form-field">
+          <label for="partner-company">Company</label>
+          <input id="partner-company" name="company" autocomplete="organization" required/>
+        </div>
+        <div class="partner-form-field">
+          <label for="partner-type">Partner type</label>
+          <select id="partner-type" name="partner_type" required>
+            <option value="">Select one</option>
+            <option value="certified_implementer">Certified implementer</option>
+            <option value="solution_partner">Solution partner</option>
+            <option value="embedded_oem">Embedded / OEM</option>
+            <option value="not_sure">Not sure yet</option>
+          </select>
+        </div>
+        <div class="partner-form-field">
+          <label for="partner-volume">Client volume</label>
+          <select id="partner-volume" name="client_volume">
+            <option value="">Select one</option>
+            <option value="1_2_per_quarter">1 to 2 client launches per quarter</option>
+            <option value="3_5_per_quarter">3 to 5 client launches per quarter</option>
+            <option value="6_plus_per_quarter">6 or more client launches per quarter</option>
+            <option value="embedded_many">Embedded across many customers</option>
+          </select>
+        </div>
+        <div class="partner-form-field full">
+          <label for="partner-details">Partner details</label>
+          <textarea id="partner-details" name="details" placeholder="Tell us about your clients, systems, workflow volume, and where Index should fit."></textarea>
+        </div>
+      </div>
+      <div class="partner-form-actions">
+        <p class="partner-form-status" id="partner-form-status" role="status" aria-live="polite"></p>
+        <div>
+          <button class="partner-form-secondary" type="button" data-close-partner-form>Keep browsing</button>
+          <button class="partner-form-submit" type="submit">Submit partner details</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section class="proof-viewer-shell" id="proof-viewer-modal" role="dialog" aria-modal="true" aria-labelledby="proof-viewer-title" aria-hidden="true" hidden>
+  <div class="proof-viewer-card">
+    <div class="proof-viewer-copy">
+      <p class="proof-viewer-kicker" id="proof-viewer-kicker">Workflow preview</p>
+      <h2 class="proof-viewer-title" id="proof-viewer-title">Workflow proof</h2>
+      <p class="proof-viewer-body" id="proof-viewer-body">A focused product preview opens here.</p>
+      <p class="proof-viewer-meta" id="proof-viewer-meta">Click cards or product visuals to inspect the workflow.</p>
+      <div class="proof-viewer-actions">
+        <button class="proof-viewer-primary" type="button" data-open-partner-form>Start application</button>
+        <button class="proof-viewer-secondary" type="button" data-close-proof-viewer>Keep browsing</button>
+        <button class="proof-viewer-close" type="button" data-close-proof-viewer aria-label="Close workflow preview">Close</button>
+      </div>
+    </div>
+    <div class="proof-viewer-frame">
+      <div class="proof-viewer-media" id="proof-viewer-media" role="img" aria-label="Index workflow preview"></div>
+    </div>
+  </div>
+</section>
+
+<script type="module">
+import * as THREE from 'three';
+window.THREE = THREE;
+
 (() => {
   const stage = document.getElementById('stage');
   const proxy = document.getElementById('scroll-proxy');
@@ -216,8 +641,175 @@
   const fillEl = document.getElementById('progress-fill');
   const sceneNumEl = document.getElementById('scene-num');
   const sceneLabelEl = document.getElementById('scene-label');
-  const introHint = document.getElementById('intro-hint');
-  if (!window.THREE) return;
+  const partnerModal = document.getElementById('partner-form-modal');
+  const partnerForm = document.getElementById('partner-form');
+  const partnerFormStatus = document.getElementById('partner-form-status');
+  const proofViewerModal = document.getElementById('proof-viewer-modal');
+  const proofViewerKicker = document.getElementById('proof-viewer-kicker');
+  const proofViewerTitle = document.getElementById('proof-viewer-title');
+  const proofViewerBody = document.getElementById('proof-viewer-body');
+  const proofViewerMeta = document.getElementById('proof-viewer-meta');
+  const proofViewerMedia = document.getElementById('proof-viewer-media');
+  const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+  const GOOGLE_FORM_ENDPOINT = '';
+  let lastPartnerTrigger = null;
+  let lastProofTrigger = null;
+
+  function partnerFormPayload() {
+    const data = Object.fromEntries(new FormData(partnerForm).entries());
+    return {
+      capturedAt: new Date().toISOString(),
+      source: 'index-partner-landing',
+      ...data,
+    };
+  }
+
+  function storePartnerLead(payload) {
+    const raw = localStorage.getItem('indexPartnerLeads');
+    const existing = raw ? JSON.parse(raw) : [];
+    if (!Array.isArray(existing)) {
+      throw new Error('Stored partner leads are not an array');
+    }
+    existing.push(payload);
+    localStorage.setItem('indexPartnerLeads', JSON.stringify(existing.slice(-50)));
+    window.dispatchEvent(new CustomEvent('index:partner-lead', { detail: payload }));
+  }
+
+  function setPartnerFormStatus(message, state = '') {
+    partnerFormStatus.textContent = message;
+    partnerFormStatus.dataset.state = state;
+  }
+
+  function focusableElements(root) {
+    return [...root.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')]
+      .filter((el) => el instanceof HTMLElement && el.offsetParent !== null);
+  }
+  function trapModalFocus(modal, event) {
+    if (event.key !== 'Tab' || modal.hidden) return;
+    const items = focusableElements(modal);
+    if (!items.length) return;
+    const first = items[0];
+    const last = items[items.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  function openPartnerForm(trigger = document.activeElement) {
+    const triggerIsVisible = trigger instanceof HTMLElement && trigger.offsetParent !== null;
+    if (!proofViewerModal.hidden) closeProofViewer({ restoreFocus: false });
+    lastPartnerTrigger = triggerIsVisible ? trigger : null;
+    partnerModal.hidden = false;
+    partnerModal.setAttribute('aria-hidden', 'false');
+    setPartnerFormStatus('', '');
+    requestAnimationFrame(() => {
+      document.getElementById('partner-email')?.focus();
+    });
+  }
+
+  function closePartnerForm() {
+    partnerModal.hidden = true;
+    partnerModal.setAttribute('aria-hidden', 'true');
+    lastPartnerTrigger?.focus?.();
+  }
+
+  function openProofViewer(preview, trigger = document.activeElement) {
+    const asset = PRODUCT_ASSETS[preview.key];
+    const crop = PRODUCT_CROPS[preview.key] ?? {};
+    if (!asset) return;
+    lastProofTrigger = trigger instanceof HTMLElement ? trigger : null;
+    proofViewerKicker.textContent = preview.kicker ?? 'Workflow preview';
+    proofViewerTitle.textContent = preview.title;
+    proofViewerBody.textContent = preview.detail;
+    proofViewerMeta.textContent = preview.meta ?? 'Click Start application when this is the workflow you want to launch.';
+    proofViewerMedia.style.backgroundImage = `url("${asset.src}")`;
+    proofViewerMedia.style.setProperty('--preview-x', `${Math.round((preview.focusX ?? crop.focusX ?? 0.5) * 100)}%`);
+    proofViewerMedia.style.setProperty('--preview-y', `${Math.round((preview.focusY ?? crop.focusY ?? 0.4) * 100)}%`);
+    proofViewerMedia.style.setProperty('--preview-zoom', String(Math.max(1.12, Math.min(preview.zoom ?? crop.zoom ?? 1.24, 1.46))));
+    proofViewerMedia.style.setProperty('--preview-mobile-zoom', String(Math.max(1.34, Math.min((preview.zoom ?? crop.zoom ?? 1.5) + 0.12, 1.74))));
+    proofViewerMedia.setAttribute('aria-label', asset.alt);
+    proofViewerModal.hidden = false;
+    proofViewerModal.setAttribute('aria-hidden', 'false');
+    requestAnimationFrame(() => {
+      proofViewerModal.querySelector('[data-open-partner-form]')?.focus();
+    });
+  }
+
+  function closeProofViewer({ restoreFocus = true } = {}) {
+    proofViewerModal.hidden = true;
+    proofViewerModal.setAttribute('aria-hidden', 'true');
+    proofViewerMedia.style.backgroundImage = '';
+    if (restoreFocus) lastProofTrigger?.focus?.();
+  }
+
+  document.querySelectorAll('[data-open-partner-form]').forEach(el => {
+    el.addEventListener('click', e => {
+      e.preventDefault();
+      const sceneIndex = Number.parseInt(el.dataset.go ?? '', 10);
+      if (Number.isFinite(sceneIndex)) {
+        proxy.scrollTo({ top: sceneTop(sceneIndex), behavior: 'smooth' });
+      }
+      openPartnerForm(el);
+    });
+  });
+
+  document.querySelectorAll('[data-close-partner-form]').forEach(el => {
+    el.addEventListener('click', closePartnerForm);
+  });
+
+  document.querySelectorAll('[data-close-proof-viewer]').forEach(el => {
+    el.addEventListener('click', closeProofViewer);
+  });
+
+  partnerModal.addEventListener('pointerdown', e => {
+    if (e.target === partnerModal) closePartnerForm();
+  });
+
+  proofViewerModal.addEventListener('pointerdown', e => {
+    if (e.target === proofViewerModal) closeProofViewer();
+  });
+
+  window.addEventListener('keydown', e => {
+    trapModalFocus(partnerModal, e);
+    trapModalFocus(proofViewerModal, e);
+    if (e.defaultPrevented) return;
+    if (e.key !== 'Escape') return;
+    if (!partnerModal.hidden) closePartnerForm();
+    else if (!proofViewerModal.hidden) closeProofViewer();
+  });
+
+  partnerForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!partnerForm.reportValidity()) return;
+
+    const submitButton = partnerForm.querySelector('.partner-form-submit');
+    const payload = partnerFormPayload();
+    submitButton.disabled = true;
+    setPartnerFormStatus('Capturing partner details...', '');
+
+    try {
+      if (GOOGLE_FORM_ENDPOINT) {
+        await fetch(GOOGLE_FORM_ENDPOINT, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: new FormData(partnerForm),
+        });
+      } else {
+        storePartnerLead(payload);
+      }
+      partnerForm.reset();
+      setPartnerFormStatus('Captured. We will follow up with partner qualification details.', 'success');
+    } catch (error) {
+      console.error(error);
+      setPartnerFormStatus('Could not capture the form. Please try again.', 'error');
+    } finally {
+      submitButton.disabled = false;
+    }
+  });
 
   // ============================================================
   // SCENE CONTENT — each scene is a "page" that becomes shattered
@@ -229,34 +821,40 @@
   const SCENES = [
     {
       label: 'Cover',
-      title: 'IDX',
+      title: 'Index',
       build: drawSceneCover,
-      shardCols: 11, shardRows: 7,
+      shardCols: 5, shardRows: 3,
+      seed: 101,
     },
     {
       label: 'Blueprints',
       build: drawSceneBlueprints,
-      shardCols: 12, shardRows: 8,
+      shardCols: 6, shardRows: 4,
+      seed: 202,
     },
     {
       label: 'Platform',
       build: drawScenePlatform,
-      shardCols: 10, shardRows: 7,
+      shardCols: 6, shardRows: 4,
+      seed: 303,
     },
     {
-      label: 'Numbers',
-      build: drawSceneNumbers,
-      shardCols: 11, shardRows: 7,
+      label: 'Proof',
+      build: drawSceneProof,
+      shardCols: 6, shardRows: 4,
+      seed: 404,
     },
     {
-      label: 'Pricing',
-      build: drawScenePricing,
-      shardCols: 12, shardRows: 7,
+      label: 'Partners',
+      build: drawScenePartners,
+      shardCols: 6, shardRows: 4,
+      seed: 505,
     },
     {
-      label: 'Talk to us',
+      label: 'Apply',
       build: drawSceneCTA,
-      shardCols: 9, shardRows: 6,
+      shardCols: 5, shardRows: 3,
+      seed: 606,
     },
   ];
 
@@ -271,6 +869,147 @@
   const PENCIL = '#7a5a44';
   const ACCENT = '#d24a2e';
   const MARKER = 'rgba(255, 224, 80, 0.55)';
+  const sceneObjects = []; // { group, shards, label, z, texture, canvas }
+  const ROLE_WORDS = ['finance', 'operations'];
+  let roleWordIndex = 0;
+  const PRODUCT_ASSETS = {
+    hero: { src: '/assets/product/idx-ap-review.png', alt: 'AP invoice match workspace' },
+    apMatch: { src: '/assets/product/idx-ap-match.png', alt: 'AP invoice review workspace' },
+    inbox: { src: '/assets/product/idx-inbox.png', alt: 'Index inbox workspace' },
+    dashboard: { src: '/assets/product/idx-dashboard.png', alt: 'Index operations dashboard' },
+    inventory: { src: '/assets/product/idx-inventory.png', alt: 'Index inventory workspace' },
+    customer: { src: '/assets/product/idx-customer-360.png', alt: 'Index customer 360 workspace' },
+    posting: { src: '/assets/product/idx-posting-preview.png', alt: 'Index posting preview and audit trail' },
+  };
+  const PRODUCT_CROPS = {
+    hero: { focusX: 0.56, focusY: 0.38, zoom: 1.62 },
+    apMatch: { focusX: 0.56, focusY: 0.42, zoom: 1.72 },
+    inbox: { focusX: 0.6, focusY: 0.32, zoom: 1.74 },
+    dashboard: { focusX: 0.5, focusY: 0.34, zoom: 1.82 },
+    inventory: { focusX: 0.48, focusY: 0.43, zoom: 1.78 },
+    customer: { focusX: 0.62, focusY: 0.34, zoom: 1.76 },
+    posting: { focusX: 0.45, focusY: 0.34, zoom: 1.68 },
+  };
+  const PRODUCT_PREVIEWS = {
+    hero: {
+      title: 'AP review workspace',
+      detail: 'A close inspection view of invoice match, source evidence, PO details, receipt variance, and approval context.',
+      meta: 'Invoice match, source document, approval path',
+    },
+    apMatch: {
+      title: 'Invoice match',
+      detail: 'Show partners how Index ties PO, goods receipt, tax, line items, and exception handling back to the source document.',
+      meta: 'PO, receipt, tax, approval owner',
+    },
+    inbox: {
+      title: 'Inbox triage',
+      detail: 'Loose inbound documents become typed, tagged, assigned work with ownership visible before the workflow starts.',
+      meta: 'Vendor, customer, amount, due date',
+    },
+    dashboard: {
+      title: 'Cash dashboard',
+      detail: 'Operators can see late work, open AR, purchase commitments, blocked approvals, and the queues slowing cash.',
+      meta: 'Open AR, approvals, blocked work',
+    },
+    inventory: {
+      title: 'Inventory holds',
+      detail: 'Counts, shortages, reorder triggers, and open purchase orders stay linked to the documents that explain the exception.',
+      meta: 'Counts, shortages, reorder triggers',
+    },
+    customer: {
+      title: 'Customer follow up',
+      detail: 'Customer documents, contracts, orders, invoices, payments, and notes reveal the next step before AR stalls.',
+      meta: 'Orders, invoices, payments, notes',
+    },
+    posting: {
+      title: 'Posting audit',
+      detail: 'Approvers see GL entry, cash impact, risks, source document evidence, and audit trail before data syncs downstream.',
+      meta: 'GL entry, cash impact, risk, audit trail',
+    },
+  };
+  const CONNECTORS = [
+    { name: 'Salesforce', mark: 'SF', color: '#00a1e0', icon: 'cloud' },
+    { name: 'QuickBooks', mark: 'qb', color: '#2ca01c', icon: 'letters' },
+    { name: 'HubSpot', mark: 'HS', color: '#ff5c35', icon: 'nodes' },
+    { name: 'Stripe', mark: 'S', color: '#635bff', icon: 'letters' },
+    { name: 'NetSuite', mark: 'N', color: '#1f6f9f', icon: 'letters' },
+    { name: 'Anrok', mark: 'A', color: '#104c3f', icon: 'letters' },
+    { name: 'DocuSign', mark: 'D', color: '#0052cc', icon: 'doc' },
+    { name: 'Gmail', mark: 'M', color: '#ea4335', icon: 'mail' },
+    { name: 'Mercury', mark: 'M', color: '#5c6670', icon: 'letters' },
+    { name: 'Plaid', mark: 'P', color: '#111827', icon: 'mesh' },
+    { name: 'Slack', mark: '#', color: '#611f69', icon: 'slack' },
+  ];
+  const productImages = {};
+  const sceneHotspots = new Map();
+  let drawingSceneIndex = -1;
+  let connectorRollIndex = 0;
+  let textureRefreshQueued = false;
+
+  function queueTextureRefresh() {
+    if (!sceneObjects.length || textureRefreshQueued) return;
+    textureRefreshQueued = true;
+    requestAnimationFrame(() => {
+      textureRefreshQueued = false;
+      redrawSceneTextures();
+    });
+  }
+
+  Object.entries(PRODUCT_ASSETS).forEach(([key, asset]) => {
+    const image = new Image();
+    image.decoding = 'async';
+    image.onload = queueTextureRefresh;
+    image.onerror = () => console.warn(`Could not load product visual: ${asset.src}`);
+    image.src = asset.src;
+    productImages[key] = image;
+  });
+
+  function currentRoleWord() {
+    return reducedMotion ? 'finance or operations' : ROLE_WORDS[roleWordIndex];
+  }
+  function paidFasterCopy() {
+    return `Get paid faster without hiring another ${currentRoleWord()} person.`;
+  }
+  function syncRoleWordDataset() {
+    document.documentElement.dataset.indexRoleWord = currentRoleWord();
+  }
+  function currentConnector() {
+    return CONNECTORS[connectorRollIndex % CONNECTORS.length];
+  }
+  function syncConnectorDataset() {
+    document.documentElement.dataset.indexConnector = currentConnector()?.name ?? '';
+  }
+  function previewPayload(key, label, detail, opts = {}) {
+    const base = PRODUCT_PREVIEWS[key] ?? {};
+    return {
+      key,
+      title: opts.previewTitle ?? base.title ?? label,
+      detail: opts.previewDetail ?? base.detail ?? detail,
+      meta: opts.previewMeta ?? base.meta ?? detail,
+      kicker: opts.previewKicker ?? 'Workflow preview',
+      focusX: opts.previewFocusX ?? opts.focusX,
+      focusY: opts.previewFocusY ?? opts.focusY,
+      zoom: opts.previewZoom ?? opts.zoom,
+    };
+  }
+  function addPreviewHotspot(x, y, w, h, key, label, detail, opts = {}) {
+    if (drawingSceneIndex < 0 || opts.preview === false || !PRODUCT_ASSETS[key]) return;
+    const hotspots = sceneHotspots.get(drawingSceneIndex);
+    if (!hotspots) return;
+    hotspots.push({
+      x, y, w, h,
+      ...previewPayload(key, label, detail, opts),
+    });
+  }
+  function buildSceneCanvas(sceneSpec, sceneIndex) {
+    drawingSceneIndex = sceneIndex;
+    sceneHotspots.set(sceneIndex, []);
+    try {
+      return sceneSpec.build();
+    } finally {
+      drawingSceneIndex = -1;
+    }
+  }
 
   function makeCanvas(w, h) {
     const c = document.createElement('canvas');
@@ -329,63 +1068,403 @@
     }
     ctx.globalAlpha = 1;
   }
+  function compactLayout() {
+    return window.innerWidth < 720 || window.innerHeight > window.innerWidth * 1.22;
+  }
+  function roundedRectPath(ctx, x, y, w, h, r = 8) {
+    const rr = Math.min(r, w / 2, h / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + rr, y);
+    ctx.lineTo(x + w - rr, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + rr);
+    ctx.lineTo(x + w, y + h - rr);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - rr, y + h);
+    ctx.lineTo(x + rr, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - rr);
+    ctx.lineTo(x, y + rr);
+    ctx.quadraticCurveTo(x, y, x + rr, y);
+    ctx.closePath();
+  }
+  function drawFittedImage(ctx, img, x, y, w, h, fit = 'cover', focusX = 0.5, focusY = 0.5, zoom = 1) {
+    const iw = img.naturalWidth || img.width;
+    const ih = img.naturalHeight || img.height;
+    if (!iw || !ih) return;
+    const baseScale = fit === 'contain' ? Math.min(w / iw, h / ih) : Math.max(w / iw, h / ih);
+    const scale = baseScale * Math.max(1, zoom);
+    const sw = w / scale;
+    const sh = h / scale;
+    const sx = Math.max(0, Math.min(iw - sw, (iw - sw) * focusX));
+    const sy = Math.max(0, Math.min(ih - sh, (ih - sh) * focusY));
+    const dx = fit === 'contain' ? x + (w - iw * scale) / 2 : x;
+    const dy = fit === 'contain' ? y + (h - ih * scale) / 2 : y;
+    const dw = fit === 'contain' ? iw * scale : w;
+    const dh = fit === 'contain' ? ih * scale : h;
+    ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
+  }
+  function assetSlot(ctx, x, y, w, h, label, detail, tone = 'dark') {
+    const dark = tone !== 'light';
+    ctx.save();
+    ctx.fillStyle = dark ? 'rgba(26,20,17,0.82)' : 'rgba(250,247,240,0.92)';
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = dark ? 'rgba(250,247,240,0.18)' : 'rgba(13,10,8,0.18)';
+    ctx.setLineDash([9, 8]);
+    ctx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
+    ctx.setLineDash([]);
+    ctx.fillStyle = ACCENT;
+    ctx.font = '500 13px "JetBrains Mono", monospace';
+    ctx.fillText('PRODUCT VISUAL', x + 18, y + 30);
+    ctx.fillStyle = dark ? PAPER : '#0d0a08';
+    ctx.font = `500 ${w < 220 ? 21 : 30}px "Cormorant Garamond", serif`;
+    ctx.fillText(label, x + 18, y + 68);
+    ctx.fillStyle = dark ? '#cfc5b6' : 'rgba(13,10,8,0.58)';
+    ctx.font = '400 15px Inter, sans-serif';
+    body(ctx, x + 18, y + 100, [detail], { size: 15, maxW: w - 36, color: ctx.fillStyle, lh: 1.36 });
+    ctx.restore();
+  }
+  function productSlot(ctx, x, y, w, h, key, label, detail, opts = {}) {
+    const crop = PRODUCT_CROPS[key] || {};
+    const {
+      tone = 'dark',
+      fit = 'cover',
+      caption = true,
+      pad = 8,
+      focusX = crop.focusX ?? 0.5,
+      focusY = crop.focusY ?? 0.5,
+      zoom: requestedZoom = crop.zoom ?? 1,
+      imageFilter = 'contrast(1.2) saturate(1.08) brightness(1.04)',
+      preview = true,
+    } = opts;
+    addPreviewHotspot(x, y, w, h, key, label, detail, opts);
+    const zoom = Math.max(requestedZoom, crop.zoom ?? 1);
+    const dark = tone !== 'light';
+    const img = productImages[key];
+    if (!img?.complete || !img.naturalWidth) {
+      assetSlot(ctx, x, y, w, h, label, detail, tone);
+      return;
+    }
+
+    ctx.save();
+    ctx.shadowColor = dark ? 'rgba(0,0,0,0.34)' : 'rgba(13,10,8,0.16)';
+    ctx.shadowBlur = dark ? 22 : 16;
+    ctx.shadowOffsetY = 8;
+    roundedRectPath(ctx, x, y, w, h, 8);
+    ctx.fillStyle = dark ? 'rgba(26,20,17,0.9)' : 'rgba(250,247,240,0.96)';
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetY = 0;
+    ctx.strokeStyle = dark ? 'rgba(250,247,240,0.18)' : 'rgba(13,10,8,0.18)';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+
+    const ix = x + pad;
+    const iy = y + pad;
+    const iw = w - pad * 2;
+    const ih = h - pad * 2;
+    ctx.save();
+    roundedRectPath(ctx, ix, iy, iw, ih, 6);
+    ctx.clip();
+    ctx.fillStyle = PAPER_WARM;
+    ctx.fillRect(ix, iy, iw, ih);
+    ctx.save();
+    ctx.filter = imageFilter;
+    drawFittedImage(ctx, img, ix, iy, iw, ih, fit, focusX, focusY, zoom);
+    ctx.restore();
+    const vignette = ctx.createLinearGradient(ix, iy, ix, iy + ih);
+    vignette.addColorStop(0, 'rgba(250,247,240,0.08)');
+    vignette.addColorStop(0.58, 'rgba(13,10,8,0)');
+    vignette.addColorStop(1, dark ? 'rgba(13,10,8,0.18)' : 'rgba(250,247,240,0.14)');
+    ctx.fillStyle = vignette;
+    ctx.fillRect(ix, iy, iw, ih);
+    ctx.restore();
+
+    if (caption) {
+      const capH = h < 120 ? 28 : 34;
+      ctx.fillStyle = dark ? 'rgba(13,10,8,0.72)' : 'rgba(250,247,240,0.84)';
+      ctx.fillRect(x + pad, y + h - pad - capH, w - pad * 2, capH);
+      ctx.fillStyle = dark ? PAPER : '#0d0a08';
+      ctx.font = `500 ${h < 120 ? 12 : 14}px "JetBrains Mono", monospace`;
+      ctx.fillText(label.toUpperCase(), x + pad + 12, y + h - pad - 11);
+    }
+    if (preview) {
+      const viewW = h < 120 ? 46 : 58;
+      ctx.fillStyle = dark ? 'rgba(13,10,8,0.68)' : 'rgba(250,247,240,0.86)';
+      ctx.fillRect(x + w - pad - viewW - 8, y + pad + 8, viewW, h < 120 ? 20 : 24);
+      ctx.strokeStyle = dark ? 'rgba(250,247,240,0.28)' : 'rgba(13,10,8,0.2)';
+      ctx.strokeRect(x + w - pad - viewW - 7.5, y + pad + 8.5, viewW - 1, (h < 120 ? 20 : 24) - 1);
+      ctx.fillStyle = dark ? PAPER : '#0d0a08';
+      ctx.font = `700 ${h < 120 ? 8 : 10}px "JetBrains Mono", monospace`;
+      ctx.fillText('VIEW', x + w - pad - viewW + 3, y + pad + (h < 120 ? 22 : 25));
+    }
+    ctx.restore();
+  }
+  function pill(ctx, x, y, text, tone = 'dark') {
+    const padX = 12;
+    ctx.save();
+    ctx.font = '500 13px "JetBrains Mono", monospace';
+    const w = ctx.measureText(text).width + padX * 2;
+    ctx.fillStyle = tone === 'light' ? 'rgba(13,10,8,0.08)' : 'rgba(250,247,240,0.08)';
+    ctx.fillRect(x, y - 19, w, 28);
+    ctx.strokeStyle = tone === 'light' ? 'rgba(13,10,8,0.16)' : 'rgba(250,247,240,0.16)';
+    ctx.strokeRect(x + 0.5, y - 18.5, w - 1, 27);
+    ctx.fillStyle = tone === 'light' ? '#0d0a08' : PAPER;
+    ctx.fillText(text.toUpperCase(), x + padX, y);
+    ctx.restore();
+    return w;
+  }
+  function connectorIcon(ctx, x, y, size, connector, tone = 'dark') {
+    const dark = tone !== 'light';
+    const r = Math.max(4, size * 0.18);
+    ctx.save();
+    roundedRectPath(ctx, x, y, size, size, r);
+    ctx.fillStyle = connector.color;
+    ctx.fill();
+    ctx.strokeStyle = dark ? 'rgba(250,247,240,0.18)' : 'rgba(13,10,8,0.18)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    ctx.fillStyle = '#fff';
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = Math.max(2, size * 0.08);
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    const cx = x + size / 2;
+    const cy = y + size / 2;
+    const s = size;
+
+    if (connector.icon === 'cloud') {
+      ctx.beginPath();
+      ctx.arc(x + s * 0.38, y + s * 0.56, s * 0.17, Math.PI * 0.85, Math.PI * 1.95);
+      ctx.arc(x + s * 0.52, y + s * 0.45, s * 0.2, Math.PI * 1.1, Math.PI * 1.95);
+      ctx.arc(x + s * 0.66, y + s * 0.57, s * 0.16, Math.PI * 1.25, Math.PI * 0.18, true);
+      ctx.lineTo(x + s * 0.35, y + s * 0.72);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = connector.color;
+      ctx.font = `700 ${s * 0.22}px Inter, sans-serif`;
+      ctx.fillText('SF', x + s * 0.38, y + s * 0.62);
+    } else if (connector.icon === 'nodes') {
+      ctx.beginPath();
+      ctx.moveTo(x + s * 0.35, y + s * 0.58);
+      ctx.lineTo(x + s * 0.62, y + s * 0.42);
+      ctx.moveTo(x + s * 0.62, y + s * 0.42);
+      ctx.lineTo(x + s * 0.73, y + s * 0.62);
+      ctx.stroke();
+      [[0.35,0.58],[0.62,0.42],[0.73,0.62]].forEach(([px, py]) => {
+        ctx.beginPath();
+        ctx.arc(x + s * px, y + s * py, s * 0.09, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    } else if (connector.icon === 'doc') {
+      ctx.strokeRect(x + s * 0.33, y + s * 0.23, s * 0.34, s * 0.48);
+      ctx.beginPath();
+      ctx.moveTo(x + s * 0.42, y + s * 0.58);
+      ctx.lineTo(x + s * 0.61, y + s * 0.4);
+      ctx.stroke();
+    } else if (connector.icon === 'mail') {
+      ctx.strokeRect(x + s * 0.24, y + s * 0.31, s * 0.52, s * 0.38);
+      ctx.beginPath();
+      ctx.moveTo(x + s * 0.24, y + s * 0.33);
+      ctx.lineTo(cx, y + s * 0.55);
+      ctx.lineTo(x + s * 0.76, y + s * 0.33);
+      ctx.stroke();
+    } else if (connector.icon === 'mesh') {
+      [[0.32,0.34],[0.66,0.34],[0.5,0.68]].forEach(([px, py]) => {
+        ctx.beginPath();
+        ctx.arc(x + s * px, y + s * py, s * 0.08, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.beginPath();
+      ctx.moveTo(x + s * 0.32, y + s * 0.34);
+      ctx.lineTo(x + s * 0.66, y + s * 0.34);
+      ctx.lineTo(x + s * 0.5, y + s * 0.68);
+      ctx.closePath();
+      ctx.stroke();
+    } else if (connector.icon === 'slack') {
+      const bars = [
+        ['#36c5f0', 0.31, 0.3, 0.1, 0.32],
+        ['#2eb67d', 0.52, 0.3, 0.32, 0.1],
+        ['#ecb22e', 0.59, 0.52, 0.1, 0.32],
+        ['#e01e5a', 0.26, 0.59, 0.32, 0.1],
+      ];
+      bars.forEach(([color, px, py, bw, bh]) => {
+        ctx.fillStyle = color;
+        roundedRectPath(ctx, x + s * px, y + s * py, s * bw, s * bh, s * 0.04);
+        ctx.fill();
+      });
+    } else {
+      ctx.font = `800 ${s * (connector.mark.length > 1 ? 0.32 : 0.42)}px Inter, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(connector.mark, cx, cy + s * 0.02);
+    }
+    ctx.restore();
+  }
+  function connectorBand(ctx, x, y, w, h, opts = {}) {
+    const { tone = 'dark', compact = false } = opts;
+    const dark = tone !== 'light';
+    ctx.save();
+    roundedRectPath(ctx, x, y, w, h, 8);
+    ctx.fillStyle = dark ? 'rgba(26,20,17,0.86)' : 'rgba(250,247,240,0.94)';
+    ctx.fill();
+    ctx.strokeStyle = dark ? 'rgba(250,247,240,0.16)' : 'rgba(13,10,8,0.14)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    ctx.fillStyle = ACCENT;
+    ctx.font = `700 ${compact ? 11 : 13}px "JetBrains Mono", monospace`;
+    ctx.fillText('CONNECTS TO YOUR CLIENT STACK', x + 18, y + 28);
+    ctx.fillStyle = dark ? PAPER : '#0d0a08';
+    ctx.font = `500 ${compact ? 24 : 28}px "Cormorant Garamond", serif`;
+    ctx.fillText(compact ? 'Grow without replacing their tools.' : 'Connect the tools clients already run.', x + 18, y + (compact ? 62 : 72));
+    if (compact) {
+      body(ctx, x + 18, y + 84, [
+        'Index is the AI documents operations platform between documents and the systems where cash, customers, contracts, approvals, and payments live.'
+      ], { size: 12, maxW: w - 36, color: dark ? '#cfc5b6' : 'rgba(13,10,8,0.64)', lh: 1.28 });
+    } else {
+      ctx.fillStyle = dark ? '#cfc5b6' : 'rgba(13,10,8,0.64)';
+      ctx.font = '500 15px Inter, sans-serif';
+      ctx.fillText('Index is the AI documents operations platform.', x + 18, y + 104);
+    }
+
+    const active = currentConnector();
+    const activeIndex = connectorRollIndex % CONNECTORS.length;
+    if (compact) {
+      const panelY = y + 132;
+      ctx.fillStyle = dark ? 'rgba(250,247,240,0.08)' : 'rgba(13,10,8,0.06)';
+      ctx.fillRect(x + 18, panelY, w - 36, 72);
+      ctx.strokeStyle = active.color;
+      ctx.strokeRect(x + 18.5, panelY + 0.5, w - 37, 71);
+      connectorIcon(ctx, x + 34, panelY + 11, 50, active, tone);
+      ctx.fillStyle = dark ? PAPER : '#0d0a08';
+      ctx.font = '500 38px "Cormorant Garamond", serif';
+      ctx.fillText(active.name, x + 100, panelY + 43);
+      ctx.fillStyle = ACCENT;
+      ctx.font = '700 10px "JetBrains Mono", monospace';
+      ctx.fillText('LIVE CONNECTOR', x + 102, panelY + 62);
+
+      const iconSize = 24;
+      const gap = 10;
+      const cols = 6;
+      const gx = x + 18;
+      const gy = y + 228;
+      CONNECTORS.forEach((connector, i) => {
+        const col = i % cols;
+        const row = Math.floor(i / cols);
+        const ix = gx + col * (iconSize + gap);
+        const iy = gy + row * (iconSize + 10);
+        ctx.globalAlpha = i === activeIndex ? 1 : 0.38;
+        connectorIcon(ctx, ix, iy, iconSize, connector, tone);
+        ctx.globalAlpha = 1;
+      });
+    } else {
+      const panelW = 438;
+      const panelX = x + w - panelW - 18;
+      const panelY = y + 24;
+      ctx.fillStyle = dark ? 'rgba(250,247,240,0.07)' : 'rgba(13,10,8,0.06)';
+      ctx.fillRect(panelX, panelY, panelW, 102);
+      ctx.strokeStyle = active.color;
+      ctx.lineWidth = 1.4;
+      ctx.strokeRect(panelX + 0.5, panelY + 0.5, panelW - 1, 101);
+      connectorIcon(ctx, panelX + 20, panelY + 20, 62, active, tone);
+      ctx.fillStyle = dark ? PAPER : '#0d0a08';
+      ctx.font = '500 46px "Cormorant Garamond", serif';
+      ctx.fillText(active.name, panelX + 100, panelY + 58);
+      ctx.fillStyle = ACCENT;
+      ctx.font = '700 12px "JetBrains Mono", monospace';
+      ctx.fillText('ROLLING CONNECTOR', panelX + 102, panelY + 82);
+
+      const iconSize = 23;
+      const gap = 11;
+      const railY = y + h - 42;
+      CONNECTORS.forEach((connector, i) => {
+        const ix = x + 18 + i * (iconSize + gap);
+        ctx.globalAlpha = i === activeIndex ? 1 : 0.34;
+        connectorIcon(ctx, ix, railY, iconSize, connector, tone);
+        ctx.globalAlpha = 1;
+      });
+      ctx.fillStyle = dark ? '#cfc5b6' : 'rgba(13,10,8,0.62)';
+      ctx.font = '700 11px "JetBrains Mono", monospace';
+      ctx.fillText(`CURRENTLY SYNCING: ${active.name}`.toUpperCase(), x + 18, y + 112);
+    }
+    ctx.restore();
+  }
+  function skimStatement(ctx, x, y, w, primary, secondary, tone = 'dark') {
+    const dark = tone !== 'light';
+    const h = 126;
+    ctx.save();
+    ctx.fillStyle = dark ? 'rgba(250,247,240,0.96)' : 'rgba(26,20,17,0.92)';
+    roundedRectPath(ctx, x, y, w, h, 8);
+    ctx.fill();
+    ctx.fillStyle = ACCENT;
+    ctx.fillRect(x, y, 6, h);
+    ctx.fillStyle = dark ? '#0d0a08' : PAPER;
+    body(ctx, x + 24, y + 36, [primary], { size: w < 620 ? 23 : 29, maxW: w - 48, color: ctx.fillStyle, lh: 1.08, font: '"Cormorant Garamond", serif', weight: 500 });
+    ctx.fillStyle = ACCENT;
+    body(ctx, x + 24, y + h - 34, [secondary], { size: w < 620 ? 14 : 17, maxW: w - 48, color: ACCENT, lh: 1.08, font: 'Inter, sans-serif', weight: 700 });
+    ctx.restore();
+  }
 
   // ---- Scenes -------------------------------------------------
   function drawSceneCover() {
     const c = makeCanvas(TEX_W, TEX_H), ctx = c.getContext('2d');
     pageBg(ctx, '#0d0a08');
+    if (compactLayout()) {
+      eyebrow(ctx, 680, 130, 'Partner program  ·  Spring 2026', PENCIL);
+      display(ctx, 700, 245, 'Get paid', 92, 500, PAPER);
+      displayItalic(ctx, 700, 338, 'faster', 96);
+      display(ctx, 700, 430, 'without hiring', 62, 500, PAPER);
+      display(ctx, 700, 500, 'another', 62, 500, PAPER);
+      displayItalic(ctx, 700, 578, currentRoleWord(), currentRoleWord().length > 10 ? 47 : 78);
+      display(ctx, 700, 646, 'person.', 62, 500, PAPER);
+      skimStatement(ctx, 700, 680, 520, "B2B Ops are why companies don't get paid fast enough. Index is the fix.", 'Review. Reconcile. Approve. Sync.');
+      body(ctx, 700, 826, ['Index is the AI documents operations platform.'], { size: 17, maxW: 520, color: '#cfc5b6', lh: 1.2 });
+      productSlot(ctx, 700, 870, 520, 148, 'hero', 'AP review workspace', 'Source linked extraction and match review.', { fit: 'cover', focusY: 0.35, zoom: 1.18 });
+      eyebrow(ctx, 700, 1015, '01  /  Partner cover', ACCENT);
+      return c;
+    }
 
     // Eyebrow
-    eyebrow(ctx, 110, 130, 'Spring  ·  release  ·  Blueprints 2.0', PENCIL);
+    eyebrow(ctx, 110, 130, 'Partner program  ·  Spring 2026', PENCIL);
 
     // Headline
     ctx.save();
-    display(ctx, 110, 380, 'The document', 220, 500, PAPER);
-    display(ctx, 110, 580, 'back office,', 220, 500, PAPER);
-    ctx.font = `italic 400 220px "Cormorant Garamond", serif`;
-    ctx.fillStyle = ACCENT;
-    ctx.fillText('finally', 110, 780);
+    display(ctx, 110, 292, 'Get paid faster', 142, 500, PAPER);
+    display(ctx, 110, 438, 'without hiring', 128, 500, PAPER);
+    display(ctx, 110, 560, 'another', 104, 500, PAPER);
+    const roleSize = currentRoleWord().length > 10 ? 70 : 106;
     ctx.fillStyle = PAPER;
-    ctx.font = `500 220px "Cormorant Garamond", serif`;
-    ctx.fillText(' automated.', 110 + ctx.measureText('finally').width, 780);
+    ctx.font = `500 ${roleSize}px "Cormorant Garamond", serif`;
+    ctx.fillStyle = ACCENT;
+    ctx.font = `italic 400 ${roleSize}px "Cormorant Garamond", serif`;
+    ctx.fillText(currentRoleWord(), 110, 676);
+    const roleW = ctx.measureText(currentRoleWord()).width;
+    ctx.fillStyle = PAPER;
+    ctx.font = `500 ${roleSize}px "Cormorant Garamond", serif`;
+    ctx.fillText('person.', 110 + roleW + 22, 676);
     ctx.restore();
 
-    // Lede
-    body(ctx, 110, 850, [
-      'IDX turns invoices, BOLs, POs and claims into structured records — reviewed by your team and posted to your system of record. Pick a blueprint, connect your inbox, go live in a week.'
-    ], { size: 26, color: '#cfc5b6', maxW: 980, lh: 1.45 });
+    skimStatement(ctx, 110, 720, 950, "B2B Ops are why companies don't get paid fast enough. Index is the fix.", 'Review. Reconcile. Approve. Sync.');
+    body(ctx, 110, 888, [
+      'Index is the AI documents operations platform.',
+      'Deploy source linked workflows for review, reconciliation, approval, and clean sync into the systems your clients already use.'
+    ], { size: 22, color: '#cfc5b6', maxW: 920, lh: 1.22 });
 
-    // Right column — preview-like card
-    const px = 1180, py = 200, pw = 620, ph = 560;
+    // Right column: one strong product proof visual with small workflow materials below it.
+    const px = 1080, py = 162, pw = 730, ph = 660;
     ctx.fillStyle = '#1a1411'; ctx.fillRect(px, py, pw, ph);
     ctx.strokeStyle = 'rgba(250,247,240,0.18)'; ctx.lineWidth = 1; ctx.strokeRect(px+0.5, py+0.5, pw-1, ph-1);
-    // bar
     ctx.fillStyle = '#221a16'; ctx.fillRect(px, py, pw, 38);
-    eyebrow(ctx, px + 18, py + 25, 'acme.idx.app  /  inbox  /  INV-204881.pdf', '#9a8a78');
+    eyebrow(ctx, px + 18, py + 25, 'partner.index.app  /  client rollout  /  INV 204881.pdf', '#9a8a78');
     [PENCIL, PENCIL, PENCIL].forEach((cc, i) => {
       ctx.fillStyle = '#3d2418'; ctx.beginPath(); ctx.arc(px + 16 + i*14, py + 19, 4, 0, Math.PI*2); ctx.fill();
     });
-    // fields
-    const fld = (yy, lab, val, kind) => {
-      const x = px + 22, w = 290;
-      const accent = kind === 'warn' ? '#b8860b' : kind === 'bad' ? '#a83232' : '#2d6a3e';
-      const bg = kind === 'warn' ? 'rgba(184,134,11,0.14)' : kind === 'bad' ? 'rgba(168,50,50,0.13)' : '#221a16';
-      ctx.fillStyle = bg; ctx.fillRect(x, yy, w, 56);
-      ctx.fillStyle = accent; ctx.fillRect(x, yy, 3, 56);
-      ctx.fillStyle = '#9a8a78'; ctx.font = '500 13px "JetBrains Mono", monospace'; ctx.fillText(lab.toUpperCase(), x + 14, yy + 22);
-      ctx.fillStyle = PAPER; ctx.font = '500 22px "JetBrains Mono", monospace'; ctx.fillText(val, x + 14, yy + 46);
-    };
-    eyebrow(ctx, px + 22, py + 80, 'Header', '#9a8a78');
-    fld(py + 100, 'Vendor', 'Lufting Mercantile Co.');
-    fld(py + 162, 'Invoice  №', 'INV-204881');
-    fld(py + 224, 'Issue date', '2026·04·14');
-    eyebrow(ctx, px + 22, py + 310, 'Totals', '#9a8a78');
-    fld(py + 330, 'Subtotal', '$ 18,420.00');
-    fld(py + 392, 'Tax  ·  review', '$  1,289.40', 'warn');
-    fld(py + 454, 'Total due', '$ 19,709.40');
+    productSlot(ctx, px + 30, py + 72, 670, 435, 'hero', 'AP review workspace', 'Source linked extraction and match review.', { fit: 'cover', focusY: 0.36, zoom: 1.12, caption: true });
+    productSlot(ctx, px + 30, py + 536, 208, 92, 'inbox', 'Inbox triage', 'Assigned work queue.', { fit: 'cover', focusY: 0.28, zoom: 1.18, caption: true, pad: 5 });
+    productSlot(ctx, px + 260, py + 536, 208, 92, 'dashboard', 'Cash dashboard', 'Blocked cash view.', { fit: 'cover', focusY: 0.22, zoom: 1.18, caption: true, pad: 5 });
+    productSlot(ctx, px + 492, py + 536, 208, 92, 'posting', 'Posting audit', 'Approval proof.', { fit: 'cover', focusY: 0.28, zoom: 1.18, caption: true, pad: 5 });
 
     // page number / accent label
-    eyebrow(ctx, 110, TEX_H - 80, '01  /  Cover', ACCENT);
+    eyebrow(ctx, 110, TEX_H - 80, '01  /  Partner cover', ACCENT);
 
     // Hero meta cells
     const meta = (xx, k, v) => {
@@ -395,65 +1474,83 @@
       ctx.fillStyle = PAPER; ctx.font = '500 38px "Cormorant Garamond", serif';
       ctx.fillText(v, xx, 1024);
     };
-    meta(110, 'Avg. accuracy', '99.4%');
-    meta(420, 'Time to live', '5–9 days');
-    meta(730, 'Hours saved', '71%');
+    meta(110, 'Time to first client', '5 to 9 days');
+    meta(420, 'B2B Ops', 'Paid faster');
+    meta(730, 'Workflow layer', 'Live');
     return c;
   }
 
   function drawSceneBlueprints() {
     const c = makeCanvas(TEX_W, TEX_H), ctx = c.getContext('2d');
     pageBg(ctx, '#0f0c0a');
-    eyebrow(ctx, 110, 130, '02  /  Blueprints', ACCENT);
-    display(ctx, 110, 250, 'Production-grade', 130, 500, PAPER);
+    if (compactLayout()) {
+      eyebrow(ctx, 680, 130, '02  /  Blueprint catalog', ACCENT);
+      display(ctx, 680, 270, 'Workflow', 112, 500, PAPER);
+      ctx.font = `italic 400 124px "Cormorant Garamond", serif`;
+      ctx.fillStyle = ACCENT;
+      ctx.fillText('blueprints.', 680, 405);
+      skimStatement(ctx, 680, 488, 560, 'Pick the workflow blocking cash. Capture, validate, assign, and sync it.', paidFasterCopy());
+      const slots = [
+        ['apMatch', 'Invoice match', 'PO, receipt, tax, approval owner'],
+        ['inbox', 'Inbox triage', 'Vendor, customer, amount, due date'],
+        ['posting', 'Posting proof', 'GL entry, cash impact, audit trail'],
+        ['customer', 'Customer follow up', 'Orders, invoices, payments, notes'],
+        ['inventory', 'Inventory holds', 'Counts, shortages, reorder triggers'],
+        ['dashboard', 'Cash dashboard', 'Late work, open AR, blocked approvals'],
+      ];
+      slots.forEach((s, i) => {
+        const x = 680 + (i % 2) * 292;
+        const y = 610 + Math.floor(i / 2) * 126;
+        productSlot(ctx, x, y, 268, 112, s[0], s[1], s[2], { fit: 'cover', zoom: 1.18, caption: true });
+      });
+      return c;
+    }
+    eyebrow(ctx, 110, 130, '02  /  Blueprint catalog', ACCENT);
+    display(ctx, 110, 250, 'Workflow', 130, 500, PAPER);
     ctx.font = `italic 400 130px "Cormorant Garamond", serif`;
     ctx.fillStyle = ACCENT;
     ctx.fillText('blueprints.', 110, 380);
-    body(ctx, 110, 440, [
-      'Every blueprint is a complete document workflow — extraction schema, validation rules, reviewer queues, and downstream sync — tuned on hundreds of thousands of real documents.'
-    ], { size: 24, maxW: 920, color: '#cfc5b6' });
+    skimStatement(ctx, 110, 426, 920, 'A blueprint is the whole operating path: capture the document, validate the facts, assign the owner, sync the system.', paidFasterCopy());
 
     // 6-card grid
     const items = [
-      ['Ledger', 'Accounts payable', '16 fields  ·  9 rules  ·  ERP sync'],
-      ['Atrium', 'Logistics & freight', '22 fields  ·  14 rules  ·  TMS sync'],
-      ['Foundry', 'Insurance claims', '34 fields  ·  21 rules  ·  Guidewire'],
-      ['Quay', 'Sales orders', '18 fields  ·  11 rules  ·  OMS sync'],
-      ['Halberd', 'Patient intake', '28 fields  ·  19 rules  ·  Epic / Athena'],
-      ['Bespoke', 'With our team', 'From 30 days  ·  fixed-fee'],
+      ['apMatch', 'Invoice match', 'PO, receipt, tax, approval owner', 'Stops payment delays from mismatched invoices.'],
+      ['inbox', 'Inbox triage', 'Vendor, customer, amount, due date', 'Turns loose documents into assigned work.'],
+      ['posting', 'Posting proof', 'GL entry, cash impact, audit trail', 'Shows exactly what changes before approval.'],
+      ['customer', 'Customer follow up', 'Orders, invoices, payments, notes', 'Finds the missing step before AR stalls.'],
+      ['inventory', 'Inventory holds', 'Counts, shortages, reorder triggers', 'Links stock exceptions to the documents behind them.'],
+      ['dashboard', 'Cash dashboard', 'Late work, open AR, blocked approvals', 'Gives operators the queue that decides cash speed.'],
     ];
-    const cw = 540, ch = 230, gx = 110, gy = 580;
+    const cw = 540, ch = 238, gx = 110, gy = 596;
     items.forEach((it, i) => {
       const col = i % 3, row = Math.floor(i / 3);
       const x = gx + col * (cw + 16);
       const y = gy + row * (ch + 16);
       ctx.fillStyle = '#1a1411'; ctx.fillRect(x, y, cw, ch);
       ctx.strokeStyle = 'rgba(250,247,240,0.14)'; ctx.lineWidth = 1; ctx.strokeRect(x+0.5, y+0.5, cw-1, ch-1);
-      // mini preview block (left)
-      ctx.fillStyle = '#221a16'; ctx.fillRect(x + 18, y + 22, 160, 186);
-      // hairlines inside
-      [40, 60, 80, 100, 130, 150].forEach(yy => {
-        ctx.fillStyle = '#5a3a26'; ctx.fillRect(x + 28, y + yy, 130 - (yy % 30), 3);
-      });
-      // marker
-      ctx.fillStyle = MARKER; ctx.fillRect(x + 28, y + 108, 100, 8);
+      productSlot(ctx, x + 18, y + 22, 222, 194, it[0], it[2], 'Product workflow thumbnail.', { fit: 'cover', focusY: 0.38, zoom: 1.22, caption: false, pad: 6 });
 
       // text
       ctx.fillStyle = PAPER; ctx.font = `500 36px "Cormorant Garamond", serif`;
-      ctx.fillText(it[0], x + 200, y + 60);
+      ctx.fillText(it[1], x + 262, y + 60);
       ctx.fillStyle = PENCIL; ctx.font = `500 13px "JetBrains Mono", monospace`;
-      ctx.fillText(it[1].toUpperCase(), x + 200, y + 88);
+      ctx.fillText(it[2].toUpperCase(), x + 262, y + 88);
       // hairline
-      rule(ctx, x + 200, y + 110, cw - 220, 'rgba(250,247,240,0.14)');
+      rule(ctx, x + 262, y + 110, cw - 284, 'rgba(250,247,240,0.14)');
       // body
       ctx.fillStyle = '#cfc5b6'; ctx.font = `400 18px Inter, sans-serif`;
-      ctx.fillText('Pre-tuned schema, validators,', x + 200, y + 140);
-      ctx.fillText('reviewer queue and connectors.', x + 200, y + 164);
+      body(ctx, x + 262, y + 135, [it[3]], { size: 16, maxW: cw - 292, color: '#cfc5b6', lh: 1.25 });
       // foot
       ctx.fillStyle = PENCIL; ctx.font = `500 12px "JetBrains Mono", monospace`;
-      ctx.fillText(it[2].toUpperCase(), x + 200, y + 198);
+      ctx.fillText('CAPTURE  VALIDATE  SYNC', x + 262, y + 204);
       ctx.fillStyle = ACCENT; ctx.font = `500 22px "Cormorant Garamond", serif`;
       ctx.fillText('→', x + cw - 36, y + 198);
+      addPreviewHotspot(x, y, cw, ch, it[0], it[1], it[3], {
+        previewTitle: it[1],
+        previewDetail: it[3],
+        previewMeta: it[2],
+        previewKicker: 'Blueprint preview',
+      });
     });
 
     return c;
@@ -462,103 +1559,183 @@
   function drawScenePlatform() {
     const c = makeCanvas(TEX_W, TEX_H), ctx = c.getContext('2d');
     pageBg(ctx, '#0d0a08');
-    eyebrow(ctx, 110, 130, '03  /  Platform', ACCENT);
-    display(ctx, 110, 290, 'One pipeline,', 160, 500, PAPER);
+    if (compactLayout()) {
+      eyebrow(ctx, 680, 130, '03  /  Implementation model', ACCENT);
+      display(ctx, 680, 270, 'One partner', 116, 500, PAPER);
+      ctx.font = `italic 400 124px "Cormorant Garamond", serif`;
+      ctx.fillStyle = ACCENT;
+      ctx.fillText('motion.', 680, 405);
+      body(ctx, 680, 478, [
+        'Your team owns discovery and change management. Index supplies the document layer, proof, and sync path.'
+      ], { size: 24, maxW: 560, color: '#cfc5b6', lh: 1.4 });
+      connectorBand(ctx, 680, 584, 560, 330, { compact: true });
+      return c;
+    }
+    eyebrow(ctx, 110, 130, '03  /  Implementation model', ACCENT);
+    display(ctx, 110, 290, 'One partner', 160, 500, PAPER);
     ctx.font = `500 160px "Cormorant Garamond", serif`;
-    ctx.fillStyle = PAPER; ctx.fillText('four ', 110, 460);
-    const fwidth = ctx.measureText('four ').width;
+    ctx.fillStyle = PAPER; ctx.fillText('motion, ', 110, 460);
+    const fwidth = ctx.measureText('motion, ').width;
     ctx.font = `italic 400 160px "Cormorant Garamond", serif`;
-    ctx.fillStyle = ACCENT; ctx.fillText('moves.', 110 + fwidth, 460);
+    ctx.fillStyle = ACCENT; ctx.fillText('four moves.', 110 + fwidth, 460);
 
     body(ctx, 110, 540, [
-      "The work IDX does is unsexy on purpose. Bring documents in, pull the data out, let humans agree, push it onward."
+      "Your practice owns the client relationship. Index supplies the document layer: intake, extraction, review evidence, and clean sync into the system of record."
     ], { size: 24, maxW: 920, color: '#cfc5b6' });
+    connectorBand(ctx, 110, 610, 1670, 150);
 
     // Four steps in a row
     const steps = [
-      ['Capture', 'A shared inbox for documents. Email, SFTP, API, Drive, EDI. We dedupe and classify.', '⌧'],
-      ['Extract', 'Fields with provenance — typed values, confidence scores, pinned to source pixels.', '⊟'],
-      ['Reconcile', 'Validation rules route exceptions. The 92% that pass clean go straight through.', '◐'],
-      ['Sync', 'Native connectors to NetSuite, SAP, Guidewire, plus typed REST & webhooks for the rest.', '◑'],
+      ['inbox', 'Discover', 'Use your client discovery motion to map document sets, systems, and exception rules.', '⌧'],
+      ['apMatch', 'Configure', 'Blueprint fields, validators, queues, and source linked review states.', '⊟'],
+      ['posting', 'Validate', 'Partner led acceptance with evidence attached to every extracted value.', '◐'],
+      ['dashboard', 'Launch', 'Get clients paid faster. Sync approved work to ERP, TMS, CRM, or vertical systems.', '◑'],
     ];
-    const sx = 110, sy = 700, sw = 410, sh = 280;
+    const sx = 110, sy = 780, sw = 410, sh = 230;
     steps.forEach((st, i) => {
       const x = sx + i * (sw + 14);
       ctx.strokeStyle = 'rgba(250,247,240,0.2)'; ctx.lineWidth = 1;
       ctx.strokeRect(x + 0.5, sy + 0.5, sw - 1, sh - 1);
-      // glyph
+      productSlot(ctx, x + 24, sy + 18, sw - 48, 116, st[0], st[1] + ' visual', st[2], { fit: 'cover', focusY: 0.34, zoom: 1.2, caption: true, pad: 5 });
       ctx.fillStyle = ACCENT; ctx.font = `500 13px "JetBrains Mono", monospace`;
-      ctx.fillText('— 0' + (i+1), x + 24, sy + 40);
-      ctx.fillStyle = PAPER; ctx.font = `500 76px "Cormorant Garamond", serif`;
-      ctx.fillText(st[2], x + 24, sy + 130);
-      ctx.font = `500 44px "Cormorant Garamond", serif`;
-      ctx.fillText(st[0], x + 24, sy + 190);
+      ctx.fillText('0' + (i+1), x + 24, sy + 158);
+      ctx.fillStyle = PAPER; ctx.font = `500 38px "Cormorant Garamond", serif`;
+      ctx.fillText(st[1], x + 74, sy + 160);
       ctx.fillStyle = '#cfc5b6'; ctx.font = `400 17px Inter, sans-serif`;
-      body(ctx, x + 24, sy + 218, [st[1]], { size: 17, maxW: sw - 48, color: '#cfc5b6', lh: 1.45 });
+      body(ctx, x + 24, sy + 192, [st[2]], { size: 13, maxW: sw - 48, color: '#cfc5b6', lh: 1.15 });
+      addPreviewHotspot(x, sy, sw, sh, st[0], st[1], st[2], {
+        previewTitle: st[1],
+        previewDetail: st[2],
+        previewMeta: 'Partner implementation motion',
+        previewKicker: 'Implementation preview',
+      });
     });
     return c;
   }
 
-  function drawSceneNumbers() {
+  function drawSceneProof() {
     const c = makeCanvas(TEX_W, TEX_H), ctx = c.getContext('2d');
     pageBg(ctx, '#0e0b09');
-    eyebrow(ctx, 110, 130, '04  /  In production', ACCENT);
-    display(ctx, 110, 290, 'Numbers from', 150, 500, PAPER);
+    if (compactLayout()) {
+      eyebrow(ctx, 680, 130, '04  /  Partner proof', ACCENT);
+      display(ctx, 680, 260, 'Proof from', 104, 500, PAPER);
+      ctx.font = `italic 400 124px "Cormorant Garamond", serif`;
+      ctx.fillStyle = ACCENT;
+      ctx.fillText('workflows.', 680, 388);
+      body(ctx, 680, 478, [
+        'Product proof from workflow screens: cash, audit, follow up, matching, intake, and inventory control.'
+      ], { size: 24, maxW: 560, color: '#cfc5b6', lh: 1.4 });
+      const slots = [
+        ['dashboard', 'Cash dashboard', 'Late work, approvals, open AR'],
+        ['posting', 'Posting audit', 'GL, cash, risk, source document'],
+        ['customer', 'Customer follow up', 'Orders, invoices, payments, notes'],
+        ['apMatch', 'Invoice match', 'PO, receipt, tax, approval owner'],
+      ];
+      slots.forEach((s, i) => {
+        const y = 560 + i * 124;
+        productSlot(ctx, 680, y, 560, 112, s[0], s[1], s[2], { fit: 'cover', focusY: 0.3, zoom: 1.24, caption: true });
+      });
+      return c;
+    }
+    eyebrow(ctx, 110, 130, '04  /  Partner proof', ACCENT);
+    display(ctx, 110, 285, 'Proof from', 145, 500, PAPER);
     ctx.font = `500 150px "Cormorant Garamond", serif`;
-    ctx.fillText('real ', 110, 450);
+    ctx.fillText('real ', 110, 445);
     const fw = ctx.measureText('real ').width;
     ctx.font = `italic 400 150px "Cormorant Garamond", serif`;
     ctx.fillStyle = ACCENT;
-    ctx.fillText('deployments.', 110 + fw, 450);
+    ctx.fillText('workflows.', 110 + fw, 445);
 
-    // Big metric blocks
-    const metrics = [
-      ['99.4%', 'Header-field accuracy', 'Across 14M invoices in the last 12 months. Line-item at 97.1%.'],
-      ['5.4d', 'Median time to live', 'Kickoff to first synced doc. Faster than your last vendor onboarding.'],
-      ['71%', 'Reviewer time saved', 'Vs. the team\'s previous keying process. Three-day-month closes routine.'],
-      ['$0.04', 'Cost per page', 'Bundled. No per-field, per-API or per-seat surprises in the bill.'],
+    body(ctx, 110, 515, [
+      'Product proof from the screens partners use to show cash, audit, follow up, matching, intake, and inventory control.'
+    ], { size: 22, maxW: 1050, color: '#cfc5b6', lh: 1.35 });
+
+    const proofItems = [
+      ['dashboard', 'Cash dashboard', 'Late work visible', 'Open AR, approvals, and blocked work are visible in one cash queue.'],
+      ['posting', 'Posting audit', 'Audit before approval', 'Approvers see GL, cash, inventory, risk, and source document evidence before sync.'],
+      ['customer', 'Customer follow up', 'AR never stalls silently', 'Orders, invoices, payments, and notes show the missing next step.'],
+      ['apMatch', 'Invoice match', 'PO, receipt, tax', 'Mismatch work is tied to the source document and the approval owner.'],
+      ['inbox', 'Inbox triage', 'Assigned work queue', 'Loose documents become typed, tagged, and owned work.'],
+      ['inventory', 'Inventory holds', 'Stock exceptions', 'Counts, shortages, and reorder triggers stay connected to the documents behind them.'],
     ];
-    const mx = 110, my = 600, mw = 425, mh = 350;
-    metrics.forEach((m, i) => {
-      const x = mx + i * (mw + 10);
-      ctx.strokeStyle = 'rgba(250,247,240,0.16)';
-      ctx.beginPath(); ctx.moveTo(x, my); ctx.lineTo(x + mw, my); ctx.stroke();
-      ctx.fillStyle = PAPER; ctx.font = `500 130px "Cormorant Garamond", serif`;
-      ctx.fillText(m[0], x, my + 130);
-      ctx.fillStyle = PENCIL; ctx.font = `500 13px "JetBrains Mono", monospace`;
-      ctx.fillText(m[1].toUpperCase(), x, my + 180);
-      ctx.fillStyle = '#cfc5b6'; ctx.font = `400 18px Inter, sans-serif`;
-      body(ctx, x, my + 220, [m[2]], { size: 18, maxW: mw - 30, color: '#cfc5b6' });
+    const pw = 540, ph = 252, gx = 110, gy = 548;
+    proofItems.forEach((it, i) => {
+      const col = i % 3, row = Math.floor(i / 3);
+      const x = gx + col * (pw + 16);
+      const y = gy + row * (ph + 18);
+      ctx.fillStyle = '#1a1411';
+      ctx.fillRect(x, y, pw, ph);
+      ctx.strokeStyle = 'rgba(250,247,240,0.14)';
+      ctx.strokeRect(x + 0.5, y + 0.5, pw - 1, ph - 1);
+      productSlot(ctx, x + 18, y + 18, pw - 36, 150, it[0], it[1], it[2], { fit: 'cover', focusY: 0.32, zoom: 1.22, caption: true, pad: 6 });
+      ctx.fillStyle = PAPER; ctx.font = `500 34px "Cormorant Garamond", serif`;
+      ctx.fillText(it[1], x + 22, y + 196);
+      ctx.fillStyle = ACCENT; ctx.font = `700 13px Inter, sans-serif`;
+      ctx.fillText(it[2].toUpperCase(), x + 292, y + 196);
+      body(ctx, x + 22, y + 224, [it[3]], { size: 13, maxW: pw - 44, color: '#cfc5b6', lh: 1.15 });
+      addPreviewHotspot(x, y, pw, ph, it[0], it[1], it[3], {
+        previewTitle: it[1],
+        previewDetail: it[3],
+        previewMeta: it[2],
+        previewKicker: 'Proof preview',
+      });
     });
-
-    // quote at bottom
-    ctx.fillStyle = ACCENT; ctx.font = `italic 500 30px "Cormorant Garamond", serif`;
-    ctx.fillText('"Eight hundred invoices a week now post without a human."', 110, 1010);
-    ctx.fillStyle = PENCIL; ctx.font = `500 13px "JetBrains Mono", monospace`;
-    ctx.fillText('MARCUS QUIBELL  ·  CONTROLLER  ·  FOUNDRY & SONS', 110, 1040);
     return c;
   }
 
-  function drawScenePricing() {
+  function drawScenePartners() {
     const c = makeCanvas(TEX_W, TEX_H), ctx = c.getContext('2d');
     pageBg(ctx, '#0d0a08');
-    eyebrow(ctx, 110, 130, '05  /  Pricing', ACCENT);
-    display(ctx, 110, 290, 'Plain pricing,', 150, 500, PAPER);
+    if (compactLayout()) {
+      eyebrow(ctx, 680, 130, '05  /  Become a partner', ACCENT);
+      display(ctx, 700, 260, 'Partner', 96, 500, PAPER);
+      display(ctx, 700, 356, 'terms,', 96, 500, PAPER);
+      ctx.font = `italic 400 82px "Cormorant Garamond", serif`;
+      ctx.fillStyle = ACCENT;
+      ctx.fillText('not rate cards.', 700, 450);
+      body(ctx, 700, 520, [
+        `Three paths: certified implementation, solution partner, or embedded OEM. ${paidFasterCopy()}`
+      ], { size: 23, maxW: 520, color: '#cfc5b6', lh: 1.4 });
+      const tiers = [
+        ['Certified Implementer', 'Partner terms', 'ERP/accounting consultants.'],
+        ['Solution Partner', 'Get paid faster', 'Repeatable practice teams.'],
+        ['Embedded / OEM', 'Volume terms', 'Embedded software teams.'],
+      ];
+      tiers.forEach((t, i) => {
+        const y = 650 + i * 112;
+        const featured = i === 1;
+        ctx.fillStyle = featured ? PAPER : '#1a1411';
+        ctx.fillRect(700, y, 520, 86);
+        ctx.strokeStyle = featured ? PAPER : 'rgba(250,247,240,0.18)';
+        ctx.strokeRect(700.5, y + 0.5, 519, 85);
+        ctx.fillStyle = featured ? '#0d0a08' : PAPER;
+        ctx.font = `500 30px "Cormorant Garamond", serif`;
+        ctx.fillText(t[0], 720, y + 34);
+        ctx.fillStyle = featured ? 'rgba(13,10,8,0.56)' : '#cfc5b6';
+        ctx.font = `500 11px "JetBrains Mono", monospace`;
+        ctx.fillText(t[1].toUpperCase(), 720, y + 58);
+        ctx.font = `400 14px Inter, sans-serif`;
+        ctx.fillText(t[2], 900, y + 58);
+      });
+      return c;
+    }
+    eyebrow(ctx, 110, 130, '05  /  Become a partner', ACCENT);
+    display(ctx, 110, 290, 'Partner terms,', 150, 500, PAPER);
     ctx.font = `italic 400 150px "Cormorant Garamond", serif`;
-    ctx.fillStyle = ACCENT; ctx.fillText('per page.', 110, 450);
+    ctx.fillStyle = ACCENT; ctx.fillText('not rate cards.', 110, 450);
 
-    body(ctx, 110, 510, ['Pick a plan that matches your volume. Every plan includes the full blueprint catalogue, every connector, and a real human inside two business hours.'],
+    body(ctx, 110, 510, ["B2B Ops are why companies don't get paid fast enough. Index is the fix. Partner terms are scoped by motion, volume, client ownership, implementation scope, and whether Index is sold, configured, or embedded."],
       { size: 22, maxW: 880, color: '#cfc5b6' });
 
     const plans = [
-      ['Studio', 'Starter', '$0.06', '/page', 'For a single team that wants to be live this month, on a credit card.', ['Every blueprint, unbranded', 'Up to 5 reviewers', 'REST API · email alias', 'Email support'], false],
-      ['Atelier', 'Business', '$0.04', '/page', 'For finance and ops orgs running production document workflows daily.', ['Branded reviewer workspace', 'Unlimited reviewers · SSO', 'All connectors · webhooks', 'Named CSM · 99.95% SLA'], true],
-      ['Foundry', 'Enterprise', 'Custom', '', 'Bespoke blueprints, your VPC, your auditors, your procurement form.', ['Custom blueprint engineering', 'Single-tenant deployment', 'HIPAA / SOC 2 / ISO 27001', 'Solutions architect on-call'], false],
+      ['Certified', 'Implementer', 'Partner terms', 'For ERP and accounting consultants who configure Index into client rollouts.', ['Blueprint catalog access', 'Implementation playbooks', 'Partner enablement', 'Client handoff support'], false],
+      ['Solution', 'Partner', 'Get paid faster', `For firms building a repeatable document automation practice with Index. ${paidFasterCopy()}`, ['Partner branded workspace', 'B2B Ops playbook', 'Named solutions lead', 'Priority blueprint requests'], true],
+      ['Embedded', 'OEM', 'Volume terms', 'For software platforms embedding Index workflows inside their own product.', ['Embedded review surfaces', 'API and webhook guidance', 'Security review support', 'Roadmap alignment'], false],
     ];
     const pw = 565, ph = 400, gx = 110, gy = 620;
     plans.forEach((p, i) => {
       const x = gx + i * (pw + 12);
-      const featured = p[6];
+      const featured = p[5];
       ctx.fillStyle = featured ? '#faf7f0' : '#1a1411';
       ctx.fillRect(x, gy, pw, ph);
       ctx.strokeStyle = featured ? '#faf7f0' : 'rgba(250,247,240,0.18)';
@@ -567,22 +1744,20 @@
       const sub = featured ? 'rgba(13,10,8,0.55)' : '#cfc5b6';
       // name
       ctx.fillStyle = txt; ctx.font = `500 38px "Cormorant Garamond", serif`;
-      ctx.fillText(p[0], x + 30, gy + 60);
+      ctx.fillText(p[0], x + 30, gy + 56);
       ctx.fillStyle = sub; ctx.font = `italic 400 26px "Cormorant Garamond", serif`;
-      ctx.fillText('· ' + p[1].toLowerCase(), x + 30 + ctx.measureText(p[0]).width + 12, gy + 60);
-      // price
-      ctx.fillStyle = txt; ctx.font = `500 76px "Cormorant Garamond", serif`;
-      ctx.fillText(p[2], x + 30, gy + 150);
-      ctx.fillStyle = sub; ctx.font = `400 22px "Cormorant Garamond", serif`;
-      ctx.fillText(p[3], x + 30 + ctx.measureText(p[2]).width + 8, gy + 150);
+      ctx.fillText(p[1].toLowerCase(), x + 30, gy + 86);
+      // terms
+      ctx.fillStyle = txt; ctx.font = `500 58px "Cormorant Garamond", serif`;
+      ctx.fillText(p[2], x + 30, gy + 158);
       // pitch
       ctx.fillStyle = sub; ctx.font = `400 17px Inter, sans-serif`;
-      body(ctx, x + 30, gy + 195, [p[4]], { size: 17, maxW: pw - 60, color: sub, lh: 1.4 });
+      body(ctx, x + 30, gy + 195, [p[3]], { size: 17, maxW: pw - 60, color: sub, lh: 1.4 });
       // bullets
       let yy = gy + 270;
-      p[5].forEach(b => {
-        ctx.fillStyle = ACCENT; ctx.font = `500 17px "JetBrains Mono", monospace`;
-        ctx.fillText('—', x + 30, yy);
+      p[4].forEach(b => {
+        ctx.fillStyle = ACCENT;
+        ctx.fillRect(x + 30, yy - 10, 7, 7);
         ctx.fillStyle = featured ? '#0d0a08' : PAPER; ctx.font = `400 17px Inter, sans-serif`;
         ctx.fillText(b, x + 60, yy);
         yy += 26;
@@ -594,33 +1769,61 @@
   function drawSceneCTA() {
     const c = makeCanvas(TEX_W, TEX_H), ctx = c.getContext('2d');
     pageBg(ctx, '#0d0a08');
-    eyebrow(ctx, 110, 130, '06  /  Talk to us', ACCENT);
-    display(ctx, 110, 380, 'Ship your', 240, 500, PAPER);
-    display(ctx, 110, 600, 'back office.', 240, 500, PAPER);
-    ctx.font = `italic 400 240px "Cormorant Garamond", serif`;
+    if (compactLayout()) {
+      const titleX = 720;
+      const contentX = 680;
+      eyebrow(ctx, titleX, 130, '06  /  Apply', ACCENT);
+      display(ctx, titleX, 285, 'Help clients', 94, 500, PAPER);
+      display(ctx, titleX, 395, 'get paid', 88, 500, PAPER);
+      ctx.font = `italic 400 96px "Cormorant Garamond", serif`;
+      ctx.fillStyle = ACCENT;
+      ctx.fillText('faster.', titleX, 510);
+      skimStatement(ctx, contentX, 566, 560, "B2B Ops are why companies don't get paid fast enough. Index is the fix.", paidFasterCopy());
+      body(ctx, contentX, 718, [
+        'Start with one workflow: invoice match, customer follow up, posting proof, or cash dashboard. Index gives your team the blueprint and proof path.'
+      ], { size: 21, maxW: 560, color: '#cfc5b6', lh: 1.32 });
+      ctx.fillStyle = PAPER; ctx.fillRect(contentX, 832, 250, 58);
+      ctx.fillStyle = '#0d0a08'; ctx.font = `500 20px Inter, sans-serif`;
+      ctx.fillText('Start application', contentX + 26, 868);
+      ctx.strokeStyle = 'rgba(250,247,240,0.36)';
+      ctx.strokeRect(contentX + 274.5, 832.5, 286, 57);
+      ctx.fillStyle = PAPER;
+      ctx.fillText('View launch kit', contentX + 306, 868);
+      productSlot(ctx, contentX, 908, 560, 118, 'posting', 'Final CTA visual', 'Partner kit, certification badge, or implementation checklist.', { fit: 'cover', focusY: 0.28, zoom: 1.18 });
+      return c;
+    }
+    eyebrow(ctx, 110, 130, '06  /  Apply', ACCENT);
+    display(ctx, 110, 350, 'Help clients', 190, 500, PAPER);
+    display(ctx, 110, 540, 'get paid', 190, 500, PAPER);
+    ctx.font = `italic 400 196px "Cormorant Garamond", serif`;
     ctx.fillStyle = ACCENT;
-    ctx.fillText('This quarter.', 110, 820);
+    ctx.fillText('faster.', 110, 730);
 
-    body(ctx, 1180, 400, [
-      'Pick a blueprint, drop in your last hundred documents, see what comes out the other side.'
-    ], { size: 28, maxW: 600, color: '#cfc5b6', lh: 1.4 });
+    const ctaX = 1080;
+    const ctaW = 560;
+    skimStatement(ctx, ctaX, 360, ctaW, "B2B Ops are why companies don't get paid fast enough. Index is the fix.", paidFasterCopy());
+    body(ctx, ctaX, 520, [
+      'Start with one workflow: invoice match, customer follow up, posting proof, or cash dashboard. Index gives your team the blueprint, proof path, and launch kit.'
+    ], { size: 24, maxW: ctaW, color: '#cfc5b6', lh: 1.35 });
 
     // CTA buttons
-    ctx.fillStyle = PAPER; ctx.fillRect(1180, 540, 220, 64);
+    ctx.fillStyle = PAPER; ctx.fillRect(ctaX, 650, 250, 64);
     ctx.fillStyle = '#0d0a08'; ctx.font = `500 22px Inter, sans-serif`;
-    ctx.fillText('Start free  →', 1206, 581);
+    ctx.fillText('Start application', ctaX + 26, 691);
 
     ctx.strokeStyle = 'rgba(250,247,240,0.4)'; ctx.lineWidth = 1.2;
-    ctx.strokeRect(1420.5, 540.5, 280, 63);
+    ctx.strokeRect(ctaX + 282.5, 650.5, 238, 63);
     ctx.fillStyle = PAPER; ctx.font = `500 22px Inter, sans-serif`;
-    ctx.fillText('Book a 30-min demo', 1442, 581);
+    ctx.fillText('View launch kit', ctaX + 312, 691);
+
+    productSlot(ctx, ctaX, 752, ctaW, 240, 'posting', 'Partner proof kit', 'Implementation checklist, audit trail, and partner branded workflow preview.', { fit: 'cover', focusY: 0.3, zoom: 1.16 });
 
     // Footer-ish wordmark
     ctx.fillStyle = '#1a1411'; ctx.fillRect(0, 940, TEX_W, 1);
     ctx.fillStyle = PAPER; ctx.font = `500 360px "Cormorant Garamond", serif`;
-    ctx.fillText('IDX.', 90, 1060);
+    ctx.fillText('Index.', 90, 1060);
     ctx.fillStyle = PENCIL; ctx.font = `500 13px "JetBrains Mono", monospace`;
-    ctx.fillText('© 2026 IDX DOCUMENT SYSTEMS LTD.  ·  MADE IN BRISTOL & BROOKLYN.', 1180, 1050);
+    ctx.fillText('© 2026 Index  ·  PARTNER READY DOCUMENT OPERATIONS.', 1120, 1050);
     return c;
   }
 
@@ -641,19 +1844,87 @@
   stage.appendChild(renderer.domElement);
 
   // Lighting (subtle)
-  scene.add(new THREE.AmbientLight(0xffffff, 0.85));
-  const key = new THREE.DirectionalLight(0xffe6c2, 0.4);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.9));
+  const key = new THREE.DirectionalLight(0xffe6c2, 0.38);
   key.position.set(2, 1, 3);
   scene.add(key);
+  const rim = new THREE.DirectionalLight(0xf2b37a, 0.28);
+  rim.position.set(-3, -1, 2);
+  scene.add(rim);
 
   // ---- Build shards for each scene ----------------------------
   // World scale: each scene plane is 1600 wide × 900 tall (matches 16:9 texture)
   const PLANE_W = 1600, PLANE_H = 900;
   const SCENE_SPACING = 1100; // distance between scenes along Z
-  const sceneObjects = []; // { group, shards, label, z, texture, canvas }
+  const TOTAL_SCENES = SCENES.length;
+  const shardWorld = new THREE.Vector3();
+  let frameScale = 1;
+  let layoutCompact = compactLayout();
+  syncRoleWordDataset();
+  syncConnectorDataset();
+  if (!reducedMotion) {
+    window.setInterval(() => {
+      roleWordIndex = (roleWordIndex + 1) % ROLE_WORDS.length;
+      syncRoleWordDataset();
+      redrawSceneTextures();
+    }, 3000);
+    window.setInterval(() => {
+      connectorRollIndex = (connectorRollIndex + 1) % CONNECTORS.length;
+      syncConnectorDataset();
+      redrawSceneTexture(2);
+    }, 520);
+  }
 
-  function buildSceneShards(sceneSpec, zPos) {
-    const cnv = sceneSpec.build();
+  function seededRandom(seed) {
+    let s = seed >>> 0;
+    return () => {
+      s = (s * 1664525 + 1013904223) >>> 0;
+      return s / 4294967296;
+    };
+  }
+
+  function setProxyHeight() {
+    proxy.querySelector('.spacer').style.height = (TOTAL_SCENES * window.innerHeight) + 'px';
+  }
+  function sceneTop(i) {
+    const maxScroll = Math.max(0, proxy.scrollHeight - window.innerHeight);
+    return maxScroll <= 0 ? 0 : i * maxScroll / Math.max(1, TOTAL_SCENES - 1);
+  }
+  function updateViewport() {
+    const W = window.innerWidth, H = window.innerHeight;
+    camera.aspect = W / H;
+    camera.updateProjectionMatrix();
+    renderer.setSize(W, H);
+
+    const distance = camera.position.z;
+    const viewH = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * distance;
+    const viewW = viewH * camera.aspect;
+    const compact = compactLayout();
+    frameScale = compact
+      ? Math.min((viewH * 0.86) / PLANE_H, 1)
+      : Math.min((viewW * 0.96) / PLANE_W, (viewH * 0.88) / PLANE_H, 1);
+    setProxyHeight();
+    if (compact !== layoutCompact) {
+      layoutCompact = compact;
+      redrawSceneTextures();
+    }
+  }
+  function redrawSceneTextures() {
+    sceneObjects.forEach((so, i) => {
+      redrawSceneTexture(i);
+    });
+  }
+  function redrawSceneTexture(i) {
+    const so = sceneObjects[i];
+    if (!so) return;
+    const newCanvas = buildSceneCanvas(SCENES[i], i);
+    so.canvas = newCanvas;
+    so.texture.image = newCanvas;
+    so.texture.needsUpdate = true;
+  }
+
+  function buildSceneShards(sceneSpec, sceneIndex, zPos) {
+    const cnv = buildSceneCanvas(sceneSpec, sceneIndex);
     const tex = new THREE.CanvasTexture(cnv);
     tex.minFilter = THREE.LinearFilter;
     tex.magFilter = THREE.LinearFilter;
@@ -667,16 +1938,29 @@
     group.position.z = zPos;
     scene.add(group);
 
+    const backingMat = new THREE.MeshBasicMaterial({
+      map: tex,
+      transparent: true,
+      opacity: 1,
+      depthWrite: false,
+      color: 0xffffff,
+    });
+    const backing = new THREE.Mesh(new THREE.PlaneGeometry(PLANE_W, PLANE_H), backingMat);
+    backing.position.z = -3;
+    backing.renderOrder = -1;
+    group.add(backing);
+
     const cols = sceneSpec.shardCols, rows = sceneSpec.shardRows;
     const cellW = PLANE_W / cols, cellH = PLANE_H / rows;
     const shards = [];
+    const rand = seededRandom(sceneSpec.seed ?? 1);
 
     // Generate jittered site per cell, build 4 triangles per cell around the site
     const sites = [];
     for (let j = 0; j < rows; j++) {
       for (let i = 0; i < cols; i++) {
-        const cx = -PLANE_W/2 + (i + 0.5) * cellW + (Math.random() - 0.5) * cellW * 0.7;
-        const cy = -PLANE_H/2 + (j + 0.5) * cellH + (Math.random() - 0.5) * cellH * 0.7;
+        const cx = -PLANE_W/2 + (i + 0.5) * cellW + (rand() - 0.5) * cellW * 0.62;
+        const cy = -PLANE_H/2 + (j + 0.5) * cellH + (rand() - 0.5) * cellH * 0.62;
         sites.push([cx, cy]);
       }
     }
@@ -703,12 +1987,17 @@
       geom.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
       geom.computeVertexNormals();
 
-      const mat = new THREE.MeshBasicMaterial({
+      const baseTint = new THREE.Color().setHSL(0.08, 0.14, 0.96 + rand() * 0.03);
+      const glintTint = new THREE.Color(0xffe2bd);
+      const mat = new THREE.MeshLambertMaterial({
         map: tex,
         transparent: true,
         opacity: 1,
         side: THREE.DoubleSide,
         depthWrite: false,
+        color: baseTint,
+        emissive: 0x2a1a10,
+        emissiveIntensity: 0.12,
       });
       const mesh = new THREE.Mesh(geom, mat);
       mesh.position.set(cx, cy, 0);
@@ -725,9 +2014,9 @@
       ]);
       edgeGeom.setAttribute('position', new THREE.BufferAttribute(edgePos, 3));
       const edgeMat = new THREE.LineBasicMaterial({
-        color: 0xd24a2e,
+        color: 0xf2b37a,
         transparent: true,
-        opacity: 0.15,
+        opacity: 0.004,
       });
       const edges = new THREE.LineSegments(edgeGeom, edgeMat);
       mesh.add(edges);
@@ -736,14 +2025,22 @@
 
       shards.push({
         mesh, mat, edgeMat,
+        baseTint,
+        glintTint,
         cx, cy,
         // displacement state (relative to rest)
         tx: 0, ty: 0, tz: 0,
         rx: 0, ry: 0, rz: 0,
         vx: 0, vy: 0, vz: 0,
         vrx: 0, vry: 0, vrz: 0,
-        restPhase: Math.random() * Math.PI * 2,
-        restAmp: 1.5 + Math.random() * 3,
+        restPhase: rand() * Math.PI * 2,
+        restAmp: rand() * 0.18,
+        restZ: 0,
+        restRx: 0,
+        restRy: 0,
+        spinX: rand() > 0.5 ? 1 : -1,
+        spinY: rand() > 0.5 ? 1 : -1,
+        glintPhase: rand() * Math.PI * 2,
       });
     }
 
@@ -765,12 +2062,12 @@
       }
     }
 
-    return { group, shards, label: sceneSpec.label, z: zPos, texture: tex, canvas: cnv };
+    return { group, shards, backing, backingMat, label: sceneSpec.label, z: zPos, texture: tex, canvas: cnv };
   }
 
   // Build all scenes
   SCENES.forEach((sp, i) => {
-    sceneObjects.push(buildSceneShards(sp, -i * SCENE_SPACING));
+    sceneObjects.push(buildSceneShards(sp, i, -i * SCENE_SPACING));
   });
 
   // Build dot navigator
@@ -779,55 +2076,94 @@
     const idx = String(i + 1).padStart(2, '0');
     b.innerHTML = `<span>${idx}  ${sp.label}</span><span class="d"></span>`;
     b.addEventListener('click', () => {
-      proxy.scrollTo({ top: i * window.innerHeight, behavior: 'smooth' });
+      proxy.scrollTo({ top: sceneTop(i), behavior: 'smooth' });
     });
     dotsEl.appendChild(b);
   });
-  document.querySelectorAll('.nav-links a[data-go]').forEach(a => {
+  document.querySelectorAll('.nav a[data-go]').forEach(a => {
     a.addEventListener('click', e => {
+      if (a.hasAttribute('data-open-partner-form')) return;
       e.preventDefault();
       const i = parseInt(a.dataset.go, 10);
-      proxy.scrollTo({ top: i * window.innerHeight, behavior: 'smooth' });
+      proxy.scrollTo({ top: sceneTop(i), behavior: 'smooth' });
     });
   });
 
-  // ---- Scroll proxy: total height = scenes × viewportH × 1.4 ----
-  const TOTAL_SCENES = SCENES.length;
-  function setProxyHeight() {
-    proxy.querySelector('.spacer').style.height = (TOTAL_SCENES * 1.0 * window.innerHeight + window.innerHeight) + 'px';
-  }
-  setProxyHeight();
+  // ---- Scroll proxy: total height maps every scene to a reachable waypoint ----
+  updateViewport();
 
   // ---- Mouse (raycast against the active scene's plane) -------
   const mouseNDC = new THREE.Vector2(-9999, -9999);
   let mouseInside = false;
-  const mousePlane = new THREE.Vector3(); // in world coords on active scene
   const raycaster = new THREE.Raycaster();
   const planeHelper = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+
+  function currentSceneIndex() {
+    return Math.max(0, Math.min(TOTAL_SCENES - 1, Math.round(scrollTLerp)));
+  }
+  function canvasPointFromPointer(event, sceneIndex) {
+    const activeScene = sceneObjects[sceneIndex];
+    if (!activeScene) return null;
+    const ndc = new THREE.Vector2(
+      (event.clientX / window.innerWidth) * 2 - 1,
+      -(event.clientY / window.innerHeight) * 2 + 1,
+    );
+    raycaster.setFromCamera(ndc, camera);
+    planeHelper.constant = -activeScene.group.position.z;
+    const hit = new THREE.Vector3();
+    if (!raycaster.ray.intersectPlane(planeHelper, hit)) return null;
+    const local = activeScene.group.worldToLocal(hit.clone());
+    return {
+      x: ((local.x + PLANE_W / 2) / PLANE_W) * TEX_W,
+      y: ((PLANE_H / 2 - local.y) / PLANE_H) * TEX_H,
+    };
+  }
+  function previewAtPointer(event, sceneIndex) {
+    const point = canvasPointFromPointer(event, sceneIndex);
+    if (!point) return null;
+    const hotspots = sceneHotspots.get(sceneIndex) ?? [];
+    for (let i = hotspots.length - 1; i >= 0; i -= 1) {
+      const h = hotspots[i];
+      if (point.x >= h.x && point.x <= h.x + h.w && point.y >= h.y && point.y <= h.y + h.h) {
+        return h;
+      }
+    }
+    return null;
+  }
 
   window.addEventListener('pointermove', e => {
     mouseNDC.x = (e.clientX / window.innerWidth) * 2 - 1;
     mouseNDC.y = -(e.clientY / window.innerHeight) * 2 + 1;
     mouseInside = true;
-    if (introHint) introHint.style.opacity = 0;
+    const idx = currentSceneIndex();
+    proxy.style.cursor = idx < TOTAL_SCENES - 1 && previewAtPointer(e, idx) ? 'zoom-in' : 'crosshair';
   });
-  window.addEventListener('pointerleave', () => { mouseInside = false; });
+  window.addEventListener('pointerleave', () => {
+    mouseInside = false;
+    proxy.style.cursor = 'auto';
+  });
 
   // Click to shatter
   let clickKick = null; // { sceneIdx, point }
   window.addEventListener('pointerdown', e => {
     // Don't trigger clicks on UI buttons
-    if (e.target.closest('.nav, .dots, .hud')) return;
+    if (e.target.closest('.nav, .dots, .hud, .partner-form-shell, .proof-viewer-shell')) return;
+    const activeIdxForClick = currentSceneIndex();
+    if (activeIdxForClick === TOTAL_SCENES - 1) {
+      openPartnerForm();
+      return;
+    }
+    const preview = previewAtPointer(e, activeIdxForClick);
+    if (preview) {
+      openProofViewer(preview);
+      return;
+    }
     clickKick = { time: 1.0 };
   });
 
   // ---- Resize -------------------------------------------------
   window.addEventListener('resize', () => {
-    const W = window.innerWidth, H = window.innerHeight;
-    camera.aspect = W / H;
-    camera.updateProjectionMatrix();
-    renderer.setSize(W, H);
-    setProxyHeight();
+    updateViewport();
   });
 
   // ---- Loop ---------------------------------------------------
@@ -836,18 +2172,18 @@
   let t = 0;
 
   function tick() {
-    t += 0.016;
+    t += reducedMotion ? 0 : 0.016;
 
     // Update scroll progress
     const maxScroll = proxy.scrollHeight - window.innerHeight;
     const scrollNorm = maxScroll > 0 ? proxy.scrollTop / maxScroll : 0;
     scrollT = scrollNorm * (TOTAL_SCENES - 1);
-    scrollTLerp += (scrollT - scrollTLerp) * 0.08;
+    scrollTLerp += (scrollT - scrollTLerp) * (reducedMotion ? 1 : 0.08);
 
     // Keep camera fixed at z=1200, move the scenes themselves so the active
     // scene sits at z=0 in front of the camera.
-    camera.position.x = Math.sin(t * 0.15) * 12;
-    camera.position.y = Math.cos(t * 0.12) * 8;
+    camera.position.x = reducedMotion ? 0 : Math.sin(t * 0.15) * 10;
+    camera.position.y = reducedMotion ? 0 : Math.cos(t * 0.12) * 7;
     camera.lookAt(0, 0, 0);
     sceneObjects.forEach((so, i) => {
       so.group.position.z = (scrollTLerp - i) * SCENE_SPACING * -1 + (-i * SCENE_SPACING - so.z);
@@ -856,63 +2192,89 @@
     });
 
     // Determine active scene & raycast onto its plane
-    const activeIdx = Math.round(scrollTLerp);
+    const activeIdx = Math.max(0, Math.min(TOTAL_SCENES - 1, Math.round(scrollTLerp)));
     const activeScene = sceneObjects[activeIdx];
     let mouseWorld = null;
     if (mouseInside && activeScene) {
       raycaster.setFromCamera(mouseNDC, camera);
-      // plane at z = activeScene.z facing +z
-      planeHelper.constant = -activeScene.z;
+      // Raycast against the group's current world depth so hover stays aligned after scroll.
+      planeHelper.constant = -activeScene.group.position.z;
       const hit = new THREE.Vector3();
       if (raycaster.ray.intersectPlane(planeHelper, hit)) {
         mouseWorld = hit;
       }
     }
 
-    const HOVER_R = 220;
+    const HOVER_R = compactLayout() ? 150 : 220;
     const HOVER_R2 = HOVER_R * HOVER_R;
+    const KICK_R = compactLayout() ? 430 : 620;
 
     sceneObjects.forEach((so, sIdx) => {
       const distFromActive = Math.abs(scrollTLerp - sIdx);
+      so.group.visible = distFromActive < 1.05;
+      if (!so.group.visible) return;
       // Scene fades out as we move away
-      const alpha = Math.max(0, 1 - distFromActive * 0.55);
-      const scaleBoost = Math.max(0.6, 1 - distFromActive * 0.05);
+      const alpha = Math.max(0, 1 - distFromActive * 1.8);
+      const scaleBoost = frameScale * Math.max(0.72, 1 - distFromActive * 0.045);
 
       so.group.scale.setScalar(scaleBoost);
+      so.backing.visible = alpha > 0.02;
+      so.backingMat.opacity = alpha;
 
       so.shards.forEach(s => {
+        const glint = Math.max(0, Math.sin(t * 0.8 + s.glintPhase)) * 0.014;
+        const glintMix = Math.min(0.2, glint * 6);
+        if (reducedMotion) {
+          s.mesh.position.set(s.cx, s.cy, 0);
+          s.mesh.rotation.set(0, 0, 0);
+          s.mat.opacity = alpha;
+          s.mat.color.copy(s.baseTint).lerp(s.glintTint, glintMix);
+          s.edgeMat.opacity += (((0.003 + glint * 0.45) * alpha) - s.edgeMat.opacity) * 0.1;
+          s.mesh.visible = alpha > 0.02;
+          return;
+        }
+        const hasPointer = mouseWorld && sIdx === activeIdx;
+        let dx = 0, dy = 0;
+        if (hasPointer) {
+          s.mesh.getWorldPosition(shardWorld);
+          dx = shardWorld.x - mouseWorld.x;
+          dy = shardWorld.y - mouseWorld.y;
+        }
+
         // Hover repulsion (only for active scene)
-        if (mouseWorld && sIdx === activeIdx) {
-          const dx = (s.cx + so.group.position.x) - mouseWorld.x;
-          const dy = (s.cy + so.group.position.y) - mouseWorld.y;
+        if (hasPointer) {
           const d2 = dx*dx + dy*dy;
           if (d2 < HOVER_R2) {
             const d = Math.sqrt(d2) || 1;
             const falloff = 1 - d / HOVER_R;
-            const force = falloff * falloff * 2.2;
+            const force = falloff * falloff * 1.45;
             s.vx += (dx / d) * force;
             s.vy += (dy / d) * force;
-            s.vz += force * 3.5;
-            s.vrx += (Math.random() - 0.5) * falloff * 0.04;
-            s.vry += (Math.random() - 0.5) * falloff * 0.04;
-            s.vrz += (dx / d) * falloff * 0.03;
+            s.vz += force * 2.5;
+            s.vrx += s.spinX * falloff * 0.012;
+            s.vry += s.spinY * falloff * 0.012;
+            s.vrz += (dx / d) * falloff * 0.018;
 
-            s.edgeMat.opacity = Math.min(0.9, s.edgeMat.opacity + falloff * 0.05);
+            s.edgeMat.opacity = Math.min(0.2, s.edgeMat.opacity + falloff * 0.018);
           }
         }
 
         // Click kick (only on active scene)
-        if (clickKick && clickKick.time > 0.95 && sIdx === activeIdx && mouseWorld) {
-          const dx = s.cx - mouseWorld.x;
-          const dy = s.cy - mouseWorld.y;
-          const d = Math.max(40, Math.hypot(dx, dy));
-          const f = 380 / d;
-          s.vx += (dx / d) * f * 18;
-          s.vy += (dy / d) * f * 18;
-          s.vz += f * 20;
-          s.vrx += (Math.random() - 0.5) * 0.5;
-          s.vry += (Math.random() - 0.5) * 0.5;
-          s.vrz += (Math.random() - 0.5) * 0.5;
+        if (clickKick && hasPointer) {
+          const d = Math.max(1, Math.hypot(dx, dy));
+          const travel = (1 - clickKick.time) * KICK_R;
+          const wave = Math.max(0, 1 - Math.abs(d - travel) / 170);
+          const falloff = Math.max(0, 1 - d / KICK_R);
+          const f = wave * falloff * 8.5;
+          if (f > 0) {
+            s.vx += (dx / d) * f * 1.8;
+            s.vy += (dy / d) * f * 1.8;
+            s.vz += f * 3.8;
+            s.vrx += s.spinX * f * 0.018;
+            s.vry += s.spinY * f * 0.018;
+            s.vrz += Math.sin(s.restPhase + d * 0.01) * f * 0.02;
+            s.edgeMat.opacity = Math.min(0.3, s.edgeMat.opacity + f * 0.012);
+          }
         }
 
         // Scroll-induced drift: each scene's shards stagger entry/exit based on scroll proximity
@@ -920,19 +2282,19 @@
         if (Math.abs(distFromActive) > 0.05 && Math.abs(distFromActive) < 1.2) {
           const dir = scrollTLerp - sIdx;
           const phase = (s.restPhase + s.cx * 0.001) ;
-          s.vx += Math.cos(phase) * 0.12 * dir;
-          s.vy += Math.sin(phase) * 0.12 * dir;
-          s.vrz += Math.sin(phase * 1.7) * 0.002 * dir;
+          s.vx += Math.cos(phase) * 0.075 * dir;
+          s.vy += Math.sin(phase) * 0.075 * dir;
+          s.vrz += Math.sin(phase * 1.7) * 0.0015 * dir;
         }
 
         // Rest oscillation (subtle ambient motion)
-        const restX = Math.sin(t * 0.5 + s.restPhase) * s.restAmp * 0.4;
-        const restY = Math.cos(t * 0.4 + s.restPhase) * s.restAmp * 0.4;
+        const restX = Math.sin(t * 0.5 + s.restPhase) * s.restAmp;
+        const restY = Math.cos(t * 0.4 + s.restPhase) * s.restAmp;
         s.vx += (restX - s.tx) * 0.025;
         s.vy += (restY - s.ty) * 0.025;
-        s.vz += (0 - s.tz) * 0.045;
-        s.vrx += (0 - s.rx) * 0.04;
-        s.vry += (0 - s.ry) * 0.04;
+        s.vz += (s.restZ - s.tz) * 0.042;
+        s.vrx += (s.restRx - s.rx) * 0.04;
+        s.vry += (s.restRy - s.ry) * 0.04;
         s.vrz += (0 - s.rz) * 0.04;
 
         // Damping
@@ -947,18 +2309,19 @@
 
         // Material alpha
         s.mat.opacity = alpha;
-        s.edgeMat.opacity += (0.15 * alpha - s.edgeMat.opacity) * 0.06;
+        s.mat.color.copy(s.baseTint).lerp(s.glintTint, glintMix + Math.min(0.18, Math.abs(s.rz) * 0.45));
+        s.edgeMat.opacity += (((0.004 + glint * 0.55) * alpha) - s.edgeMat.opacity) * 0.06;
         s.mesh.visible = alpha > 0.02;
       });
     });
 
     if (clickKick) {
-      clickKick.time *= 0.6;
+      clickKick.time *= 0.88;
       if (clickKick.time < 0.05) clickKick = null;
     }
 
     // HUD updates
-    const idx = Math.round(scrollTLerp);
+    const idx = Math.max(0, Math.min(TOTAL_SCENES - 1, Math.round(scrollTLerp)));
     sceneNumEl.textContent = String(idx + 1).padStart(2, '0') + ' / ' + String(TOTAL_SCENES).padStart(2, '0');
     sceneLabelEl.textContent = SCENES[idx].label;
     fillEl.style.width = (scrollNorm * 100) + '%';
@@ -974,11 +2337,7 @@
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(() => {
       // Redraw all scene textures now that fonts are loaded
-      sceneObjects.forEach((so, i) => {
-        const newCanvas = SCENES[i].build();
-        so.texture.image = newCanvas;
-        so.texture.needsUpdate = true;
-      });
+      redrawSceneTextures();
     });
   }
 

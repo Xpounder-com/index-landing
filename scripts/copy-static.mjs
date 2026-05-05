@@ -1,22 +1,35 @@
-import { cp, mkdir, readdir } from 'node:fs/promises';
-import { extname, join } from 'node:path';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 
 const root = process.cwd();
 const dist = join(root, 'dist');
-const staticExtensions = new Set(['.html', '.jsx', '.css']);
-const staticDirs = new Set(['screenshots', 'uploads']);
+const siteUrl = (process.env.VITE_SITE_URL || 'https://www.index.app').replace(/\/+$/, '');
+const now = new Date().toISOString();
 
 await mkdir(dist, { recursive: true });
 
-for (const entry of await readdir(root, { withFileTypes: true })) {
-  const source = join(root, entry.name);
-  const target = join(dist, entry.name);
+await writeFile(
+  join(dist, 'robots.txt'),
+  [
+    'User-agent: *',
+    'Allow: /',
+    `Sitemap: ${siteUrl}/sitemap.xml`,
+    '',
+  ].join('\n'),
+);
 
-  if (entry.isFile() && entry.name !== 'index.html' && staticExtensions.has(extname(entry.name))) {
-    await cp(source, target);
-  }
-
-  if (entry.isDirectory() && staticDirs.has(entry.name)) {
-    await cp(source, target, { recursive: true });
-  }
-}
+await writeFile(
+  join(dist, 'sitemap.xml'),
+  [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    '  <url>',
+    `    <loc>${siteUrl}/</loc>`,
+    `    <lastmod>${now}</lastmod>`,
+    '    <changefreq>weekly</changefreq>',
+    '    <priority>1.0</priority>',
+    '  </url>',
+    '</urlset>',
+    '',
+  ].join('\n'),
+);
