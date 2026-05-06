@@ -1,5 +1,6 @@
 import { createReadStream } from 'node:fs';
 import { access, readFile, readdir, stat } from 'node:fs/promises';
+import { generateKeyPairSync } from 'node:crypto';
 import { createServer } from 'node:http';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -47,6 +48,11 @@ const productAssets = [
 ];
 
 const textExtensions = new Set(['.css', '.html', '.js', '.svg', '.txt', '.xml']);
+const expectedDemoUrl = process.env.VITE_DEMO_URL || '';
+const smokeDemoCode = process.env.DEMO_ACCESS_CODE || 'INDEX-DEMO-SMOKE';
+if (!expectedDemoUrl) {
+  throw new Error('VITE_DEMO_URL is required for smoke. Build and smoke with VITE_DEMO_URL pointing at the product login URL.');
+}
 
 const collectTextFiles = async (dir) => {
   const entries = await readdir(dir, { withFileTypes: true });
@@ -59,6 +65,104 @@ const collectTextFiles = async (dir) => {
   }));
   return nestedFiles.flat();
 };
+
+const mockReq = (body) => ({
+  method: 'POST',
+  body,
+  headers: {
+    referer: 'https://www.neuralint.io/idx/',
+    'user-agent': 'index-landing-smoke',
+  },
+});
+
+const mockRes = () => {
+  const response = {
+    headers: {},
+    statusCode: 200,
+    body: '',
+    setHeader(key, value) {
+      this.headers[key.toLowerCase()] = value;
+    },
+    end(value) {
+      this.body = value;
+    },
+  };
+  return response;
+};
+
+const parseJsonBody = (response) => JSON.parse(response.body || '{}');
+
+async function runContactApiSmoke() {
+  const previousEnv = {
+    GOOGLE_SHEET_ID: process.env.GOOGLE_SHEET_ID,
+    GOOGLE_SERVICE_ACCOUNT_EMAIL: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+    GOOGLE_PRIVATE_KEY: process.env.GOOGLE_PRIVATE_KEY,
+    DEMO_ACCESS_CODE: process.env.DEMO_ACCESS_CODE,
+  };
+  const previousFetch = globalThis.fetch;
+  const { privateKey } = generateKeyPairSync('rsa', { modulusLength: 2048 });
+  const appendedRows = [];
+
+  process.env.GOOGLE_SHEET_ID = 'smoke-sheet';
+  process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL = 'index-landing-smoke@neuralint.test';
+  process.env.GOOGLE_PRIVATE_KEY = privateKey.export({ type: 'pkcs8', format: 'pem' });
+  process.env.DEMO_ACCESS_CODE = smokeDemoCode;
+
+  globalThis.fetch = async (url, init = {}) => {
+    const textUrl = String(url);
+    if (textUrl === 'https://oauth2.googleapis.com/token') {
+      return Response.json({ access_token: 'smoke-token' });
+    }
+    if (textUrl.startsWith('https://sheets.googleapis.com/')) {
+      appendedRows.push(JSON.parse(String(init.body || '{}')).values?.[0] ?? []);
+      return Response.json({ updates: { updatedRows: 1 } });
+    }
+    return new Response('{}', { status: 404 });
+  };
+
+  try {
+    const { default: handler } = await import(`../api/contact.js?smoke=${Date.now()}`);
+
+    const demoResponse = mockRes();
+    await handler(mockReq({
+      email: 'viewer@northstar.test',
+      page: 'https://www.neuralint.io/idx/',
+      source: 'index-demo-access',
+    }), demoResponse);
+    const demoPayload = parseJsonBody(demoResponse);
+    if (demoResponse.statusCode !== 200 || demoPayload.demo_access_code !== smokeDemoCode) {
+      throw new Error(`Demo contact API response was unexpected: ${demoResponse.statusCode} ${demoResponse.body}`);
+    }
+    const demoRow = appendedRows.at(-1);
+    if (demoRow?.[2] !== 'viewer@northstar.test' || demoRow?.[4] !== 'demo_access' || demoRow?.[7] !== 'index-demo-access') {
+      throw new Error(`Demo contact API did not append the expected row: ${JSON.stringify(demoRow)}`);
+    }
+
+    const previousConsoleError = console.error;
+    try {
+      console.error = () => {};
+      const invalidPartnerResponse = mockRes();
+      await handler(mockReq({
+        email: 'partner@northstar.test',
+        source: 'index-partner-landing',
+      }), invalidPartnerResponse);
+      const invalidPayload = parseJsonBody(invalidPartnerResponse);
+      if (invalidPartnerResponse.statusCode !== 400 || invalidPayload.error !== 'missing_required_fields') {
+        throw new Error(`Partner validation changed unexpectedly: ${invalidPartnerResponse.statusCode} ${invalidPartnerResponse.body}`);
+      }
+    } finally {
+      console.error = previousConsoleError;
+    }
+  } finally {
+    globalThis.fetch = previousFetch;
+    Object.entries(previousEnv).forEach(([key, value]) => {
+      if (value == null) delete process.env[key];
+      else process.env[key] = value;
+    });
+  }
+}
+
+await runContactApiSmoke();
 
 await access(join(dist, 'index.html'));
 await access(join(dist, 'robots.txt'));
@@ -170,6 +274,7 @@ const requiredTerms = [
   'Mercury',
   'Plaid',
   'Slack',
+  'Try live demo',
 ];
 const missingRequiredTerms = requiredTerms.filter((term) => !builtLandingText.includes(term));
 if (missingRequiredTerms.length) {
@@ -191,7 +296,9 @@ const server = createServer(async (req, res) => {
       const payload = JSON.parse(Buffer.concat(chunks).toString('utf8'));
       contactSubmissions.push(payload);
       res.writeHead(200, { 'content-type': 'application/json; charset=utf-8' });
-      res.end(JSON.stringify({ ok: true }));
+      res.end(JSON.stringify(payload.source === 'index-demo-access'
+        ? { ok: true, demo_access_code: smokeDemoCode }
+        : { ok: true }));
       return;
     }
     const routedPath = stripBasePath(url.pathname);
@@ -303,7 +410,7 @@ try {
     'nav CTA',
   );
   await page.waitForFunction(() => !document.querySelector('#partner-form-modal')?.hidden, null, { timeout: 3_000 });
-  const submitVisibleFromFirstClick = await page.locator('.partner-form-submit').evaluate((el) => {
+  const submitVisibleFromFirstClick = await page.locator('#partner-form .partner-form-submit').evaluate((el) => {
     const rect = el.getBoundingClientRect();
     return rect.width > 0 && rect.height > 0 && rect.top >= 0 && rect.bottom <= window.innerHeight;
   });
@@ -316,7 +423,7 @@ try {
   await page.selectOption('#partner-type', 'solution_partner');
   await page.selectOption('#partner-volume', '3_5_per_quarter');
   await page.fill('#partner-details', 'Testing partner capture for Google Form handoff with NetSuite and AP invoice match details.');
-  await page.click('.partner-form-submit');
+  await page.click('#partner-form .partner-form-submit');
   try {
     await page.waitForFunction(() => document.querySelector('#partner-form-status')?.dataset.state === 'success', null, { timeout: 3_000 });
   } catch (error) {
@@ -345,6 +452,40 @@ try {
   }
   await page.click('[data-close-partner-form]');
   await page.waitForFunction(() => document.querySelector('#partner-form-modal')?.hidden, null, { timeout: 3_000 });
+
+  await page.click('[data-open-demo-access]');
+  await page.waitForFunction(() => !document.querySelector('#demo-access-modal')?.hidden, null, { timeout: 3_000 });
+  await page.fill('#demo-access-email', 'viewer@northstar.test');
+  await page.click('.demo-access-form .partner-form-submit');
+  await page.waitForFunction(() => document.querySelector('#demo-access-modal')?.dataset.demoState === 'ready', null, { timeout: 3_000 });
+  const demoAccessState = await page.evaluate(() => ({
+    code: document.querySelector('#demo-access-code')?.textContent,
+    href: document.querySelector('#demo-access-open')?.getAttribute('href'),
+    stored: JSON.parse(window.localStorage.getItem('index-demo-access') || '{}'),
+  }));
+  if (
+    demoAccessState.code !== smokeDemoCode
+    || demoAccessState.href !== expectedDemoUrl
+    || demoAccessState.stored?.email !== 'viewer@northstar.test'
+    || demoAccessState.stored?.code !== smokeDemoCode
+  ) {
+    throw new Error(`Demo access state was unexpected: ${JSON.stringify(demoAccessState)}`);
+  }
+  const capturedDemoLead = contactSubmissions.at(-1);
+  if (
+    capturedDemoLead?.source !== 'index-demo-access'
+    || capturedDemoLead?.email !== 'viewer@northstar.test'
+    || !capturedDemoLead?.page?.startsWith(landingUrl)
+  ) {
+    throw new Error(`Demo access did not capture expected details: ${JSON.stringify(capturedDemoLead)}`);
+  }
+  await page.click('[data-close-demo-access]');
+  await page.waitForFunction(() => document.querySelector('#demo-access-modal')?.hidden, null, { timeout: 3_000 });
+  await page.click('[data-open-demo-access]');
+  await page.waitForFunction(() => document.querySelector('#demo-access-modal')?.dataset.demoState === 'ready', null, { timeout: 3_000 });
+  await page.keyboard.press('Escape');
+  await page.waitForFunction(() => document.querySelector('#demo-access-modal')?.hidden, null, { timeout: 3_000 });
+
   await page.evaluate(() => { document.querySelector('#scroll-proxy').scrollTop = 0; });
   await expectApplyScene(
     () => page.evaluate(() => {

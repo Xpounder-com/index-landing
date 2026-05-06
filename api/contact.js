@@ -3,6 +3,7 @@ import { createPrivateKey, createSign } from 'node:crypto';
 const googleTokenUrl = 'https://oauth2.googleapis.com/token';
 const sheetsScope = 'https://www.googleapis.com/auth/spreadsheets';
 const defaultSheetRange = 'Leads!A:K';
+const demoAccessSource = 'index-demo-access';
 const maxFieldLengths = {
   name: 160,
   email: 254,
@@ -135,6 +136,25 @@ function sheetSafe(value) {
 
 function validateLead(payload) {
   const lead = Object.fromEntries(Object.keys(maxFieldLengths).map((field) => [field, cleanField(payload, field)]));
+  if (lead.source === demoAccessSource) {
+    if (!lead.email) {
+      throw Object.assign(new Error('Missing required fields: email'), {
+        statusCode: 400,
+        code: 'missing_required_fields',
+      });
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(lead.email)) {
+      throw Object.assign(new Error('Invalid email address'), {
+        statusCode: 400,
+        code: 'invalid_email',
+      });
+    }
+    return {
+      ...lead,
+      partner_type: 'demo_access',
+      details: lead.details || 'Requested live demo access.',
+    };
+  }
   const missing = requiredFields.filter((field) => !lead[field]);
   if (missing.length) {
     throw Object.assign(new Error(`Missing required fields: ${missing.join(', ')}`), {
@@ -149,6 +169,17 @@ function validateLead(payload) {
     });
   }
   return lead;
+}
+
+function demoAccessCode() {
+  const value = env('DEMO_ACCESS_CODE');
+  if (!value) {
+    throw Object.assign(new Error('DEMO_ACCESS_CODE is not configured'), {
+      statusCode: 500,
+      code: 'demo_access_code_not_configured',
+    });
+  }
+  return value;
 }
 
 function createJwt(config) {
@@ -237,9 +268,12 @@ export default async function handler(req, res) {
     const config = requireGoogleConfig();
     const payload = await readRequestJson(req);
     const lead = validateLead(payload);
+    const revealedDemoCode = lead.source === demoAccessSource ? demoAccessCode() : '';
     const accessToken = await getAccessToken(config);
     await appendLead(config, accessToken, lead, req);
-    json(res, 200, { ok: true });
+    json(res, 200, lead.source === demoAccessSource
+      ? { ok: true, demo_access_code: revealedDemoCode }
+      : { ok: true });
   } catch (error) {
     const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 500;
     console.error(error);
