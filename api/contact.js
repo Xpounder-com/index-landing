@@ -64,8 +64,9 @@ function env(name) {
 }
 
 function readServiceAccountJson() {
-  const value = env('GOOGLE_SERVICE_ACCOUNT_JSON');
+  const value = env('GOOGLE_SERVICE_ACCOUNT_JSON') || env('GOOGLE_PRIVATE_KEY');
   if (!value) return {};
+  if (!value.trim().startsWith('{')) return {};
   try {
     const parsed = JSON.parse(value);
     return {
