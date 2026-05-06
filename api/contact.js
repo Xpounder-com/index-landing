@@ -27,7 +27,18 @@ function base64url(value) {
 }
 
 function normalizePrivateKey(value) {
-  return value.replace(/\\n/g, '\n');
+  const trimmed = value.trim();
+  if (trimmed.startsWith('{')) {
+    const parsed = JSON.parse(trimmed);
+    if (typeof parsed.private_key !== 'string') {
+      throw new Error('GOOGLE_PRIVATE_KEY JSON must include private_key');
+    }
+    return normalizePrivateKey(parsed.private_key);
+  }
+  if (trimmed.startsWith('"') && trimmed.endsWith('"')) {
+    return JSON.parse(trimmed).replace(/\\n/g, '\n');
+  }
+  return trimmed.replace(/\\n/g, '\n');
 }
 
 function env(name) {
