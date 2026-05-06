@@ -63,11 +63,29 @@ function env(name) {
   return typeof value === 'string' && value.trim() ? value.trim() : '';
 }
 
+function readServiceAccountJson() {
+  const value = env('GOOGLE_SERVICE_ACCOUNT_JSON');
+  if (!value) return {};
+  try {
+    const parsed = JSON.parse(value);
+    return {
+      serviceAccountEmail: typeof parsed.client_email === 'string' ? parsed.client_email : '',
+      privateKey: typeof parsed.private_key === 'string' ? parsed.private_key : '',
+    };
+  } catch (error) {
+    throw Object.assign(error, {
+      statusCode: 500,
+      code: 'invalid_service_account_json',
+    });
+  }
+}
+
 function requireGoogleConfig() {
+  const serviceAccount = readServiceAccountJson();
   const config = {
     sheetId: env('GOOGLE_SHEET_ID'),
-    serviceAccountEmail: env('GOOGLE_SERVICE_ACCOUNT_EMAIL'),
-    privateKey: env('GOOGLE_PRIVATE_KEY'),
+    serviceAccountEmail: env('GOOGLE_SERVICE_ACCOUNT_EMAIL') || serviceAccount.serviceAccountEmail,
+    privateKey: env('GOOGLE_PRIVATE_KEY') || serviceAccount.privateKey,
     range: env('GOOGLE_SHEET_RANGE') || defaultSheetRange,
   };
   const missing = Object.entries(config)
