@@ -176,9 +176,24 @@ if (missingRequiredTerms.length) {
   throw new Error(`Required landing terms missing: ${missingRequiredTerms.join(', ')}`);
 }
 
+const contactSubmissions = [];
 const server = createServer(async (req, res) => {
   try {
     const url = new URL(req.url ?? '/', 'http://127.0.0.1');
+    if (url.pathname === '/api/contact') {
+      if (req.method !== 'POST') {
+        res.writeHead(405, { allow: 'POST', 'content-type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({ ok: false, error: 'method_not_allowed' }));
+        return;
+      }
+      const chunks = [];
+      for await (const chunk of req) chunks.push(chunk);
+      const payload = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+      contactSubmissions.push(payload);
+      res.writeHead(200, { 'content-type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({ ok: true }));
+      return;
+    }
     const routedPath = stripBasePath(url.pathname);
     const rawPath = decodeURIComponent(routedPath === '/' ? '/index.html' : routedPath);
     const safePath = normalize(rawPath).replace(/^(\.\.[/\\])+/, '');
@@ -302,9 +317,30 @@ try {
   await page.selectOption('#partner-volume', '3_5_per_quarter');
   await page.fill('#partner-details', 'Testing partner capture for Google Form handoff with NetSuite and AP invoice match details.');
   await page.click('.partner-form-submit');
-  await page.waitForFunction(() => document.querySelector('#partner-form-status')?.dataset.state === 'success', null, { timeout: 3_000 });
-  const capturedLead = await page.evaluate(() => JSON.parse(localStorage.getItem('indexPartnerLeads') ?? '[]').at(-1));
-  if (capturedLead?.email !== 'partner@example.com' || capturedLead?.partner_type !== 'solution_partner' || !capturedLead?.details?.includes('NetSuite')) {
+  try {
+    await page.waitForFunction(() => document.querySelector('#partner-form-status')?.dataset.state === 'success', null, { timeout: 3_000 });
+  } catch (error) {
+    const status = await page.locator('#partner-form-status').evaluate((el) => ({
+      text: el.textContent,
+      state: el.dataset.state,
+    }));
+    throw new Error(
+      [
+        `Partner form did not reach success state: ${JSON.stringify(status)}`,
+        `Failed requests: ${failedRequests.join(' | ') || 'none'}`,
+        `Runtime errors: ${runtimeErrors.join(' | ') || 'none'}`,
+        `Contact submissions: ${JSON.stringify(contactSubmissions)}`,
+      ].join('\n'),
+      { cause: error },
+    );
+  }
+  const capturedLead = contactSubmissions.at(-1);
+  if (
+    capturedLead?.email !== 'partner@example.com'
+    || capturedLead?.partner_type !== 'solution_partner'
+    || !capturedLead?.details?.includes('NetSuite')
+    || !capturedLead?.page?.startsWith(landingUrl)
+  ) {
     throw new Error(`Partner form did not capture expected details: ${JSON.stringify(capturedLead)}`);
   }
   await page.click('[data-close-partner-form]');

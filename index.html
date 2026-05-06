@@ -561,7 +561,7 @@
       </div>
       <button class="partner-form-close" type="button" data-close-partner-form aria-label="Close partner application form">Close</button>
     </div>
-    <form class="partner-form" id="partner-form" data-capture-target="google-form-ready">
+    <form class="partner-form" id="partner-form" data-capture-target="google-sheets">
       <div class="partner-form-grid">
         <div class="partner-form-field">
           <label for="partner-name">Name</label>
@@ -651,7 +651,7 @@ window.THREE = THREE;
   const proofViewerMeta = document.getElementById('proof-viewer-meta');
   const proofViewerMedia = document.getElementById('proof-viewer-media');
   const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-  const GOOGLE_FORM_ENDPOINT = '';
+  const PARTNER_LEAD_ENDPOINT = import.meta.env?.VITE_CONTACT_ENDPOINT || '/api/contact';
   let lastPartnerTrigger = null;
   let lastProofTrigger = null;
 
@@ -660,19 +660,9 @@ window.THREE = THREE;
     return {
       capturedAt: new Date().toISOString(),
       source: 'index-partner-landing',
+      page: window.location.href,
       ...data,
     };
-  }
-
-  function storePartnerLead(payload) {
-    const raw = localStorage.getItem('indexPartnerLeads');
-    const existing = raw ? JSON.parse(raw) : [];
-    if (!Array.isArray(existing)) {
-      throw new Error('Stored partner leads are not an array');
-    }
-    existing.push(payload);
-    localStorage.setItem('indexPartnerLeads', JSON.stringify(existing.slice(-50)));
-    window.dispatchEvent(new CustomEvent('index:partner-lead', { detail: payload }));
   }
 
   function setPartnerFormStatus(message, state = '') {
@@ -792,14 +782,14 @@ window.THREE = THREE;
     setPartnerFormStatus('Capturing partner details...', '');
 
     try {
-      if (GOOGLE_FORM_ENDPOINT) {
-        await fetch(GOOGLE_FORM_ENDPOINT, {
-          method: 'POST',
-          mode: 'no-cors',
-          body: new FormData(partnerForm),
-        });
-      } else {
-        storePartnerLead(payload);
+      const response = await fetch(PARTNER_LEAD_ENDPOINT, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || result.ok === false) {
+        throw new Error(result.message || `Contact capture failed with status ${response.status}`);
       }
       partnerForm.reset();
       setPartnerFormStatus('Captured. We will follow up with partner qualification details.', 'success');

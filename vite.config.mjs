@@ -19,6 +19,15 @@ export default defineConfig({
           .replaceAll('%BASE_URL%', basePath);
       },
     },
+    {
+      name: 'index-contact-api-dev',
+      configureServer(server) {
+        server.middlewares.use('/api/contact', async (req, res) => {
+          const { default: handler } = await import('./api/contact.js');
+          await handler(req, res);
+        });
+      },
+    },
   ],
   build: {
     chunkSizeWarningLimit: 750,
