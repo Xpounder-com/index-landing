@@ -1,4 +1,4 @@
-import { createSign } from 'node:crypto';
+import { createPrivateKey, createSign } from 'node:crypto';
 
 const googleTokenUrl = 'https://oauth2.googleapis.com/token';
 const sheetsScope = 'https://www.googleapis.com/auth/spreadsheets';
@@ -27,18 +27,35 @@ function base64url(value) {
 }
 
 function normalizePrivateKey(value) {
-  const trimmed = value.trim();
+  let trimmed = value.trim();
+  if (trimmed.startsWith('GOOGLE_PRIVATE_KEY=')) {
+    trimmed = trimmed.slice('GOOGLE_PRIVATE_KEY='.length).trim();
+  }
   if (trimmed.startsWith('{')) {
     const parsed = JSON.parse(trimmed);
     if (typeof parsed.private_key !== 'string') {
-      throw new Error('GOOGLE_PRIVATE_KEY JSON must include private_key');
+      throw Object.assign(new Error('GOOGLE_PRIVATE_KEY JSON must include private_key'), {
+        statusCode: 500,
+        code: 'invalid_private_key_format',
+      });
     }
     return normalizePrivateKey(parsed.private_key);
   }
-  if (trimmed.startsWith('"') && trimmed.endsWith('"')) {
-    return JSON.parse(trimmed).replace(/\\n/g, '\n');
+  if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
+    trimmed = trimmed.slice(1, -1);
   }
-  return trimmed.replace(/\\n/g, '\n');
+  return trimmed.replace(/\\r\\n/g, '\n').replace(/\\n/g, '\n');
+}
+
+function privateKeyObject(value) {
+  try {
+    return createPrivateKey(normalizePrivateKey(value));
+  } catch (error) {
+    throw Object.assign(error, {
+      statusCode: 500,
+      code: 'invalid_private_key_format',
+    });
+  }
 }
 
 function env(name) {
@@ -128,7 +145,7 @@ function createJwt(config) {
   const unsigned = `${base64url(header)}.${base64url(claims)}`;
   const signature = createSign('RSA-SHA256')
     .update(unsigned)
-    .sign(normalizePrivateKey(config.privateKey), 'base64url');
+    .sign(privateKeyObject(config.privateKey), 'base64url');
   return `${unsigned}.${signature}`;
 }
 
