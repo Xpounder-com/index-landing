@@ -183,6 +183,7 @@ async function getAccessToken(config) {
     throw Object.assign(new Error(`Google auth failed with status ${response.status}`), {
       statusCode: 502,
       code: 'google_auth_failed',
+      publicMessage: data.error_description || data.error || `Google auth failed with status ${response.status}`,
     });
   }
   return data.access_token;
@@ -215,10 +216,12 @@ async function appendLead(config, accessToken, lead, req) {
     },
     body: JSON.stringify({ values: [row] }),
   });
+  const data = await response.json().catch(() => ({}));
   if (!response.ok) {
     throw Object.assign(new Error(`Google Sheets append failed with status ${response.status}`), {
       statusCode: 502,
       code: 'google_sheets_append_failed',
+      publicMessage: data.error?.message || `Google Sheets append failed with status ${response.status}`,
     });
   }
 }
@@ -243,7 +246,7 @@ export default async function handler(req, res) {
     json(res, statusCode, {
       ok: false,
       error: error.code || 'contact_submit_failed',
-      message: statusCode < 500 ? error.message : 'Could not save contact details',
+      message: error.publicMessage || (statusCode < 500 ? error.message : 'Could not save contact details'),
     });
   }
 }
