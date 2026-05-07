@@ -105,6 +105,7 @@ async function runContactApiSmoke() {
   const appendedRows = [];
   const smokeProductOrigin = 'https://product-smoke.index.test';
   let productAccessCodeEnabled = true;
+  let productLoginEnabled = true;
 
   process.env.GOOGLE_SHEET_ID = 'smoke-sheet';
   process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL = 'index-landing-smoke@neuralint.test';
@@ -118,7 +119,8 @@ async function runContactApiSmoke() {
       return Response.json({
         authenticated: false,
         login_url: '/auth/login?return_to=%2Fportal%3Fjourney%3Dsample',
-        local_auth_enabled: true,
+        local_auth_enabled: productLoginEnabled,
+        google_client_id: productLoginEnabled ? 'smoke-google-client-id' : '',
         access_code_auth_enabled: productAccessCodeEnabled,
       });
     }
@@ -142,7 +144,12 @@ async function runContactApiSmoke() {
       source: 'index-demo-access',
     }), demoResponse);
     const demoPayload = parseJsonBody(demoResponse);
-    if (demoResponse.statusCode !== 200 || demoPayload.demo_access_code !== smokeDemoCode) {
+    if (
+      demoResponse.statusCode !== 200
+      || demoPayload.auth_mode !== 'access_code'
+      || demoPayload.demo_access_code !== smokeDemoCode
+      || demoPayload.demo_url !== process.env.VITE_DEMO_URL
+    ) {
       throw new Error(`Demo contact API response was unexpected: ${demoResponse.statusCode} ${demoResponse.body}`);
     }
     const demoRow = appendedRows.at(-1);
@@ -154,6 +161,23 @@ async function runContactApiSmoke() {
     try {
       console.error = () => {};
       productAccessCodeEnabled = false;
+      const loginModeDemoResponse = mockRes();
+      await handler(mockReq({
+        email: 'login@northstar.test',
+        page: 'https://www.neuralint.io/idx/',
+        source: 'index-demo-access',
+      }), loginModeDemoResponse);
+      const loginModePayload = parseJsonBody(loginModeDemoResponse);
+      if (
+        loginModeDemoResponse.statusCode !== 200
+        || loginModePayload.auth_mode !== 'login'
+        || loginModePayload.demo_access_code
+        || loginModePayload.demo_url !== process.env.VITE_DEMO_URL
+      ) {
+        throw new Error(`Demo contact API did not support login-only product auth: ${loginModeDemoResponse.statusCode} ${loginModeDemoResponse.body}`);
+      }
+
+      productLoginEnabled = false;
       const blockedDemoResponse = mockRes();
       await handler(mockReq({
         email: 'blocked@northstar.test',
@@ -161,11 +185,12 @@ async function runContactApiSmoke() {
         source: 'index-demo-access',
       }), blockedDemoResponse);
       const blockedPayload = parseJsonBody(blockedDemoResponse);
-      if (blockedDemoResponse.statusCode !== 503 || blockedPayload.error !== 'product_access_code_auth_not_configured') {
+      if (blockedDemoResponse.statusCode !== 503 || blockedPayload.error !== 'product_demo_auth_not_configured') {
         throw new Error(`Demo access readiness did not block unsupported product auth: ${blockedDemoResponse.statusCode} ${blockedDemoResponse.body}`);
       }
     } finally {
       productAccessCodeEnabled = true;
+      productLoginEnabled = true;
       console.error = previousConsoleError;
     }
 
@@ -327,7 +352,7 @@ const server = createServer(async (req, res) => {
       contactSubmissions.push(payload);
       res.writeHead(200, { 'content-type': 'application/json; charset=utf-8' });
       res.end(JSON.stringify(payload.source === 'index-demo-access'
-        ? { ok: true, demo_access_code: smokeDemoCode }
+        ? { ok: true, auth_mode: 'login', demo_url: expectedDemoUrl }
         : { ok: true }));
       return;
     }
@@ -337,7 +362,8 @@ const server = createServer(async (req, res) => {
         authenticated: false,
         login_url: '/auth/login?return_to=%2Fportal%3Fjourney%3Dsample',
         local_auth_enabled: true,
-        access_code_auth_enabled: true,
+        google_client_id: 'smoke-google-client-id',
+        access_code_auth_enabled: false,
       }));
       return;
     }
@@ -349,8 +375,8 @@ const server = createServer(async (req, res) => {
   <head><meta charset="utf-8" /><title>Index demo login</title></head>
   <body>
     <main>
-      <h1>Sign in to your document workspace</h1>
-      <form><input name="email" type="email" /><input name="access_code" type="password" /></form>
+      <h1>Sign in to IDX</h1>
+      <p>Use Google sign-in to open your private IDX workspace.</p>
       <a href="${returnTo || '/portal'}">Continue to workspace</a>
     </main>
   </body>
@@ -522,14 +548,17 @@ try {
   await page.waitForFunction(() => document.querySelector('#demo-access-modal')?.dataset.demoState === 'ready', null, { timeout: 3_000 });
   const demoAccessState = await page.evaluate(() => ({
     code: document.querySelector('#demo-access-code')?.textContent,
+    copy: document.querySelector('#demo-access-result-copy')?.textContent,
     href: document.querySelector('#demo-access-open')?.getAttribute('href'),
     stored: JSON.parse(window.localStorage.getItem('index-demo-access') || '{}'),
   }));
   if (
-    demoAccessState.code !== smokeDemoCode
+    demoAccessState.code !== 'Ready'
+    || !demoAccessState.copy?.includes('Continue with viewer@northstar.test')
     || demoAccessState.href !== expectedDemoUrl
     || demoAccessState.stored?.email !== 'viewer@northstar.test'
-    || demoAccessState.stored?.code !== smokeDemoCode
+    || demoAccessState.stored?.authMode !== 'login'
+    || demoAccessState.stored?.demoUrl !== expectedDemoUrl
   ) {
     throw new Error(`Demo access state was unexpected: ${JSON.stringify(demoAccessState)}`);
   }
@@ -558,11 +587,10 @@ try {
     }));
     if (
       demoLoginState.title !== 'Index demo login'
-      || !demoLoginState.heading?.includes('document workspace')
-      || !demoLoginState.hasEmail
-      || !demoLoginState.hasAccessCode
+      || !demoLoginState.heading?.includes('Sign in to IDX')
+      || demoLoginState.hasAccessCode
     ) {
-      throw new Error(`Demo login page did not expose the access-code form: ${JSON.stringify(demoLoginState)}`);
+      throw new Error(`Demo login page did not expose the login handoff: ${JSON.stringify(demoLoginState)}`);
     }
   }
   await demoPage.close();

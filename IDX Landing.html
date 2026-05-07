@@ -681,7 +681,7 @@
       <div>
         <p class="partner-form-kicker">Live demo</p>
         <h2 class="partner-form-title" id="demo-access-title">See the workspace.</h2>
-        <p class="partner-form-copy">Enter your work email once. We will record demo access, reveal the workspace code, and send you into the live product.</p>
+        <p class="partner-form-copy">Enter your work email once. We will record demo access and send you into the live product.</p>
       </div>
       <button class="partner-form-close" type="button" data-close-demo-access aria-label="Close live demo access form">Close</button>
     </div>
@@ -693,15 +693,15 @@
       <p class="partner-form-status" id="demo-access-status" role="status" aria-live="polite"></p>
       <div class="demo-access-actions">
         <button class="partner-form-secondary" type="button" data-close-demo-access>Keep browsing</button>
-        <button class="partner-form-submit" type="submit">Reveal demo access</button>
+        <button class="partner-form-submit" type="submit">Continue to demo</button>
       </div>
     </form>
     <div class="demo-access-result" aria-live="polite">
       <div class="demo-access-code">
-        <span>Workspace access code</span>
-        <strong id="demo-access-code">Pending</strong>
+        <span>Workspace access</span>
+        <strong id="demo-access-code">Ready</strong>
       </div>
-      <p class="demo-access-result-copy" id="demo-access-result-copy">Use this code with the same email on the product login screen.</p>
+      <p class="demo-access-result-copy" id="demo-access-result-copy">Continue with the same email on the product login screen.</p>
       <div class="demo-access-actions">
         <button class="partner-form-secondary" type="button" data-close-demo-access>Keep browsing</button>
         <a class="demo-access-open" id="demo-access-open" href="#" target="_blank" rel="noopener noreferrer">Open demo</a>
@@ -757,7 +757,8 @@ window.THREE = THREE;
   const proofViewerMedia = document.getElementById('proof-viewer-media');
   const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
   const PARTNER_LEAD_ENDPOINT = import.meta.env?.VITE_CONTACT_ENDPOINT || '/api/contact';
-  const DEMO_URL = import.meta.env?.VITE_DEMO_URL || '';
+  const DEFAULT_DEMO_URL = 'https://idx.mehrdadzaker.com/auth/login?return_to=%2Fportal%3Fjourney%3Dsample';
+  const DEMO_URL = import.meta.env?.VITE_DEMO_URL || DEFAULT_DEMO_URL;
   const DEMO_ACCESS_STORAGE_KEY = 'index-demo-access';
   let lastPartnerTrigger = null;
   let lastDemoAccessTrigger = null;
@@ -796,7 +797,9 @@ window.THREE = THREE;
       if (!parsed || typeof parsed !== 'object') return null;
       const email = String(parsed.email || '').trim();
       const code = String(parsed.code || '').trim();
-      return email && code ? { email, code } : null;
+      const authMode = String(parsed.authMode || (code ? 'access_code' : 'login')).trim();
+      const demoUrl = String(parsed.demoUrl || DEMO_URL || '').trim();
+      return email && (code || authMode !== 'access_code') ? { email, code, authMode, demoUrl } : null;
     } catch {
       return null;
     }
@@ -806,6 +809,8 @@ window.THREE = THREE;
       window.localStorage.setItem(DEMO_ACCESS_STORAGE_KEY, JSON.stringify({
         email: state.email,
         code: state.code,
+        authMode: state.authMode,
+        demoUrl: state.demoUrl,
         capturedAt: new Date().toISOString(),
       }));
     } catch {
@@ -813,12 +818,16 @@ window.THREE = THREE;
     }
   }
   function setDemoAccessReady(state) {
-    demoAccessCode.textContent = state.code;
-    demoAccessOpen.href = DEMO_URL || '#';
-    demoAccessOpen.setAttribute('aria-disabled', DEMO_URL ? 'false' : 'true');
-    demoAccessResultCopy.textContent = DEMO_URL
-      ? `Use this code with ${state.email} on the product login screen.`
-      : `Use this code with ${state.email}. The product demo URL is not configured yet.`;
+    const openUrl = state.demoUrl || DEMO_URL;
+    const isAccessCode = state.authMode === 'access_code' && state.code;
+    demoAccessCode.textContent = isAccessCode ? state.code : 'Ready';
+    demoAccessOpen.href = openUrl || '#';
+    demoAccessOpen.setAttribute('aria-disabled', openUrl ? 'false' : 'true');
+    demoAccessResultCopy.textContent = openUrl
+      ? isAccessCode
+        ? `Use this code with ${state.email} on the product login screen.`
+        : `Continue with ${state.email} on the product login screen.`
+      : `Demo access is recorded for ${state.email}. The product demo URL is not configured yet.`;
     demoAccessModal.dataset.demoState = 'ready';
   }
   function resetDemoAccessCapture() {
@@ -1016,9 +1025,15 @@ window.THREE = THREE;
       if (!response.ok || result.ok === false) {
         throw new Error(result.message || `Demo access capture failed with status ${response.status}`);
       }
+      const authMode = String(result.auth_mode || (result.demo_access_code ? 'access_code' : 'login')).trim();
       const code = String(result.demo_access_code || '').trim();
-      if (!code) throw new Error('Demo access is not configured yet.');
-      const state = { email: String(payload.email || '').trim(), code };
+      if (authMode === 'access_code' && !code) throw new Error('Demo access code is not configured yet.');
+      const state = {
+        email: String(payload.email || '').trim(),
+        code,
+        authMode,
+        demoUrl: String(result.demo_url || DEMO_URL || '').trim(),
+      };
       storeDemoAccess(state);
       setDemoAccessReady(state);
       demoAccessForm.reset();

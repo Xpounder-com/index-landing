@@ -44,8 +44,8 @@ Import this repo into the GitHub organization, then connect it to Vercel as a Vi
 - Environment variable: set `GOOGLE_SHEET_ID` to the destination Google Sheet ID
 - Environment variable: set `GOOGLE_SERVICE_ACCOUNT_EMAIL` to the service account email that has edit access to the sheet
 - Environment variable: set `GOOGLE_PRIVATE_KEY` to the service account private key, preserving escaped `\n` line breaks
-- Environment variable: set `VITE_DEMO_URL` to the product login handoff URL, for example `https://ops.your-product-host.com/auth/login?return_to=%2Fportal%3Fjourney%3Dsample`
-- Environment variable: set `DEMO_ACCESS_CODE` to the shared demo code configured on the product app as `IDX_AUTH_ACCESS_CODE`
+- Environment variable: set `VITE_DEMO_URL` to the product login handoff URL, for example `https://ops.your-product-host.com/auth/login?return_to=%2Fportal%3Fjourney%3Dsample`; the app defaults to the current Index product handoff when this is absent
+- Optional environment variable: set `DEMO_ACCESS_CODE` to the shared demo code configured on the product app as `IDX_AUTH_ACCESS_CODE` only when the product host reports `access_code_auth_enabled: true`
 - Optional environment variable: set `GOOGLE_SHEET_RANGE` to override the default `Leads!A:K`
 - Optional environment variable: set `VITE_CONTACT_ENDPOINT` to override the default `/api/contact`
 - Cloudflare: add the DNS records shown by Vercel after the custom domain is attached
@@ -56,9 +56,9 @@ See `LAUNCH_CHECKLIST.md` for the push, Vercel, Cloudflare, and verification che
 
 ## Google Sheets Capture
 
-The partner form and demo access form submit to `/api/contact`, which appends one row per lead to Google Sheets from a Vercel serverless function. Keep the Google credentials and `DEMO_ACCESS_CODE` server-side in Vercel; do not expose a private key in browser environment variables.
+The partner form and demo access form submit to `/api/contact`, which appends one row per lead to Google Sheets from a Vercel serverless function. Keep Google credentials and any optional `DEMO_ACCESS_CODE` server-side in Vercel; do not expose a private key in browser environment variables.
 
-Before revealing a workspace access code, `/api/contact` checks the product host derived from `VITE_DEMO_URL` by calling `/auth/me` and requiring `access_code_auth_enabled: true`. This keeps the landing page from revealing a code that the product login page will not accept.
+Before revealing demo access, `/api/contact` checks the product host derived from `VITE_DEMO_URL` by calling `/auth/me`. If the product supports access-code sign-in, the landing page reveals the configured code. If the product supports Google or another local product login, the landing page records access and opens the product login handoff without showing a code.
 
 Create a sheet tab named `Leads` with these columns:
 

@@ -5,9 +5,9 @@
 - Set `VITE_SITE_URL` to `https://www.neuralint.io/idx` in Vercel and confirm the generated canonical, Open Graph, Twitter, robots, and sitemap URLs use it.
 - Set `VITE_BASE` to `/idx/` in Vercel and confirm scripts, styles, images, and favicon load under `/idx/`.
 - Enable the Google Sheets API, set `GOOGLE_SHEET_ID`, `GOOGLE_SERVICE_ACCOUNT_EMAIL`, and `GOOGLE_PRIVATE_KEY` in Vercel, then share the lead sheet with the service account email.
-- Set `VITE_DEMO_URL` to the product login handoff URL and `DEMO_ACCESS_CODE` to the shared product access code.
-- In the product app, set `IDX_AUTH_SESSION_SECRET`, matching `IDX_AUTH_ACCESS_CODE`, and `IDX_V3_WORKSPACE_DEFAULT_ROLE=viewer`; keep `IDX_AUTH_DEV_BYPASS` unset in production.
-- Confirm the product app's `/auth/me` response for the demo return target reports `access_code_auth_enabled: true`.
+- Set `VITE_DEMO_URL` to the product login handoff URL, or confirm the built-in Index product handoff is still correct.
+- If using access-code sign-in, set `DEMO_ACCESS_CODE` to the shared product access code and configure matching `IDX_AUTH_ACCESS_CODE` in the product app.
+- Confirm the product app's `/auth/me` response for the demo return target reports either `access_code_auth_enabled: true` or another enabled product login method such as Google sign-in.
 - Keep `IDX Landing.html` mirrored from `index.html` if you still want the local snapshot under the legacy filename.
 - Confirm the seven product screenshots in `public/assets/product/` are approved for public use.
 - Add final partner logos, named testimonials, or case-study evidence only when approved.
@@ -36,8 +36,8 @@
 - Confirm `dist/` contains only the landing route, Vite assets, public assets, `robots.txt`, and `sitemap.xml`.
 - Verify scene 06 is reachable by scroll, dots, and nav.
 - Verify `Start application` opens the partner form and appends email plus partner details to Google Sheets.
-- Verify `Try live demo` captures a work email, reveals the demo access code, stores local demo access state, and opens the configured product login URL.
-- Verify the configured product login page accepts the revealed access code and lands in `/portal?journey=sample`.
+- Verify `Try live demo` captures a work email, reveals demo access, stores local demo access state, and opens the configured product login URL.
+- Verify the configured product login page accepts the active sign-in method and lands in `/portal?journey=sample`.
 - Verify proof cards open the high-quality product preview viewer.
 - Verify connector names and logos rotate through the approved connector list.
 - Verify all product images load with no console errors or failed requests.

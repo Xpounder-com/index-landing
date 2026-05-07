@@ -4,6 +4,7 @@ const googleTokenUrl = 'https://oauth2.googleapis.com/token';
 const sheetsScope = 'https://www.googleapis.com/auth/spreadsheets';
 const defaultSheetRange = 'Leads!A:K';
 const demoAccessSource = 'index-demo-access';
+const defaultDemoUrl = 'https://idx.mehrdadzaker.com/auth/login?return_to=%2Fportal%3Fjourney%3Dsample';
 const maxFieldLengths = {
   name: 160,
   email: 254,
@@ -171,20 +172,13 @@ function validateLead(payload) {
   return lead;
 }
 
-function demoAccessCode() {
+function optionalDemoAccessCode() {
   const value = env('DEMO_ACCESS_CODE');
-  if (!value) {
-    throw Object.assign(new Error('DEMO_ACCESS_CODE is not configured'), {
-      statusCode: 500,
-      code: 'demo_access_code_not_configured',
-      publicMessage: 'Demo access code is not configured yet.',
-    });
-  }
   return value;
 }
 
 function demoUrl() {
-  return env('VITE_DEMO_URL') || env('DEMO_URL');
+  return env('VITE_DEMO_URL') || env('DEMO_URL') || defaultDemoUrl;
 }
 
 function requestOrigin(req) {
@@ -221,7 +215,7 @@ function demoAuthCheckUrl(rawDemoUrl, req) {
   }
 }
 
-async function requireDemoAccessProductSupport(rawDemoUrl, req) {
+async function demoAccessProductStatus(rawDemoUrl, req) {
   const endpoint = demoAuthCheckUrl(rawDemoUrl, req);
   const response = await fetch(endpoint, {
     headers: { accept: 'application/json' },
@@ -234,13 +228,20 @@ async function requireDemoAccessProductSupport(rawDemoUrl, req) {
       publicMessage: data.detail || data.message || `Product auth check failed with status ${response.status}`,
     });
   }
-  if (data.access_code_auth_enabled !== true) {
-    throw Object.assign(new Error('Product demo access-code sign-in is not configured'), {
+  const supportsAccessCode = data.access_code_auth_enabled === true;
+  const supportsProductLogin = supportsAccessCode || data.local_auth_enabled === true || Boolean(data.google_client_id);
+  if (!supportsProductLogin) {
+    throw Object.assign(new Error('Product demo sign-in is not configured'), {
       statusCode: 503,
-      code: 'product_access_code_auth_not_configured',
-      publicMessage: 'The product demo is not configured for access-code sign-in yet.',
+      code: 'product_demo_auth_not_configured',
+      publicMessage: 'The product demo is not configured for sign-in yet.',
     });
   }
+  return {
+    authMode: supportsAccessCode ? 'access_code' : 'login',
+    demoUrl: rawDemoUrl,
+    productLoginUrl: typeof data.login_url === 'string' ? data.login_url : '',
+  };
 }
 
 function createJwt(config) {
@@ -328,15 +329,32 @@ export default async function handler(req, res) {
   try {
     const payload = await readRequestJson(req);
     const lead = validateLead(payload);
-    const revealedDemoCode = lead.source === demoAccessSource ? demoAccessCode() : '';
+    const configuredDemoUrl = demoUrl();
+    const productStatus = lead.source === demoAccessSource
+      ? await demoAccessProductStatus(configuredDemoUrl, req)
+      : null;
+    const revealedDemoCode = productStatus?.authMode === 'access_code'
+      ? optionalDemoAccessCode()
+      : '';
     if (lead.source === demoAccessSource) {
-      await requireDemoAccessProductSupport(demoUrl(), req);
+      if (productStatus?.authMode === 'access_code' && !revealedDemoCode) {
+        throw Object.assign(new Error('DEMO_ACCESS_CODE is not configured'), {
+          statusCode: 500,
+          code: 'demo_access_code_not_configured',
+          publicMessage: 'Demo access code is not configured yet.',
+        });
+      }
     }
     const config = requireGoogleConfig();
     const accessToken = await getAccessToken(config);
     await appendLead(config, accessToken, lead, req);
     json(res, 200, lead.source === demoAccessSource
-      ? { ok: true, demo_access_code: revealedDemoCode }
+      ? {
+          ok: true,
+          auth_mode: productStatus.authMode,
+          demo_access_code: revealedDemoCode,
+          demo_url: productStatus.demoUrl,
+        }
       : { ok: true });
   } catch (error) {
     const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 500;
