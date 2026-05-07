@@ -704,7 +704,7 @@
       <p class="demo-access-result-copy" id="demo-access-result-copy">Use this code with the same email on the product login screen.</p>
       <div class="demo-access-actions">
         <button class="partner-form-secondary" type="button" data-close-demo-access>Keep browsing</button>
-        <a class="demo-access-open" id="demo-access-open" href="#" target="_blank" rel="noreferrer">Open demo</a>
+        <a class="demo-access-open" id="demo-access-open" href="#" target="_blank" rel="noopener noreferrer">Open demo</a>
       </div>
     </div>
   </div>
@@ -1024,7 +1024,9 @@ window.THREE = THREE;
       demoAccessForm.reset();
     } catch (error) {
       console.error(error);
-      setDemoAccessStatus('Could not reveal demo access. Please try again.', 'error');
+      setDemoAccessStatus(error instanceof Error && error.message
+        ? error.message
+        : 'Could not reveal demo access. Please try again.', 'error');
     } finally {
       submitButton.disabled = false;
     }

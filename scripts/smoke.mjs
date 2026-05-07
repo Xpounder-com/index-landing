@@ -98,18 +98,30 @@ async function runContactApiSmoke() {
     GOOGLE_SERVICE_ACCOUNT_EMAIL: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
     GOOGLE_PRIVATE_KEY: process.env.GOOGLE_PRIVATE_KEY,
     DEMO_ACCESS_CODE: process.env.DEMO_ACCESS_CODE,
+    VITE_DEMO_URL: process.env.VITE_DEMO_URL,
   };
   const previousFetch = globalThis.fetch;
   const { privateKey } = generateKeyPairSync('rsa', { modulusLength: 2048 });
   const appendedRows = [];
+  const smokeProductOrigin = 'https://product-smoke.index.test';
+  let productAccessCodeEnabled = true;
 
   process.env.GOOGLE_SHEET_ID = 'smoke-sheet';
   process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL = 'index-landing-smoke@neuralint.test';
   process.env.GOOGLE_PRIVATE_KEY = privateKey.export({ type: 'pkcs8', format: 'pem' });
   process.env.DEMO_ACCESS_CODE = smokeDemoCode;
+  process.env.VITE_DEMO_URL = `${smokeProductOrigin}/auth/login?return_to=%2Fportal%3Fjourney%3Dsample`;
 
   globalThis.fetch = async (url, init = {}) => {
     const textUrl = String(url);
+    if (textUrl.startsWith(`${smokeProductOrigin}/auth/me`)) {
+      return Response.json({
+        authenticated: false,
+        login_url: '/auth/login?return_to=%2Fportal%3Fjourney%3Dsample',
+        local_auth_enabled: true,
+        access_code_auth_enabled: productAccessCodeEnabled,
+      });
+    }
     if (textUrl === 'https://oauth2.googleapis.com/token') {
       return Response.json({ access_token: 'smoke-token' });
     }
@@ -139,6 +151,24 @@ async function runContactApiSmoke() {
     }
 
     const previousConsoleError = console.error;
+    try {
+      console.error = () => {};
+      productAccessCodeEnabled = false;
+      const blockedDemoResponse = mockRes();
+      await handler(mockReq({
+        email: 'blocked@northstar.test',
+        page: 'https://www.neuralint.io/idx/',
+        source: 'index-demo-access',
+      }), blockedDemoResponse);
+      const blockedPayload = parseJsonBody(blockedDemoResponse);
+      if (blockedDemoResponse.statusCode !== 503 || blockedPayload.error !== 'product_access_code_auth_not_configured') {
+        throw new Error(`Demo access readiness did not block unsupported product auth: ${blockedDemoResponse.statusCode} ${blockedDemoResponse.body}`);
+      }
+    } finally {
+      productAccessCodeEnabled = true;
+      console.error = previousConsoleError;
+    }
+
     try {
       console.error = () => {};
       const invalidPartnerResponse = mockRes();
@@ -301,6 +331,37 @@ const server = createServer(async (req, res) => {
         : { ok: true }));
       return;
     }
+    if (url.pathname === '/auth/me') {
+      res.writeHead(200, { 'content-type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({
+        authenticated: false,
+        login_url: '/auth/login?return_to=%2Fportal%3Fjourney%3Dsample',
+        local_auth_enabled: true,
+        access_code_auth_enabled: true,
+      }));
+      return;
+    }
+    if (url.pathname === '/auth/login') {
+      const returnTo = url.searchParams.get('return_to') || '';
+      res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
+      res.end(`<!doctype html>
+<html lang="en">
+  <head><meta charset="utf-8" /><title>Index demo login</title></head>
+  <body>
+    <main>
+      <h1>Sign in to your document workspace</h1>
+      <form><input name="email" type="email" /><input name="access_code" type="password" /></form>
+      <a href="${returnTo || '/portal'}">Continue to workspace</a>
+    </main>
+  </body>
+</html>`);
+      return;
+    }
+    if (url.pathname === '/portal') {
+      res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
+      res.end('<!doctype html><title>Index demo workspace</title><h1>Index sample workspace</h1>');
+      return;
+    }
     const routedPath = stripBasePath(url.pathname);
     const rawPath = decodeURIComponent(routedPath === '/' ? '/index.html' : routedPath);
     const safePath = normalize(rawPath).replace(/^(\.\.[/\\])+/, '');
@@ -325,6 +386,7 @@ await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
 const { port } = server.address();
 const origin = `http://127.0.0.1:${port}`;
 const landingUrl = `${origin}${basePath}`;
+const expectedDemoOpenUrl = new URL(expectedDemoUrl, origin).toString();
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
@@ -479,6 +541,31 @@ try {
   ) {
     throw new Error(`Demo access did not capture expected details: ${JSON.stringify(capturedDemoLead)}`);
   }
+  const [demoPage] = await Promise.all([
+    page.waitForEvent('popup', { timeout: 3_000 }),
+    page.click('#demo-access-open'),
+  ]);
+  await demoPage.waitForLoadState('domcontentloaded', { timeout: 5_000 });
+  if (demoPage.url() !== expectedDemoOpenUrl) {
+    throw new Error(`Demo open target was unexpected: ${demoPage.url()}`);
+  }
+  if (new URL(expectedDemoOpenUrl).origin === origin) {
+    const demoLoginState = await demoPage.evaluate(() => ({
+      title: document.title,
+      heading: document.querySelector('h1')?.textContent,
+      hasEmail: !!document.querySelector('input[name="email"]'),
+      hasAccessCode: !!document.querySelector('input[name="access_code"]'),
+    }));
+    if (
+      demoLoginState.title !== 'Index demo login'
+      || !demoLoginState.heading?.includes('document workspace')
+      || !demoLoginState.hasEmail
+      || !demoLoginState.hasAccessCode
+    ) {
+      throw new Error(`Demo login page did not expose the access-code form: ${JSON.stringify(demoLoginState)}`);
+    }
+  }
+  await demoPage.close();
   await page.click('[data-close-demo-access]');
   await page.waitForFunction(() => document.querySelector('#demo-access-modal')?.hidden, null, { timeout: 3_000 });
   await page.click('[data-open-demo-access]');

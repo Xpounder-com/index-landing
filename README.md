@@ -58,6 +58,8 @@ See `LAUNCH_CHECKLIST.md` for the push, Vercel, Cloudflare, and verification che
 
 The partner form and demo access form submit to `/api/contact`, which appends one row per lead to Google Sheets from a Vercel serverless function. Keep the Google credentials and `DEMO_ACCESS_CODE` server-side in Vercel; do not expose a private key in browser environment variables.
 
+Before revealing a workspace access code, `/api/contact` checks the product host derived from `VITE_DEMO_URL` by calling `/auth/me` and requiring `access_code_auth_enabled: true`. This keeps the landing page from revealing a code that the product login page will not accept.
+
 Create a sheet tab named `Leads` with these columns:
 
 ```text

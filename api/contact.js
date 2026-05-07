@@ -177,9 +177,70 @@ function demoAccessCode() {
     throw Object.assign(new Error('DEMO_ACCESS_CODE is not configured'), {
       statusCode: 500,
       code: 'demo_access_code_not_configured',
+      publicMessage: 'Demo access code is not configured yet.',
     });
   }
   return value;
+}
+
+function demoUrl() {
+  return env('VITE_DEMO_URL') || env('DEMO_URL');
+}
+
+function requestOrigin(req) {
+  const host = String(req.headers.host || '').trim();
+  if (!host) return 'https://www.neuralint.io';
+  const forwardedProto = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim();
+  const proto = forwardedProto || (host.startsWith('127.0.0.1') || host.startsWith('localhost') ? 'http' : 'https');
+  return `${proto}://${host}`;
+}
+
+function demoAuthCheckUrl(rawDemoUrl, req) {
+  if (!rawDemoUrl) {
+    throw Object.assign(new Error('VITE_DEMO_URL is not configured'), {
+      statusCode: 500,
+      code: 'demo_url_not_configured',
+      publicMessage: 'The product demo URL is not configured yet.',
+    });
+  }
+  try {
+    const parsedDemoUrl = new URL(rawDemoUrl, requestOrigin(req));
+    const returnTo = parsedDemoUrl.searchParams.get('return_to') || '/portal';
+    const authCheckUrl = new URL('/auth/me', parsedDemoUrl.origin);
+    authCheckUrl.searchParams.set(
+      'return_to',
+      new URL(returnTo, parsedDemoUrl.origin).toString(),
+    );
+    return authCheckUrl;
+  } catch (error) {
+    throw Object.assign(error, {
+      statusCode: 500,
+      code: 'invalid_demo_url',
+      publicMessage: 'The product demo URL is invalid.',
+    });
+  }
+}
+
+async function requireDemoAccessProductSupport(rawDemoUrl, req) {
+  const endpoint = demoAuthCheckUrl(rawDemoUrl, req);
+  const response = await fetch(endpoint, {
+    headers: { accept: 'application/json' },
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw Object.assign(new Error(`Product auth check failed with status ${response.status}`), {
+      statusCode: 502,
+      code: 'product_auth_check_failed',
+      publicMessage: data.detail || data.message || `Product auth check failed with status ${response.status}`,
+    });
+  }
+  if (data.access_code_auth_enabled !== true) {
+    throw Object.assign(new Error('Product demo access-code sign-in is not configured'), {
+      statusCode: 503,
+      code: 'product_access_code_auth_not_configured',
+      publicMessage: 'The product demo is not configured for access-code sign-in yet.',
+    });
+  }
 }
 
 function createJwt(config) {
@@ -265,10 +326,13 @@ export default async function handler(req, res) {
   }
 
   try {
-    const config = requireGoogleConfig();
     const payload = await readRequestJson(req);
     const lead = validateLead(payload);
     const revealedDemoCode = lead.source === demoAccessSource ? demoAccessCode() : '';
+    if (lead.source === demoAccessSource) {
+      await requireDemoAccessProductSupport(demoUrl(), req);
+    }
+    const config = requireGoogleConfig();
     const accessToken = await getAccessToken(config);
     await appendLead(config, accessToken, lead, req);
     json(res, 200, lead.source === demoAccessSource
