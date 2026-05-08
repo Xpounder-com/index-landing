@@ -1331,6 +1331,7 @@ window.THREE = THREE;
     const letterColor = opts.letterColor || '#050606';
     const graphStart = opts.graphStart || '#ddf4f2';
     const graphEnd = opts.graphEnd || '#78d5d0';
+    const graphRail = opts.graphRail || '#8fe6df';
     const nodeFill = opts.nodeFill || '#052f37';
     const nodeStroke = opts.nodeStroke || '#ddf4f2';
     const p = (value) => value * scale;
@@ -1353,29 +1354,33 @@ window.THREE = THREE;
       ctx.lineWidth = 6 * scale;
       ctx.stroke();
     };
+    const circleNode = (cx, cy, radius, fill = nodeFill, stroke = nodeStroke, width = 5) => {
+      ctx.beginPath();
+      ctx.arc(x + p(cx), y + p(cy), p(radius), 0, Math.PI * 2);
+      ctx.fillStyle = fill;
+      ctx.fill();
+      ctx.strokeStyle = stroke;
+      ctx.lineWidth = width * scale;
+      ctx.stroke();
+    };
 
     ctx.save();
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    const graphStroke = ctx.createLinearGradient(x + p(59), y + p(77), x + p(160), y + p(128));
+    const graphStroke = ctx.createLinearGradient(x + p(59), y + p(77), x + p(158), y + p(133));
     graphStroke.addColorStop(0, graphStart);
     graphStroke.addColorStop(1, graphEnd);
 
-    line(letterColor, 18, [[13, 30], [59, 77]]);
-    line(letterColor, 18, [[14, 126], [59, 77]]);
-    line(graphStroke, 12, [[59, 77], [117, 28]]);
-    line(graphStroke, 12, [[59, 77], [119, 128]]);
-    line(graphEnd, 7, [[59, 77], [160, 77]]);
-    line(graphStart, 7, [[117, 28], [160, 77], [119, 128]]);
-
-    ctx.beginPath();
-    ctx.arc(x + p(59), y + p(77), p(15), 0, Math.PI * 2);
-    ctx.fillStyle = graphStart;
-    ctx.fill();
-
-    polygon([[117, 7], [136, 18], [136, 40], [117, 51], [98, 40], [98, 18]]);
-    polygon([[160, 56], [179, 67], [179, 89], [160, 100], [141, 89], [141, 67]]);
-    polygon([[119, 107], [138, 118], [138, 140], [119, 151], [100, 140], [100, 118]]);
+    line(letterColor, 19, [[13, 30], [59, 77]]);
+    line(letterColor, 19, [[14, 126], [59, 77]]);
+    line(graphStart, 5, [[122, 21], [158, 77], [122, 133]]);
+    line(graphStroke, 11, [[59, 77], [122, 21]]);
+    line(graphStroke, 11, [[59, 77], [122, 133]]);
+    line(graphRail, 6, [[59, 77], [158, 77]]);
+    circleNode(59, 77, 12, graphStart, nodeFill, 4);
+    polygon([[122, 0], [141, 11], [141, 33], [122, 44], [103, 33], [103, 11]]);
+    circleNode(158, 77, 8.5);
+    polygon([[122, 110], [141, 121], [141, 143], [122, 154], [103, 143], [103, 121]]);
     ctx.restore();
   }
   function drawIndexCanvasLockup(ctx, x, y, scale = 1, color = PAPER) {

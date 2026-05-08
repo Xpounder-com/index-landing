@@ -1,25 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 190 158" role="img" aria-labelledby="index-hybrid-x-title">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 176 158" role="img" aria-labelledby="index-hybrid-x-title" shape-rendering="geometricPrecision">
   <title id="index-hybrid-x-title">Index hybrid X</title>
-  <defs>
-    <linearGradient id="indexHybridGraphStroke" x1="59" y1="77" x2="160" y2="128" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#ddf4f2"/>
-      <stop offset="1" stop-color="#78d5d0"/>
-    </linearGradient>
-    <linearGradient id="indexHybridNodeFill" x1="98" y1="18" x2="179" y2="140" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#fff"/>
-      <stop offset="1" stop-color="#ddf4f2"/>
-    </linearGradient>
-  </defs>
   <g stroke-linecap="round" stroke-linejoin="round">
-    <path d="M13 30L59 77" stroke="#050606" stroke-width="18"/>
-    <path d="M14 126L59 77" stroke="#050606" stroke-width="18"/>
-    <path d="M59 77L117 28" stroke="url(#indexHybridGraphStroke)" stroke-width="12"/>
-    <path d="M59 77L119 128" stroke="url(#indexHybridGraphStroke)" stroke-width="12"/>
-    <path d="M59 77L160 77" stroke="#78d5d0" stroke-width="7"/>
-    <path d="M117 28L160 77L119 128" stroke="#ddf4f2" stroke-width="7"/>
-    <circle cx="59" cy="77" r="15" fill="#ddf4f2"/>
-    <polygon points="117,7 136,18 136,40 117,51 98,40 98,18" fill="#052f37" stroke="url(#indexHybridNodeFill)" stroke-width="6"/>
-    <polygon points="160,56 179,67 179,89 160,100 141,89 141,67" fill="#052f37" stroke="url(#indexHybridNodeFill)" stroke-width="6"/>
-    <polygon points="119,107 138,118 138,140 119,151 100,140 100,118" fill="#052f37" stroke="url(#indexHybridNodeFill)" stroke-width="6"/>
+    <path d="M13 30L59 77" stroke="#050606" stroke-width="19"/>
+    <path d="M14 126L59 77" stroke="#050606" stroke-width="19"/>
+    <path d="M122 21L158 77L122 133" fill="none" stroke="#ddf4f2" stroke-width="5"/>
+    <path d="M59 77L122 21" stroke="#78d5d0" stroke-width="11"/>
+    <path d="M59 77L122 133" stroke="#78d5d0" stroke-width="11"/>
+    <path d="M59 77L158 77" stroke="#8fe6df" stroke-width="6"/>
+    <circle cx="59" cy="77" r="12" fill="#ddf4f2" stroke="#052f37" stroke-width="4"/>
+    <polygon points="122,0 141,11 141,33 122,44 103,33 103,11" fill="#052f37" stroke="#ddf4f2" stroke-width="5"/>
+    <circle cx="158" cy="77" r="8.5" fill="#052f37" stroke="#ddf4f2" stroke-width="5"/>
+    <polygon points="122,110 141,121 141,143 122,154 103,143 103,121" fill="#052f37" stroke="#ddf4f2" stroke-width="5"/>
   </g>
 </svg>
