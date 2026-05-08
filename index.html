@@ -20,7 +20,7 @@
 <link rel="icon" href="%BASE_URL%favicon.svg" type="image/svg+xml"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link rel="preload" href="%BASE_URL%assets/brand/index-logo.jpg" as="image"/>
+<link rel="preload" href="%BASE_URL%assets/brand/index-logo.svg" as="image" type="image/svg+xml"/>
 <link rel="preload" href="%BASE_URL%assets/product/idx-ap-review.png" as="image" fetchpriority="high"/>
 <link rel="prefetch" href="%BASE_URL%assets/product/idx-ap-match.png" as="image"/>
 <link rel="stylesheet" href="styles.css"/>
@@ -74,7 +74,9 @@
   .nav > * { pointer-events: auto; }
   .logo {
     display: inline-flex; align-items: center; justify-content: center;
-    width: 116px; height: 38px;
+    width: 142px; height: 42px;
+    padding: 0 10px;
+    box-sizing: border-box;
     background: rgba(250,247,240,0.96);
     border: 1px solid rgba(250,247,240,0.76);
     border-radius: 3px;
@@ -82,9 +84,8 @@
     overflow: hidden;
   }
   .logo img {
-    width: 104px; height: 30px;
-    object-fit: cover;
-    object-position: center;
+    width: 100%; height: 100%;
+    object-fit: contain;
     display: block;
   }
   .nav-links { display: flex; gap: 22px; font-size: 13px; color: rgba(250,247,240,0.68); margin-left: 12px; }
@@ -494,8 +495,8 @@
       padding: 0 14px;
       gap: 12px;
     }
-    .logo { width: 92px; height: 32px; }
-    .logo img { width: 82px; height: 24px; }
+    .logo { width: 122px; height: 36px; padding: 0 7px; }
+    .logo img { width: 100%; height: 100%; }
     .nav-links { display: none; }
     .nav-cta .btn:not(.solid) { display: none; }
     .btn { font-size: 11px; padding: 7px 10px; }
@@ -587,7 +588,7 @@
 </main>
 
 <header class="nav">
-  <a href="#" class="logo" aria-label="Index home"><img src="%BASE_URL%assets/brand/index-logo.jpg" alt="" aria-hidden="true"/></a>
+  <a href="#" class="logo" aria-label="Index home"><img src="%BASE_URL%assets/brand/index-logo.svg" alt="" aria-hidden="true"/></a>
   <nav class="nav-links">
     <a href="#" data-go="1">Blueprints</a>
     <a href="#" data-go="2">Platform</a>
@@ -1112,6 +1113,10 @@ window.THREE = THREE;
   const PENCIL = '#7a5a44';
   const ACCENT = '#d24a2e';
   const MARKER = 'rgba(255, 224, 80, 0.55)';
+  const FONT_DISPLAY = '"Cormorant Garamond", serif';
+  const FONT_MONO = '"JetBrains Mono", monospace';
+  const FONT_SANS = 'Inter, sans-serif';
+  const FONT_BRAND = '"Bodoni 72", "Didot", "Georgia", serif';
   const sceneObjects = []; // { group, shards, label, z, texture, canvas }
   const ROLE_WORDS = ['finance', 'operations'];
   let roleWordIndex = 0;
@@ -1272,21 +1277,21 @@ window.THREE = THREE;
   }
   function eyebrow(ctx, x, y, text, color = PENCIL) {
     ctx.fillStyle = color;
-    ctx.font = '500 18px "JetBrains Mono", monospace';
+    ctx.font = `500 18px ${FONT_MONO}`;
     ctx.fillText(text.toUpperCase(), x, y);
   }
   function display(ctx, x, y, text, size = 200, weight = 500, color = PAPER) {
     ctx.fillStyle = color;
-    ctx.font = `${weight} ${size}px "Cormorant Garamond", serif`;
+    ctx.font = `${weight} ${size}px ${FONT_DISPLAY}`;
     ctx.fillText(text, x, y);
   }
   function displayItalic(ctx, x, y, text, size = 200, color = ACCENT) {
     ctx.fillStyle = color;
-    ctx.font = `italic 400 ${size}px "Cormorant Garamond", serif`;
+    ctx.font = `italic 400 ${size}px ${FONT_DISPLAY}`;
     ctx.fillText(text, x, y);
   }
   function body(ctx, x, y, lines, opts = {}) {
-    const { size = 26, color = '#cfc5b6', lh = 1.5, font = 'Inter, sans-serif', weight = 400, maxW = 700 } = opts;
+    const { size = 26, color = '#cfc5b6', lh = 1.5, font = FONT_DISPLAY, weight = 500, maxW = 700 } = opts;
     ctx.fillStyle = color; ctx.font = `${weight} ${size}px ${font}`;
     let yy = y;
     lines.forEach(line => {
@@ -1306,7 +1311,7 @@ window.THREE = THREE;
   }
   function tabularNum(ctx, x, y, text, size = 120, color = PAPER) {
     ctx.fillStyle = color;
-    ctx.font = `500 ${size}px "Cormorant Garamond", serif`;
+    ctx.font = `500 ${size}px ${FONT_DISPLAY}`;
     ctx.fillText(text, x, y);
   }
   function pageBg(ctx, color = '#0d0a08') {
@@ -1321,6 +1326,71 @@ window.THREE = THREE;
   }
   function compactLayout() {
     return window.innerWidth < 720 || window.innerHeight > window.innerWidth * 1.22;
+  }
+  function drawHybridXMark(ctx, x, y, scale = 1, opts = {}) {
+    const letterColor = opts.letterColor || '#050606';
+    const graphStart = opts.graphStart || '#ddf4f2';
+    const graphEnd = opts.graphEnd || '#78d5d0';
+    const nodeFill = opts.nodeFill || '#052f37';
+    const nodeStroke = opts.nodeStroke || '#ddf4f2';
+    const p = (value) => value * scale;
+    const line = (strokeStyle, width, points) => {
+      ctx.beginPath();
+      ctx.moveTo(x + p(points[0][0]), y + p(points[0][1]));
+      points.slice(1).forEach(([px, py]) => ctx.lineTo(x + p(px), y + p(py)));
+      ctx.strokeStyle = strokeStyle;
+      ctx.lineWidth = width * scale;
+      ctx.stroke();
+    };
+    const polygon = (points) => {
+      ctx.beginPath();
+      ctx.moveTo(x + p(points[0][0]), y + p(points[0][1]));
+      points.slice(1).forEach(([px, py]) => ctx.lineTo(x + p(px), y + p(py)));
+      ctx.closePath();
+      ctx.fillStyle = nodeFill;
+      ctx.fill();
+      ctx.strokeStyle = nodeStroke;
+      ctx.lineWidth = 6 * scale;
+      ctx.stroke();
+    };
+
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    const graphStroke = ctx.createLinearGradient(x + p(59), y + p(77), x + p(160), y + p(128));
+    graphStroke.addColorStop(0, graphStart);
+    graphStroke.addColorStop(1, graphEnd);
+
+    line(letterColor, 18, [[13, 30], [59, 77]]);
+    line(letterColor, 18, [[14, 126], [59, 77]]);
+    line(graphStroke, 12, [[59, 77], [117, 28]]);
+    line(graphStroke, 12, [[59, 77], [119, 128]]);
+    line(graphEnd, 7, [[59, 77], [160, 77]]);
+    line(graphStart, 7, [[117, 28], [160, 77], [119, 128]]);
+
+    ctx.beginPath();
+    ctx.arc(x + p(59), y + p(77), p(15), 0, Math.PI * 2);
+    ctx.fillStyle = graphStart;
+    ctx.fill();
+
+    polygon([[117, 7], [136, 18], [136, 40], [117, 51], [98, 40], [98, 18]]);
+    polygon([[160, 56], [179, 67], [179, 89], [160, 100], [141, 89], [141, 67]]);
+    polygon([[119, 107], [138, 118], [138, 140], [119, 151], [100, 140], [100, 118]]);
+    ctx.restore();
+  }
+  function drawIndexCanvasLockup(ctx, x, y, scale = 1, color = PAPER) {
+    ctx.save();
+    ctx.fillStyle = color;
+    ctx.font = `${500} ${144 * scale}px ${FONT_BRAND}`;
+    ctx.fillText('Inde', x + 16 * scale, y + 124 * scale);
+    drawHybridXMark(ctx, x + 322 * scale, y, scale, {
+      letterColor: color,
+      graphStart: '#ddf4f2',
+      graphEnd: '#78d5d0',
+      nodeFill: '#052f37',
+      nodeStroke: '#ddf4f2',
+    });
+    ctx.restore();
   }
   function roundedRectPath(ctx, x, y, w, h, r = 8) {
     const rr = Math.min(r, w / 2, h / 2);
@@ -1368,7 +1438,7 @@ window.THREE = THREE;
     ctx.font = `500 ${w < 220 ? 21 : 30}px "Cormorant Garamond", serif`;
     ctx.fillText(label, x + 18, y + 68);
     ctx.fillStyle = dark ? '#cfc5b6' : 'rgba(13,10,8,0.58)';
-    ctx.font = '400 15px Inter, sans-serif';
+    ctx.font = `500 16px ${FONT_DISPLAY}`;
     body(ctx, x + 18, y + 100, [detail], { size: 15, maxW: w - 36, color: ctx.fillStyle, lh: 1.36 });
     ctx.restore();
   }
@@ -1491,7 +1561,7 @@ window.THREE = THREE;
       ctx.closePath();
       ctx.fill();
       ctx.fillStyle = connector.color;
-      ctx.font = `700 ${s * 0.22}px Inter, sans-serif`;
+      ctx.font = `700 ${s * 0.22}px ${FONT_SANS}`;
       ctx.fillText('SF', x + s * 0.38, y + s * 0.62);
     } else if (connector.icon === 'nodes') {
       ctx.beginPath();
@@ -1543,7 +1613,7 @@ window.THREE = THREE;
         ctx.fill();
       });
     } else {
-      ctx.font = `800 ${s * (connector.mark.length > 1 ? 0.32 : 0.42)}px Inter, sans-serif`;
+      ctx.font = `800 ${s * (connector.mark.length > 1 ? 0.32 : 0.42)}px ${FONT_SANS}`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(connector.mark, cx, cy + s * 0.02);
@@ -1573,7 +1643,7 @@ window.THREE = THREE;
       ], { size: 12, maxW: w - 36, color: dark ? '#cfc5b6' : 'rgba(13,10,8,0.64)', lh: 1.28 });
     } else {
       ctx.fillStyle = dark ? '#cfc5b6' : 'rgba(13,10,8,0.64)';
-      ctx.font = '500 15px Inter, sans-serif';
+      ctx.font = `500 18px ${FONT_DISPLAY}`;
       ctx.fillText('Index is the AI documents operations platform.', x + 18, y + 104);
     }
 
@@ -1692,7 +1762,7 @@ window.THREE = THREE;
     ctx.fillStyle = dark ? '#0d0a08' : PAPER;
     body(ctx, x + 24, y + 36, [primary], { size: w < 620 ? 23 : 29, maxW: w - 48, color: ctx.fillStyle, lh: 1.08, font: '"Cormorant Garamond", serif', weight: 500 });
     ctx.fillStyle = ACCENT;
-    body(ctx, x + 24, y + h - 34, [secondary], { size: w < 620 ? 14 : 17, maxW: w - 48, color: ACCENT, lh: 1.08, font: 'Inter, sans-serif', weight: 700 });
+    body(ctx, x + 24, y + h - 34, [secondary], { size: w < 620 ? 14 : 17, maxW: w - 48, color: ACCENT, lh: 1.08, font: FONT_SANS, weight: 700 });
     ctx.restore();
   }
 
@@ -1820,7 +1890,7 @@ window.THREE = THREE;
       const y = gy + row * (ch + 16);
       ctx.fillStyle = '#1a1411'; ctx.fillRect(x, y, cw, ch);
       ctx.strokeStyle = 'rgba(250,247,240,0.14)'; ctx.lineWidth = 1; ctx.strokeRect(x+0.5, y+0.5, cw-1, ch-1);
-      productSlot(ctx, x + 18, y + 22, 222, 194, it[0], it[2], 'Product workflow thumbnail.', { fit: 'cover', focusY: 0.38, zoom: 1.22, caption: false, pad: 6 });
+      productSlot(ctx, x + 18, y + 22, 222, 194, it[0], it[2], 'Workflow proof preview.', { fit: 'cover', focusY: 0.38, zoom: 1.22, caption: false, pad: 6 });
 
       // text
       ctx.fillStyle = PAPER; ctx.font = `500 36px "Cormorant Garamond", serif`;
@@ -1830,7 +1900,6 @@ window.THREE = THREE;
       // hairline
       rule(ctx, x + 262, y + 110, cw - 284, 'rgba(250,247,240,0.14)');
       // body
-      ctx.fillStyle = '#cfc5b6'; ctx.font = `400 18px Inter, sans-serif`;
       body(ctx, x + 262, y + 135, [it[3]], { size: 16, maxW: cw - 292, color: '#cfc5b6', lh: 1.25 });
       // foot
       ctx.fillStyle = PENCIL; ctx.font = `500 12px "JetBrains Mono", monospace`;
@@ -1880,7 +1949,7 @@ window.THREE = THREE;
     const steps = [
       ['inbox', 'Discover', 'Use your client discovery motion to map document sets, systems, and exception rules.', '⌧'],
       ['apMatch', 'Configure', 'Blueprint fields, validators, queues, and source linked review states.', '⊟'],
-      ['posting', 'Validate', 'Partner led acceptance with evidence attached to every extracted value.', '◐'],
+      ['posting', 'Validate', 'Partner-led acceptance with evidence attached to every extracted value.', '◐'],
       ['dashboard', 'Launch', 'Get clients paid faster. Sync approved work to ERP, TMS, CRM, or vertical systems.', '◑'],
     ];
     const sx = 110, sy = 780, sw = 410, sh = 230;
@@ -1893,8 +1962,7 @@ window.THREE = THREE;
       ctx.fillText('0' + (i+1), x + 24, sy + 158);
       ctx.fillStyle = PAPER; ctx.font = `500 38px "Cormorant Garamond", serif`;
       ctx.fillText(st[1], x + 74, sy + 160);
-      ctx.fillStyle = '#cfc5b6'; ctx.font = `400 17px Inter, sans-serif`;
-      body(ctx, x + 24, sy + 192, [st[2]], { size: 13, maxW: sw - 48, color: '#cfc5b6', lh: 1.15 });
+      body(ctx, x + 24, sy + 192, [st[2]], { size: 14, maxW: sw - 48, color: '#cfc5b6', lh: 1.12 });
       addPreviewHotspot(x, sy, sw, sh, st[0], st[1], st[2], {
         previewTitle: st[1],
         previewDetail: st[2],
@@ -1962,7 +2030,7 @@ window.THREE = THREE;
       productSlot(ctx, x + 18, y + 18, pw - 36, 150, it[0], it[1], it[2], { fit: 'cover', focusY: 0.32, zoom: 1.22, caption: true, pad: 6 });
       ctx.fillStyle = PAPER; ctx.font = `500 34px "Cormorant Garamond", serif`;
       ctx.fillText(it[1], x + 22, y + 196);
-      ctx.fillStyle = ACCENT; ctx.font = `700 13px Inter, sans-serif`;
+      ctx.fillStyle = ACCENT; ctx.font = `700 12px ${FONT_MONO}`;
       ctx.fillText(it[2].toUpperCase(), x + 292, y + 196);
       body(ctx, x + 22, y + 224, [it[3]], { size: 13, maxW: pw - 44, color: '#cfc5b6', lh: 1.15 });
       addPreviewHotspot(x, y, pw, ph, it[0], it[1], it[3], {
@@ -2006,7 +2074,7 @@ window.THREE = THREE;
         ctx.fillStyle = featured ? 'rgba(13,10,8,0.56)' : '#cfc5b6';
         ctx.font = `500 11px "JetBrains Mono", monospace`;
         ctx.fillText(t[1].toUpperCase(), 720, y + 58);
-        ctx.font = `400 14px Inter, sans-serif`;
+        ctx.font = `500 16px ${FONT_DISPLAY}`;
         ctx.fillText(t[2], 900, y + 58);
       });
       return c;
@@ -2043,14 +2111,13 @@ window.THREE = THREE;
       ctx.fillStyle = txt; ctx.font = `500 58px "Cormorant Garamond", serif`;
       ctx.fillText(p[2], x + 30, gy + 158);
       // pitch
-      ctx.fillStyle = sub; ctx.font = `400 17px Inter, sans-serif`;
       body(ctx, x + 30, gy + 195, [p[3]], { size: 17, maxW: pw - 60, color: sub, lh: 1.4 });
       // bullets
       let yy = gy + 270;
       p[4].forEach(b => {
         ctx.fillStyle = ACCENT;
         ctx.fillRect(x + 30, yy - 10, 7, 7);
-        ctx.fillStyle = featured ? '#0d0a08' : PAPER; ctx.font = `400 17px Inter, sans-serif`;
+        ctx.fillStyle = featured ? '#0d0a08' : PAPER; ctx.font = `500 18px ${FONT_DISPLAY}`;
         ctx.fillText(b, x + 60, yy);
         yy += 26;
       });
@@ -2075,7 +2142,7 @@ window.THREE = THREE;
         'Start with one workflow: invoice match, customer follow up, posting proof, or cash dashboard. Index gives your team the blueprint and proof path.'
       ], { size: 21, maxW: 560, color: '#cfc5b6', lh: 1.32 });
       ctx.fillStyle = PAPER; ctx.fillRect(contentX, 832, 250, 58);
-      ctx.fillStyle = '#0d0a08'; ctx.font = `500 20px Inter, sans-serif`;
+      ctx.fillStyle = '#0d0a08'; ctx.font = `500 22px ${FONT_DISPLAY}`;
       ctx.fillText('Start application', contentX + 26, 868);
       ctx.strokeStyle = 'rgba(250,247,240,0.36)';
       ctx.strokeRect(contentX + 274.5, 832.5, 286, 57);
@@ -2083,7 +2150,7 @@ window.THREE = THREE;
       ctx.fillText('Try live demo', contentX + 306, 868);
       addActionHotspot(contentX, 832, 250, 58, 'partner');
       addActionHotspot(contentX + 274.5, 832, 286, 58, 'demo');
-      productSlot(ctx, contentX, 908, 560, 118, 'posting', 'Final CTA visual', 'Partner kit, certification badge, or implementation checklist.', { fit: 'cover', focusY: 0.28, zoom: 1.18 });
+      productSlot(ctx, contentX, 908, 560, 118, 'posting', 'Partner proof kit', 'Certification badge, implementation checklist, and audit trail.', { fit: 'cover', focusY: 0.28, zoom: 1.18 });
       return c;
     }
     eyebrow(ctx, 110, 130, '06  /  Apply', ACCENT);
@@ -2102,12 +2169,12 @@ window.THREE = THREE;
 
     // CTA buttons
     ctx.fillStyle = PAPER; ctx.fillRect(ctaX, 650, 250, 64);
-    ctx.fillStyle = '#0d0a08'; ctx.font = `500 22px Inter, sans-serif`;
+    ctx.fillStyle = '#0d0a08'; ctx.font = `500 24px ${FONT_DISPLAY}`;
     ctx.fillText('Start application', ctaX + 26, 691);
 
     ctx.strokeStyle = 'rgba(250,247,240,0.4)'; ctx.lineWidth = 1.2;
     ctx.strokeRect(ctaX + 282.5, 650.5, 238, 63);
-    ctx.fillStyle = PAPER; ctx.font = `500 22px Inter, sans-serif`;
+    ctx.fillStyle = PAPER; ctx.font = `500 24px ${FONT_DISPLAY}`;
     ctx.fillText('Try live demo', ctaX + 312, 691);
     addActionHotspot(ctaX, 650, 250, 64, 'partner');
     addActionHotspot(ctaX + 282.5, 650, 238, 64, 'demo');
@@ -2116,8 +2183,7 @@ window.THREE = THREE;
 
     // Footer-ish wordmark
     ctx.fillStyle = '#1a1411'; ctx.fillRect(0, 940, TEX_W, 1);
-    ctx.fillStyle = PAPER; ctx.font = `500 360px "Cormorant Garamond", serif`;
-    ctx.fillText('Index.', 90, 1060);
+    drawIndexCanvasLockup(ctx, 88, 790, 1.78, PAPER);
     ctx.fillStyle = PENCIL; ctx.font = `500 13px "JetBrains Mono", monospace`;
     ctx.fillText('© 2026 Index  ·  PARTNER READY DOCUMENT OPERATIONS.', 1120, 1050);
     return c;

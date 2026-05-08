@@ -222,7 +222,9 @@ await runContactApiSmoke();
 await access(join(dist, 'index.html'));
 await access(join(dist, 'robots.txt'));
 await access(join(dist, 'sitemap.xml'));
-await access(join(dist, 'assets', 'brand', 'index-logo.jpg'));
+await access(join(dist, 'favicon.svg'));
+await access(join(dist, 'assets', 'brand', 'index-logo.svg'));
+await access(join(dist, 'assets', 'brand', 'index-hybrid-x.svg'));
 await Promise.all(productAssets.map((name) => access(join(dist, 'assets', 'product', name))));
 
 const builtAssetNames = await readdir(join(dist, 'assets'));
