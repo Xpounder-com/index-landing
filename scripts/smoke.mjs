@@ -354,7 +354,7 @@ const server = createServer(async (req, res) => {
       contactSubmissions.push(payload);
       res.writeHead(200, { 'content-type': 'application/json; charset=utf-8' });
       res.end(JSON.stringify(payload.source === 'index-demo-access'
-        ? { ok: true, auth_mode: 'login', demo_url: expectedDemoUrl }
+        ? { ok: true, auth_mode: 'access_code', demo_access_code: smokeDemoCode, demo_url: expectedDemoUrl }
         : { ok: true }));
       return;
     }
@@ -365,7 +365,7 @@ const server = createServer(async (req, res) => {
         login_url: '/auth/login?return_to=%2Fportal%3Fjourney%3Dsample',
         local_auth_enabled: true,
         google_client_id: 'smoke-google-client-id',
-        access_code_auth_enabled: false,
+        access_code_auth_enabled: true,
       }));
       return;
     }
@@ -378,7 +378,11 @@ const server = createServer(async (req, res) => {
   <body>
     <main>
       <h1>Sign in to IDX</h1>
-      <p>Use Google sign-in to open your private IDX workspace.</p>
+      <p>Enter your email and workspace access code to open your private IDX workspace.</p>
+      <form>
+        <input name="email" type="email" />
+        <input name="access_code" type="password" />
+      </form>
       <a href="${returnTo || '/portal'}">Continue to workspace</a>
     </main>
   </body>
@@ -555,11 +559,13 @@ try {
     stored: JSON.parse(window.localStorage.getItem('index-demo-access') || '{}'),
   }));
   if (
-    demoAccessState.code !== 'Ready'
-    || !demoAccessState.copy?.includes('Continue with viewer@northstar.test')
+    demoAccessState.code !== smokeDemoCode
+    || !demoAccessState.copy?.includes('viewer@northstar.test')
+    || !demoAccessState.copy?.includes('workspace access code')
     || demoAccessState.href !== expectedDemoUrl
     || demoAccessState.stored?.email !== 'viewer@northstar.test'
-    || demoAccessState.stored?.authMode !== 'login'
+    || demoAccessState.stored?.authMode !== 'access_code'
+    || demoAccessState.stored?.code !== smokeDemoCode
     || demoAccessState.stored?.demoUrl !== expectedDemoUrl
   ) {
     throw new Error(`Demo access state was unexpected: ${JSON.stringify(demoAccessState)}`);
@@ -590,7 +596,8 @@ try {
     if (
       demoLoginState.title !== 'Index demo login'
       || !demoLoginState.heading?.includes('Sign in to IDX')
-      || demoLoginState.hasAccessCode
+      || !demoLoginState.hasEmail
+      || !demoLoginState.hasAccessCode
     ) {
       throw new Error(`Demo login page did not expose the login handoff: ${JSON.stringify(demoLoginState)}`);
     }

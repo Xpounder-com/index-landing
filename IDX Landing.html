@@ -682,7 +682,7 @@
       <div>
         <p class="partner-form-kicker">Live demo</p>
         <h2 class="partner-form-title" id="demo-access-title">See the workspace.</h2>
-        <p class="partner-form-copy">Enter your work email once. We will record demo access and send you into the live product.</p>
+        <p class="partner-form-copy">Enter your work email once. We will record demo access, reveal the workspace access code, and send you to the product login screen.</p>
       </div>
       <button class="partner-form-close" type="button" data-close-demo-access aria-label="Close live demo access form">Close</button>
     </div>
@@ -699,13 +699,13 @@
     </form>
     <div class="demo-access-result" aria-live="polite">
       <div class="demo-access-code">
-        <span>Workspace access</span>
+        <span>Workspace access code</span>
         <strong id="demo-access-code">Ready</strong>
       </div>
-      <p class="demo-access-result-copy" id="demo-access-result-copy">Continue with the same email on the product login screen.</p>
+      <p class="demo-access-result-copy" id="demo-access-result-copy">The product login screen will ask for your email and workspace access code.</p>
       <div class="demo-access-actions">
         <button class="partner-form-secondary" type="button" data-close-demo-access>Keep browsing</button>
-        <a class="demo-access-open" id="demo-access-open" href="#" target="_blank" rel="noopener noreferrer">Open demo</a>
+        <a class="demo-access-open" id="demo-access-open" href="#" target="_blank" rel="noopener noreferrer">Open product login</a>
       </div>
     </div>
   </div>
@@ -826,8 +826,8 @@ window.THREE = THREE;
     demoAccessOpen.setAttribute('aria-disabled', openUrl ? 'false' : 'true');
     demoAccessResultCopy.textContent = openUrl
       ? isAccessCode
-        ? `Use this code with ${state.email} on the product login screen.`
-        : `Continue with ${state.email} on the product login screen.`
+        ? `The next screen asks for ${state.email} and this workspace access code.`
+        : `Continue with ${state.email} on the product login screen. No workspace access code is required for this demo host.`
       : `Demo access is recorded for ${state.email}. The product demo URL is not configured yet.`;
     demoAccessModal.dataset.demoState = 'ready';
   }
